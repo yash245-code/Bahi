@@ -1,0 +1,117 @@
+# Migration from PostgreSQL to MongoDB & Application Verification Plan
+
+This document outlines the steps to verify the running application (Next.js UI & NestJS API) and the technical plan to switch the database layer from PostgreSQL to MongoDB.
+
+---
+
+## Part 1: How to Check the UI & Verify if the Application is Working
+
+### 1. Starting the Entire Stack
+From the project root:
+```bash
+npm run dev
+```
+Turborepo will concurrently launch:
+- **Frontend (Next.js)** on `http://localhost:3000`
+- **Backend API (NestJS)** on `http://localhost:4000`
+
+You can also run them independently if desired:
+- **Frontend only:** `npm run dev --workspace=apps/web`
+- **Backend only:** `npm run dev --workspace=apps/api`
+
+### 2. Checking the UI (Frontend)
+1. Open your browser and navigate to:
+   👉 [http://localhost:3000](http://localhost:3000)
+2. You will see the **Bahi Business Suite Dashboard**, including:
+   - Overview metrics (*Total Revenue, Open Deals, Pending Invoices, Active Projects*)
+   - Module Health statuses (*CRM, Sales, Inventory, Accounting, HR, Projects*)
+   - Recent Activities feed
+3. Click through the sidebar navigation links to verify individual module views:
+   - `/crm` — Leads and Pipeline Kanban
+   - `/sales` — Quotations and Sales Orders
+   - `/inventory` — Products and Warehouses
+   - `/accounting` — Invoices and Payments
+   - `/hr` — Employees and Leave Requests
+   - `/projects` — Projects and Task Boards
+   - `/settings` — Organization & user settings
+
+### 3. Checking the Backend API
+1. Interactive Swagger API Docs:
+   👉 [http://localhost:4000/api/docs](http://localhost:4000/api/docs)
+2. You can test API endpoints directly in Swagger or using curl:
+   ```bash
+   curl http://localhost:4000/api/v1/health
+   ```
+
+---
+
+## Part 2: Migration Plan — PostgreSQL to MongoDB
+
+### Background & Technical Requirements
+Switching Prisma from PostgreSQL to MongoDB involves specific requirements dictated by the Prisma MongoDB connector:
+1. **Primary Keys (`_id`):** MongoDB models in Prisma must use `@id @default(auto()) @map("_id") @db.ObjectId`.
+2. **Foreign Keys:** Every foreign key field referencing an `@id` with `@db.ObjectId` must also have `@db.ObjectId` attribute (e.g. `tenantId String @db.ObjectId`).
+3. **Decimal vs Float:** The Prisma MongoDB connector does **not** support the `Decimal` type (e.g. `@db.Decimal(12, 2)`). All monetary and quantity amounts must be changed to `Float`.
+4. **Prisma Migrate vs Push:** MongoDB does not support relational migrations (`prisma migrate dev`). Database synchronization is performed using `prisma db push`.
+5. **Transactions & Replica Sets:** MongoDB requires a replica set for multi-document transactions. For local Docker usage, MongoDB should run with `--replSet rs0`. For cloud usage, MongoDB Atlas has replica sets enabled by default.
+
+---
+
+## Proposed Changes
+
+### 1. Database Package (`packages/database`)
+
+#### [MODIFY] [schema.prisma](file:///c:/Users/rawat/BUIMB%20Projects/Bahi/packages/database/prisma/schema.prisma)
+- Change `provider = "postgresql"` to `provider = "mongodb"`.
+- Update all model primary keys from `id String @id @default(cuid())` to `id String @id @default(auto()) @map("_id") @db.ObjectId`.
+- Update all relational foreign keys (`tenantId`, `userId`, `roleId`, `contactId`, `productId`, `warehouseId`, `stageId`, `quotationId`, etc.) to `String @db.ObjectId` (or `String? @db.ObjectId`).
+- Convert all `Decimal @db.Decimal(...)` fields across models (`Opportunity`, `Product`, `Quotation`, `QuotationLine`, `SalesOrder`, `SalesOrderLine`, `StockMove`, `Invoice`, `Payment`, `Employee`, `Timesheet`) to `Float`.
+
+#### [MODIFY] [package.json](file:///c:/Users/rawat/BUIMB%20Projects/Bahi/packages/database/package.json)
+- Update `"migrate"` script from `prisma migrate dev` to `prisma db push`.
+- Update `"migrate:deploy"` to `prisma db push --accept-data-loss`.
+
+#### [MODIFY] [seed.ts](file:///c:/Users/rawat/BUIMB%20Projects/Bahi/packages/database/prisma/seed.ts)
+- Ensure all created and upserted records conform to the MongoDB schema.
+
+### 2. Root Project & Infrastructure
+
+#### [MODIFY] [package.json](file:///c:/Users/rawat/BUIMB%20Projects/Bahi/package.json)
+- Update root script `"db:migrate"` to trigger `prisma db push`.
+
+#### [MODIFY] [docker-compose.yml](file:///c:/Users/rawat/BUIMB%20Projects/Bahi/docker-compose.yml)
+- Replace the PostgreSQL service with a MongoDB service (`mongo:7.0`) configured with `--replSet rs0` and port `27017:27017`.
+
+#### [MODIFY] [.env.example](file:///c:/Users/rawat/BUIMB%20Projects/Bahi/.env.example)
+- Update `DATABASE_URL` format to MongoDB:
+  - Local: `DATABASE_URL="mongodb://localhost:27017/bahi_dev?replicaSet=rs0"`
+  - Atlas: `DATABASE_URL="mongodb+srv://<user>:<password>@<cluster>.mongodb.net/bahi_dev?retryWrites=true&w=majority"`
+
+### 3. API Service (`apps/api`)
+
+#### [MODIFY] [prisma.service.ts](file:///c:/Users/rawat/BUIMB%20Projects/Bahi/apps/api/src/core/prisma/prisma.service.ts)
+- Update startup log message from `Ensure PostgreSQL is running` to `Ensure MongoDB is running`.
+
+---
+
+## User Review Required
+
+> [!IMPORTANT]
+> **MongoDB Database Choice:**
+> 1. Do you plan to run MongoDB locally via **Docker / local MongoDB**, or do you prefer using a **MongoDB Atlas cloud connection string** (free tier)?
+> 2. Note: Prisma on MongoDB uses `Float` for currency/numeric values instead of SQL `Decimal(12, 2)`.
+
+---
+
+## Verification Plan
+
+### 1. Schema Validation & Client Generation
+- Run `node node_modules/prisma/build/index.js validate` on `packages/database/prisma/schema.prisma`.
+- Run `npm run db:generate` to regenerate `@prisma/client`.
+
+### 2. Build Verification
+- Run `npm run build` across all workspaces to ensure frontend and backend compile with zero TypeScript errors.
+
+### 3. Runtime Verification
+- Start the web UI with `npm run dev --workspace=apps/web` and verify `http://localhost:3000`.
+- Start the API with `npm run dev --workspace=apps/api` and verify `http://localhost:4000/api/docs`.

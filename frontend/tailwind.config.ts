@@ -62,6 +62,53 @@ const config: Config = {
           danger: '#B23A2E',
           info: '#75766E',
         },
+        // Module Colors
+        module: {
+          crm: {
+            DEFAULT: '#C2542F',
+            bg: '#3A2318',
+            border: '#5A3624',
+          },
+          inventory: {
+            DEFAULT: '#3E7FBF',
+            bg: '#16283A',
+            border: '#254764',
+          },
+          accounting: {
+            DEFAULT: '#2E9169',
+            bg: '#123322',
+            border: '#1F5138',
+          },
+          billing: {
+            DEFAULT: '#8B8D85',
+            bg: '#26271F',
+            border: '#3A3C33',
+          },
+          hr: {
+            DEFAULT: '#C24A6B',
+            bg: '#3A1B24',
+            border: '#5C2E3C',
+          },
+          projects: {
+            DEFAULT: '#D1A536',
+            bg: '#332A11',
+            border: '#544620',
+          },
+        },
+        // Neutral Ramp (50 lightest -> 950 darkest)
+        neutral: {
+          50: '#F7F6F3',
+          100: '#E8E6E1',
+          200: '#D5D2CA',
+          300: '#B8B6AE',
+          400: '#9A9B93',
+          500: '#75766E',
+          600: '#54554E',
+          700: '#3A3A3A',
+          800: '#2A2A2A',
+          900: '#222222',
+          950: '#141513',
+        },
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
@@ -73,6 +120,12 @@ const config: Config = {
         'card': '0 1px 3px rgba(32, 33, 31, 0.04), 0 1px 2px rgba(32, 33, 31, 0.06)',
         'card-hover': '0 8px 24px rgba(32, 33, 31, 0.08)',
         'accent': '0 4px 14px rgba(168, 70, 47, 0.25)',
+        'glow-crm': '0 4px 14px rgba(194, 84, 47, 0.25)',
+        'glow-inventory': '0 4px 14px rgba(62, 127, 191, 0.25)',
+        'glow-accounting': '0 4px 14px rgba(46, 145, 105, 0.25)',
+        'glow-billing': '0 4px 14px rgba(139, 141, 133, 0.25)',
+        'glow-hr': '0 4px 14px rgba(194, 74, 107, 0.25)',
+        'glow-projects': '0 4px 14px rgba(209, 165, 54, 0.25)',
       },
       borderRadius: {
         'xl': '0.75rem',

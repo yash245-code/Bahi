@@ -12,18 +12,19 @@
 - [x] `packages/types` (shared DTOs, enums, API envelopes)
 - [x] `packages/database` (Prisma schema, client, seed)
 
-## 3. Backend API (`apps/api`) — NestJS
+## 3. Backend API (`backend`) — NestJS
 - [x] Package.json & NestJS bootstrap (`main.ts`)
-- [x] `src/core/` — auth, tenancy, users, roles, audit
-- [x] `src/crm/` — leads, opportunities, pipelines
-- [x] `src/sales/` — quotations, orders
-- [x] `src/inventory/` — products, warehouses, stock-moves
-- [x] `src/accounting/` — invoices, payments
-- [x] `src/hr/` — employees, leave
-- [x] `src/projects/` — projects, tasks, timesheets
+- [x] `src/modules/core/` — auth, tenancy, users, roles, audit
+- [x] `src/modules/crm/` — leads, opportunities, pipelines
+- [x] `src/modules/sales/` — quotations, orders
+- [x] `src/modules/inventory/` — products, warehouses, stock-moves
+- [x] `src/modules/accounting/` — invoices, payments
+- [x] `src/modules/hr/` — employees, leave
+- [x] `src/modules/projects/` — projects, tasks, timesheets
 - [x] `src/shared/` — contacts, activities, attachments
+- [x] `src/common/` — middleware, guards
 
-## 4. Frontend Web App (`apps/web`) — Next.js
+## 4. Frontend Web App (`frontend`) — Next.js
 - [x] Next.js init, Tailwind, globals.css
 - [x] Application shell (Sidebar, Topbar, CommandPalette)
 - [x] Dashboard page

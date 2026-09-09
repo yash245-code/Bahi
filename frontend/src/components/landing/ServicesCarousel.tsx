@@ -28,9 +28,9 @@ export const servicesList: ServiceItem[] = [
     metric: '+34% Close Rate',
     href: '/crm',
     moduleId: 'crm',
-    accentColor: '#B7624C',
-    badgeBg: 'rgba(183, 98, 76, 0.15)',
-    iconBg: 'from-[#B7624C]/25 to-[#853526]/10',
+    accentColor: '#C2542F',
+    badgeBg: '#3A2318',
+    iconBg: 'from-[#C2542F]/25 to-[#3A2318]/20',
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
@@ -46,9 +46,9 @@ export const servicesList: ServiceItem[] = [
     metric: '< 5m Turnaround',
     href: '/sales',
     moduleId: 'sales',
-    accentColor: '#D97706',
-    badgeBg: 'rgba(217, 119, 6, 0.15)',
-    iconBg: 'from-[#D97706]/25 to-[#B45309]/10',
+    accentColor: '#8B8D85',
+    badgeBg: '#26271F',
+    iconBg: 'from-[#8B8D85]/25 to-[#26271F]/20',
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
@@ -64,9 +64,9 @@ export const servicesList: ServiceItem[] = [
     metric: '99.9% Accuracy',
     href: '/inventory',
     moduleId: 'inventory',
-    accentColor: '#1F7A4D',
-    badgeBg: 'rgba(31, 122, 77, 0.15)',
-    iconBg: 'from-[#1F7A4D]/25 to-[#165A38]/10',
+    accentColor: '#3E7FBF',
+    badgeBg: '#16283A',
+    iconBg: 'from-[#3E7FBF]/25 to-[#16283A]/20',
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
@@ -82,9 +82,9 @@ export const servicesList: ServiceItem[] = [
     metric: '-60% Audit Time',
     href: '/accounting',
     moduleId: 'accounting',
-    accentColor: '#C88775',
-    badgeBg: 'rgba(200, 135, 117, 0.15)',
-    iconBg: 'from-[#C88775]/25 to-[#853526]/10',
+    accentColor: '#2E9169',
+    badgeBg: '#123322',
+    iconBg: 'from-[#2E9169]/25 to-[#123322]/20',
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
@@ -100,9 +100,9 @@ export const servicesList: ServiceItem[] = [
     metric: 'Same-Day Approvals',
     href: '/hr',
     moduleId: 'hr',
-    accentColor: '#818CF8',
-    badgeBg: 'rgba(129, 140, 248, 0.15)',
-    iconBg: 'from-[#818CF8]/25 to-[#4F46E5]/10',
+    accentColor: '#C24A6B',
+    badgeBg: '#3A1B24',
+    iconBg: 'from-[#C24A6B]/25 to-[#3A1B24]/20',
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
@@ -118,9 +118,9 @@ export const servicesList: ServiceItem[] = [
     metric: '96% On-Time',
     href: '/projects',
     moduleId: 'projects',
-    accentColor: '#38BDF8',
-    badgeBg: 'rgba(56, 189, 248, 0.15)',
-    iconBg: 'from-[#38BDF8]/25 to-[#0284C7]/10',
+    accentColor: '#D1A536',
+    badgeBg: '#332A11',
+    iconBg: 'from-[#D1A536]/25 to-[#332A11]/20',
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" d="M6 6.878V6a2.25 2.25 0 0 1 2.25-2.25h7.5A2.25 2.25 0 0 1 18 6v.878m-12 0c.235-.083.487-.128.75-.128h10.5c.263 0 .515.045.75.128m-12 0A2.25 2.25 0 0 0 4.5 9v.878m13.5-3A2.25 2.25 0 0 1 19.5 9v.878m0 0a2.246 2.246 0 0 0-.75-.128H5.25c-.263 0-.515.045-.75.128m15 0A2.25 2.25 0 0 1 21 12v6a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18v-6c0-.98.626-1.813 1.5-2.122" />
@@ -163,6 +163,10 @@ export const servicesList: ServiceItem[] = [
   },
 ];
 
+// Navigator dots: remove the last 3 denoting dots as the carousel viewport displays
+// multiple cards at once, meaning the last 3 indices can never be scrolled into first position.
+export const navigatorDots = servicesList.slice(0, Math.max(1, servicesList.length - 3));
+
 interface ServicesCarouselProps {
   activeModuleId?: string;
   onSelectModule?: (moduleId: 'crm' | 'sales' | 'inventory' | 'accounting' | 'hr' | 'projects') => void;
@@ -170,8 +174,6 @@ interface ServicesCarouselProps {
 
 export function ServicesCarousel({ activeModuleId, onSelectModule }: ServicesCarouselProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
   const [isAutoScrolling, setIsAutoScrolling] = useState(true);
   const [isPaused, setIsPaused] = useState(false);
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
@@ -181,18 +183,26 @@ export function ServicesCarousel({ activeModuleId, onSelectModule }: ServicesCar
   const startXRef = useRef(0);
   const scrollLeftStartRef = useRef(0);
 
-  // Check scroll boundary
+  // Calculate active slide index and track scroll position
   const updateScrollButtons = useCallback(() => {
     const el = scrollContainerRef.current;
     if (!el) return;
     const { scrollLeft, scrollWidth, clientWidth } = el;
-    setCanScrollLeft(scrollLeft > 10);
-    setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 10);
 
-    // Calculate approximate active slide
-    const cardWidth = 260 + 16; // width + gap
-    const index = Math.round(scrollLeft / cardWidth);
-    setActiveSlideIndex(Math.min(Math.max(0, index), servicesList.length - 1));
+    const maxScroll = scrollWidth - clientWidth;
+    if (maxScroll <= 0) {
+      setActiveSlideIndex(0);
+      return;
+    }
+
+    // When scrolled at or near the end, highlight the final navigator dot
+    if (scrollLeft + clientWidth >= scrollWidth - 25) {
+      setActiveSlideIndex(navigatorDots.length - 1);
+    } else {
+      const cardWidth = 260 + 16; // width + gap
+      const index = Math.round(scrollLeft / cardWidth);
+      setActiveSlideIndex(Math.min(Math.max(0, index), navigatorDots.length - 1));
+    }
   }, []);
 
   useEffect(() => {
@@ -207,15 +217,36 @@ export function ServicesCarousel({ activeModuleId, onSelectModule }: ServicesCar
     };
   }, [updateScrollButtons]);
 
-  // Programmatic scroll
+  // Programmatic scroll with seamless looping
   const handleScroll = (direction: 'left' | 'right') => {
     const el = scrollContainerRef.current;
     if (!el) return;
-    const scrollAmount = (el.clientWidth > 640 ? 560 : 280);
-    el.scrollBy({
-      left: direction === 'left' ? -scrollAmount : scrollAmount,
-      behavior: 'smooth',
-    });
+    const maxScroll = el.scrollWidth - el.clientWidth;
+    const scrollAmount = el.clientWidth > 640 ? 560 : 280;
+
+    if (direction === 'right') {
+      // If already at or near the end, loop back to the beginning
+      if (el.scrollLeft + el.clientWidth >= el.scrollWidth - 20) {
+        el.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        const target = el.scrollLeft + scrollAmount;
+        el.scrollTo({
+          left: Math.min(target, maxScroll),
+          behavior: 'smooth',
+        });
+      }
+    } else {
+      // If already at or near the beginning, loop to the end
+      if (el.scrollLeft <= 20) {
+        el.scrollTo({ left: maxScroll, behavior: 'smooth' });
+      } else {
+        const target = el.scrollLeft - scrollAmount;
+        el.scrollTo({
+          left: Math.max(0, target),
+          behavior: 'smooth',
+        });
+      }
+    }
   };
 
   // Jump to specific slide index
@@ -223,8 +254,13 @@ export function ServicesCarousel({ activeModuleId, onSelectModule }: ServicesCar
     const el = scrollContainerRef.current;
     if (!el) return;
     const cardWidth = 260 + 16;
+    const maxScroll = el.scrollWidth - el.clientWidth;
+    const target = index >= navigatorDots.length - 1
+      ? maxScroll
+      : Math.min(index * cardWidth, maxScroll);
+
     el.scrollTo({
-      left: index * cardWidth,
+      left: target,
       behavior: 'smooth',
     });
   };
@@ -290,17 +326,17 @@ export function ServicesCarousel({ activeModuleId, onSelectModule }: ServicesCar
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/15 border border-accent/30 mb-3">
             <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
-            <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-[#EBD2CB]">
+            <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-brand-200">
               Full Stack SaaS Suite • 8 Integrated Services
             </span>
           </div>
           <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
             Every Engine Your Business Runs On.{' '}
-            <span className="font-serif italic font-normal text-transparent bg-clip-text bg-gradient-to-r from-[#DDB3A7] via-[#FFFFFF] to-[#EBD2CB]">
+            <span className="font-serif italic font-normal text-transparent bg-clip-text bg-gradient-to-r from-brand-300 via-white to-brand-200">
               Zero Add-Ons.
             </span>
           </h2>
-          <p className="mt-2 text-[#9A9B93] text-xs sm:text-sm max-w-2xl">
+          <p className="mt-2 text-neutral-400 text-xs sm:text-sm max-w-2xl">
             Swipe or slide through our mini square cards. Click any service to inspect its live pipeline, telemetry, or launch directly into the dashboard.
           </p>
         </div>
@@ -312,8 +348,8 @@ export function ServicesCarousel({ activeModuleId, onSelectModule }: ServicesCar
             onClick={() => setIsAutoScrolling(!isAutoScrolling)}
             className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all flex items-center gap-2 ${
               isAutoScrolling
-                ? 'bg-accent/20 border-accent/40 text-[#EBD2CB]'
-                : 'bg-[#282828] border-[#3A3A3A] text-[#9A9B93] hover:text-white'
+                ? 'bg-accent/20 border-accent/40 text-brand-200'
+                : 'bg-neutral-800 border-neutral-700 text-neutral-400 hover:text-white'
             }`}
             title={isAutoScrolling ? 'Pause Auto-Slide' : 'Enable Auto-Slide'}
           >
@@ -327,7 +363,7 @@ export function ServicesCarousel({ activeModuleId, onSelectModule }: ServicesCar
               </>
             ) : (
               <>
-                <svg className="w-3.5 h-3.5 text-[#9A9B93]" fill="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3.5 h-3.5 text-neutral-400" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M8 5v14l11-7z"/>
                 </svg>
                 <span>Auto-Scroll: PAUSED</span>
@@ -335,32 +371,22 @@ export function ServicesCarousel({ activeModuleId, onSelectModule }: ServicesCar
             )}
           </button>
 
-          {/* Left Arrow Button */}
+          {/* Left Arrow Button (Loops to end when at beginning) */}
           <button
             onClick={() => handleScroll('left')}
-            disabled={!canScrollLeft}
-            aria-label="Scroll left"
-            className={`w-10 h-10 rounded-xl flex items-center justify-center border transition-all ${
-              canScrollLeft
-                ? 'bg-[#2A2A2A] border-[#3D3D3D] text-white hover:bg-accent hover:border-accent shadow-md cursor-pointer'
-                : 'bg-[#222222] border-[#2E2E2E] text-[#555555] cursor-not-allowed opacity-50'
-            }`}
+            aria-label="Scroll left or loop to end"
+            className="w-10 h-10 rounded-xl flex items-center justify-center border transition-all bg-neutral-800 border-neutral-700 text-white hover:bg-accent hover:border-accent shadow-md cursor-pointer active:scale-95"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2.2} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
             </svg>
           </button>
 
-          {/* Right Arrow Button */}
+          {/* Right Arrow Button (Loops to start when at end) */}
           <button
             onClick={() => handleScroll('right')}
-            disabled={!canScrollRight}
-            aria-label="Scroll right"
-            className={`w-10 h-10 rounded-xl flex items-center justify-center border transition-all ${
-              canScrollRight
-                ? 'bg-[#2A2A2A] border-[#3D3D3D] text-white hover:bg-accent hover:border-accent shadow-md cursor-pointer'
-                : 'bg-[#222222] border-[#2E2E2E] text-[#555555] cursor-not-allowed opacity-50'
-            }`}
+            aria-label="Scroll right or loop to start"
+            className="w-10 h-10 rounded-xl flex items-center justify-center border transition-all bg-neutral-800 border-neutral-700 text-white hover:bg-accent hover:border-accent shadow-md cursor-pointer active:scale-95"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2.2} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
@@ -376,10 +402,10 @@ export function ServicesCarousel({ activeModuleId, onSelectModule }: ServicesCar
         onMouseLeave={() => setIsPaused(false)}
       >
         {/* Left Vignette Fade */}
-        <div className="absolute left-0 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-r from-[#222222] via-[#222222]/80 to-transparent z-20 pointer-events-none" />
+        <div className="absolute left-0 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-r from-neutral-900 via-neutral-900/80 to-transparent z-20 pointer-events-none" />
 
         {/* Right Vignette Fade */}
-        <div className="absolute right-0 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-l from-[#222222] via-[#222222]/80 to-transparent z-20 pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-l from-neutral-900 via-neutral-900/80 to-transparent z-20 pointer-events-none" />
 
         {/* ─── Mini Square Cards Carousel Track ─────────────────── */}
         <div
@@ -398,8 +424,8 @@ export function ServicesCarousel({ activeModuleId, onSelectModule }: ServicesCar
                 onClick={() => handleCardClick(service)}
                 className={`flex-shrink-0 snap-start aspect-square w-[230px] h-[230px] sm:w-[260px] sm:h-[260px] rounded-2xl p-5 flex flex-col justify-between transition-all duration-300 relative overflow-hidden group cursor-pointer ${
                   isSelected
-                    ? 'bg-gradient-to-b from-[#2F2F2F] to-[#222222] border-2 border-accent shadow-2xl ring-2 ring-accent/30 -translate-y-1.5'
-                    : 'bg-[#252525] hover:bg-[#2B2B2B] border border-[#3A3A3A] hover:border-[#555555] hover:shadow-2xl hover:-translate-y-2'
+                    ? 'bg-gradient-to-b from-neutral-800 to-neutral-900 border-2 border-accent shadow-2xl ring-2 ring-accent/30 -translate-y-1.5'
+                    : 'bg-neutral-800 hover:bg-neutral-700/80 border border-neutral-700 hover:border-neutral-600 hover:shadow-2xl hover:-translate-y-2'
                 }`}
               >
                 {/* Ambient dynamic radial glow on hover */}
@@ -430,7 +456,7 @@ export function ServicesCarousel({ activeModuleId, onSelectModule }: ServicesCar
                     >
                       {service.code}
                     </span>
-                    <span className="text-[10px] text-[#7E8076] font-medium tracking-tight">
+                    <span className="text-[10px] text-neutral-500 font-medium tracking-tight">
                       {service.category}
                     </span>
                   </div>
@@ -441,19 +467,19 @@ export function ServicesCarousel({ activeModuleId, onSelectModule }: ServicesCar
                   <h3 className="text-base sm:text-lg font-bold text-white tracking-tight group-hover:text-accent transition-colors">
                     {service.name}
                   </h3>
-                  <p className="mt-1 text-xs text-[#9A9B93] leading-snug line-clamp-2">
+                  <p className="mt-1 text-xs text-neutral-400 leading-snug line-clamp-2">
                     {service.description}
                   </p>
                 </div>
 
                 {/* Card Bottom: Metric Pill & Action Arrow */}
-                <div className="flex items-center justify-between pt-2 border-t border-[#333333] relative z-10">
+                <div className="flex items-center justify-between pt-2 border-t border-neutral-700 relative z-10">
                   <div className="flex items-center gap-1.5">
                     <span
                       className="w-2 h-2 rounded-full inline-block shrink-0 animate-pulse"
                       style={{ backgroundColor: service.accentColor }}
                     />
-                    <span className="text-[11px] font-semibold text-[#D5D2CA] tracking-tight">
+                    <span className="text-[11px] font-semibold text-neutral-200 tracking-tight">
                       {service.metric}
                     </span>
                   </div>
@@ -488,19 +514,19 @@ export function ServicesCarousel({ activeModuleId, onSelectModule }: ServicesCar
       </div>
 
       {/* ─── Pagination Dots & Direct Module Jump ─────────────────── */}
-      <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#9A9B93]">
+      <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-neutral-400">
         <div className="flex items-center gap-2">
-          <span className="text-[11px] font-mono text-[#7E8076]">Services Navigator:</span>
+          <span className="text-[11px] font-mono text-neutral-500">Services Navigator:</span>
           <div className="flex items-center gap-1.5">
-            {servicesList.map((_, idx) => (
+            {navigatorDots.map((_, idx) => (
               <button
                 key={idx}
                 onClick={() => scrollToSlide(idx)}
                 aria-label={`Jump to service slide ${idx + 1}`}
-                className={`h-1.5 rounded-full transition-all duration-300 ${
+                className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
                   activeSlideIndex === idx
                     ? 'w-6 bg-accent'
-                    : 'w-2 bg-[#3A3A3A] hover:bg-[#555555]'
+                    : 'w-2 bg-neutral-700 hover:bg-neutral-600'
                 }`}
               />
             ))}
@@ -508,10 +534,10 @@ export function ServicesCarousel({ activeModuleId, onSelectModule }: ServicesCar
         </div>
 
         <div className="flex items-center gap-2 text-xs">
-          <span className="text-[#7E8076]">Want to test them live?</span>
+          <span className="text-neutral-500">Want to test them live?</span>
           <Link
             href="/dashboard"
-            className="text-accent hover:text-[#C88775] font-semibold flex items-center gap-1 transition-colors"
+            className="text-accent hover:text-brand-400 font-semibold flex items-center gap-1 transition-colors"
           >
             Launch All Services Sandbox
             <span className="text-[10px]">→</span>

@@ -16,8 +16,8 @@ Turborepo will concurrently launch:
 - **Backend API (NestJS)** on `http://localhost:4000`
 
 You can also run them independently if desired:
-- **Frontend only:** `npm run dev --workspace=apps/web`
-- **Backend only:** `npm run dev --workspace=apps/api`
+- **Frontend only:** `npm run dev --workspace=frontend`
+- **Backend only:** `npm run dev --workspace=backend`
 
 ### 2. Checking the UI (Frontend)
 1. Open your browser and navigate to:
@@ -87,9 +87,9 @@ Switching Prisma from PostgreSQL to MongoDB involves specific requirements dicta
   - Local: `DATABASE_URL="mongodb://localhost:27017/bahi_dev?replicaSet=rs0"`
   - Atlas: `DATABASE_URL="mongodb+srv://<user>:<password>@<cluster>.mongodb.net/bahi_dev?retryWrites=true&w=majority"`
 
-### 3. API Service (`apps/api`)
+### 3. API Service (`backend`)
 
-#### [MODIFY] [prisma.service.ts](file:///c:/Users/rawat/BUIMB%20Projects/Bahi/apps/api/src/core/prisma/prisma.service.ts)
+#### [MODIFY] [prisma.service.ts](file:///c:/Users/rawat/BUIMB%20Projects/Bahi/backend/src/modules/core/prisma/prisma.service.ts)
 - Update startup log message from `Ensure PostgreSQL is running` to `Ensure MongoDB is running`.
 
 ---
@@ -113,5 +113,5 @@ Switching Prisma from PostgreSQL to MongoDB involves specific requirements dicta
 - Run `npm run build` across all workspaces to ensure frontend and backend compile with zero TypeScript errors.
 
 ### 3. Runtime Verification
-- Start the web UI with `npm run dev --workspace=apps/web` and verify `http://localhost:3000`.
-- Start the API with `npm run dev --workspace=apps/api` and verify `http://localhost:4000/api/docs`.
+- Start the web UI with `npm run dev --workspace=frontend` and verify `http://localhost:3000`.
+- Start the API with `npm run dev --workspace=backend` and verify `http://localhost:4000/api/docs`.

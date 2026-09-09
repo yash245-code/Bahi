@@ -4,14 +4,14 @@
 // ═══════════════════════════════════════════════════════════
 
 import { Module } from '@nestjs/common';
-import { CoreModule } from './core/core.module';
+import { CoreModule } from './modules/core/core.module';
 import { SharedModule } from './shared/shared.module';
-import { CrmModule } from './crm/crm.module';
-import { SalesModule } from './sales/sales.module';
-import { InventoryModule } from './inventory/inventory.module';
-import { AccountingModule } from './accounting/accounting.module';
-import { HrModule } from './hr/hr.module';
-import { ProjectsModule } from './projects/projects.module';
+import { CrmModule } from './modules/crm/crm.module';
+import { SalesModule } from './modules/sales/sales.module';
+import { InventoryModule } from './modules/inventory/inventory.module';
+import { AccountingModule } from './modules/accounting/accounting.module';
+import { HrModule } from './modules/hr/hr.module';
+import { ProjectsModule } from './modules/projects/projects.module';
 
 @Module({
   imports: [

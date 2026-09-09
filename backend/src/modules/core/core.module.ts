@@ -9,7 +9,7 @@ import { PrismaService } from './prisma/prisma.service';
 import { AuthController } from './auth/auth.controller';
 import { AuthService } from './auth/auth.service';
 import { JwtStrategy } from './auth/jwt.strategy';
-import { TenancyMiddleware } from './tenancy/tenancy.middleware';
+import { TenancyMiddleware } from '../../common/middleware/tenancy.middleware';
 import { UsersController } from './users/users.controller';
 import { UsersService } from './users/users.service';
 import { RolesController } from './roles/roles.controller';

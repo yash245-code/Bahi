@@ -111,15 +111,17 @@ Recommend **shared database, shared schema, `tenant_id` on every table + Postgre
 ### 2.4 Modular Monolith Internals
 Mirror the product's module boundaries in code:
 ```
-apps/api/src/
-  core/           (auth, users, roles, tenancy, audit-log)
-  crm/            (leads, opportunities, pipelines)
-  sales/          (quotations, orders, price-lists)
-  inventory/      (products, warehouses, stock-moves)
-  accounting/     (invoices, payments, journal-entries)
-  hr/             (employees, leave, attendance)
-  projects/       (projects, tasks, timesheets)
+backend/src/
+  modules/
+    core/         (auth, users, roles, audit-log)
+    crm/          (leads, opportunities, pipelines)
+    sales/        (quotations, orders, price-lists)
+    inventory/    (products, warehouses, stock-moves)
+    accounting/   (invoices, payments, journal-entries)
+    hr/           (employees, leave, attendance)
+    projects/     (projects, tasks, timesheets)
   shared/         (contacts, activities, attachments, notifications)
+  common/         (tenancy middleware, guards)
 ```
 Each module: its own Nest module, own Prisma schema slice, own service/controller layer, communicating with other modules via well-defined internal service interfaces (not direct DB access across module boundaries) — this is what lets you eventually peel a module into its own microservice without a rewrite.
 

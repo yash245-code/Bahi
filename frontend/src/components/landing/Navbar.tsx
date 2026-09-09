@@ -30,24 +30,41 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
   const modulesTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const commandInputRef = useRef<HTMLInputElement>(null);
 
-  // 1. Scroll listener for sticky glass shrink
+  // 1. Glitch-proof scroll listener with hysteresis deadband and requestAnimationFrame
   useEffect(() => {
+    let ticking = false;
+
     const handleScroll = () => {
-      const scrollY = window.scrollY;
-      setIsScrolled(scrollY > 20);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollY = window.scrollY;
 
-      // Simple active section detection based on scroll position
-      const sections = ['hero', 'services', 'stats', 'modules', 'architecture', 'pricing'];
-      const offsets = sections.map((sec) => {
-        const el = document.getElementById(sec);
-        if (!el) return { id: sec, top: Infinity };
-        const rect = el.getBoundingClientRect();
-        return { id: sec, top: Math.abs(rect.top - 100) };
-      });
+          // Hysteresis deadband: enter scrolled state at > 40px, exit only at < 15px
+          // Prevents rapid toggling / blinking around threshold boundary
+          setIsScrolled((prev) => {
+            if (!prev && scrollY > 40) return true;
+            if (prev && scrollY < 15) return false;
+            return prev;
+          });
 
-      offsets.sort((a, b) => a.top - b.top);
-      if (offsets[0] && offsets[0].top < 600) {
-        setActiveSection(offsets[0].id);
+          // Stable top-to-bottom section spy with threshold buffer
+          const sections = ['hero', 'services', 'stats', 'modules', 'architecture', 'pricing'];
+          for (let i = sections.length - 1; i >= 0; i--) {
+            const sectionId = sections[i];
+            if (!sectionId) continue;
+            const el = document.getElementById(sectionId);
+            if (el) {
+              const rect = el.getBoundingClientRect();
+              if (rect.top <= 140) {
+                setActiveSection(sectionId);
+                break;
+              }
+            }
+          }
+
+          ticking = false;
+        });
+        ticking = true;
       }
     };
 
@@ -227,12 +244,12 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
 
   return (
     <>
-      {/* ─── Sticky Glassmorphism Header ─────────────────────────── */}
+      {/* ─── Sticky Glassmorphism Header (Zero Layout Shift Fixed Height) ─── */}
       <header
-        className={`sticky top-0 z-50 transition-all duration-300 ease-in-out ${
+        className={`sticky top-0 z-50 h-16 transition-colors duration-300 ease-in-out ${
           isScrolled
-            ? 'bg-[#181917]/92 backdrop-blur-2xl shadow-xl shadow-black/40 py-2.5'
-            : 'bg-[#222222]/85 backdrop-blur-xl py-4'
+            ? 'bg-[#181917]/95 backdrop-blur-2xl shadow-xl shadow-black/50'
+            : 'bg-[#222222]/90 backdrop-blur-xl'
         }`}
       >
         {/* ─── Horizontal 1px Gradient Bottom Border (Orange → Transparent) ── */}
@@ -246,73 +263,59 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
           aria-hidden="true"
         />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
-          {/* ── Left: Logo + Live Atlas Status Badge ──────────────── */}
-          <div className="flex items-center gap-4 lg:gap-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-full flex items-center justify-between gap-3 sm:gap-4 flex-nowrap">
+          {/* ── Left: Logo + Live Atlas Status Badge (Strictly 1 line) ── */}
+          <div className="flex items-center gap-3 lg:gap-4 flex-shrink-0 flex-nowrap">
             <Link
               href="/"
-              className="flex items-center gap-2.5 sm:gap-3 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e8623d] rounded-lg"
+              className="flex items-center gap-2.5 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e8623d] rounded-lg flex-shrink-0 whitespace-nowrap"
               aria-label="Bahi ERP Home"
             >
               <div
-                className={`rounded-xl bg-gradient-to-br from-[#B7624C] via-[#9e412b] to-[#853526] flex items-center justify-center text-white font-black shadow-md border border-white/20 group-hover:scale-105 transition-all duration-300 ${
-                  isScrolled ? 'w-8 h-8 text-base' : 'w-9 h-9 text-lg'
+                className={`w-8 h-8 rounded-xl bg-gradient-to-br from-[#B7624C] via-[#9e412b] to-[#853526] flex items-center justify-center text-white font-black text-sm shadow-md border border-white/20 group-hover:scale-105 transition-transform duration-200 flex-shrink-0 ${
+                  isScrolled ? 'scale-95' : 'scale-100'
                 }`}
               >
                 B
               </div>
-              <div className="flex flex-col">
-                <span
-                  className={`font-black text-white tracking-tight flex items-center gap-1.5 transition-all duration-300 ${
-                    isScrolled ? 'text-base' : 'text-lg'
-                  }`}
-                >
-                  Bahi
-                  <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.2 rounded bg-[#e8623d]/20 text-[#EBD2CB] border border-[#e8623d]/35">
-                    ERP
-                  </span>
+              <span className="font-black text-white text-base tracking-tight flex items-center gap-1.5 whitespace-nowrap">
+                Bahi
+                <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-[#e8623d]/20 text-[#EBD2CB] border border-[#e8623d]/35">
+                  ERP
                 </span>
-                <span
-                  className={`text-[10px] text-[#9A9B93] font-medium tracking-wide transition-all duration-300 ${
-                    isScrolled ? 'opacity-0 h-0 overflow-hidden' : 'opacity-100 h-auto'
-                  }`}
-                >
-                  Enterprise Operations OS
-                </span>
-              </div>
+              </span>
             </Link>
 
-            {/* Live-Status Badge (Atlas Connected + Latency) */}
+            {/* Live-Status Badge (Atlas Connected + Latency - Strictly 1 line) */}
             <div
-              className="hidden lg:flex items-center gap-2 px-2.5 py-1 rounded-full bg-[#1A1B18]/90 border border-[#33352F] text-[11px] shadow-inner select-none"
+              className="hidden xl:flex items-center gap-2 px-2.5 py-1 rounded-full bg-[#1A1B18]/90 border border-[#33352F] text-[11px] shadow-inner select-none whitespace-nowrap flex-shrink-0"
               title="MongoDB Atlas Primary Replica Connection Health"
             >
-              <span className="relative flex h-2 w-2">
+              <span className="relative flex h-2 w-2 flex-shrink-0">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#1F7A4D] opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-[#1F7A4D]"></span>
               </span>
-              <span className="font-medium text-[#D8CDC8]">Atlas Connected</span>
+              <span className="font-medium text-[#D8CDC8] whitespace-nowrap">Atlas Connected</span>
               <span className="text-[#55564E]">•</span>
-              <span className="font-mono text-[#2ECC71] font-semibold">{latency}ms</span>
+              <span className="font-mono text-[#2ECC71] font-semibold whitespace-nowrap">{latency}ms</span>
             </div>
           </div>
 
-          {/* ── Center: Desktop Navigation Links + Mega-Menu ──────── */}
+          {/* ── Center: Desktop Navigation Links + Mega-Menu (Strictly 1 line) ── */}
           <nav
-            className="hidden md:flex items-center gap-1 lg:gap-1.5 ml-4"
+            className="hidden lg:flex items-center gap-1 xl:gap-1.5 flex-nowrap flex-shrink-0"
             aria-label="Main Navigation"
           >
             {/* Overview link */}
             <a
               href="#hero"
-              className={`relative px-3 py-1.5 text-xs font-semibold rounded-lg transition-all duration-150 group ${
+              className={`relative px-2.5 py-1.5 text-xs font-semibold rounded-lg transition-all duration-150 whitespace-nowrap flex-shrink-0 group ${
                 activeSection === 'hero'
                   ? 'text-white bg-white/[0.05]'
                   : 'text-[#9A9B93] hover:text-white hover:bg-white/[0.03]'
               }`}
             >
               <span>Overview</span>
-              {/* Sweeping underline */}
               <span
                 className={`absolute bottom-0.5 left-2 right-2 h-[2px] bg-gradient-to-r from-[#e8623d] to-[#ff8c69] rounded-full transition-all duration-200 ease-out ${
                   activeSection === 'hero' ? 'opacity-100' : 'w-0 opacity-0 group-hover:w-[calc(100%-1rem)] group-hover:opacity-100'
@@ -323,7 +326,7 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
             {/* Services link */}
             <a
               href="#services"
-              className={`relative px-3 py-1.5 text-xs font-semibold rounded-lg transition-all duration-150 group ${
+              className={`relative px-2.5 py-1.5 text-xs font-semibold rounded-lg transition-all duration-150 whitespace-nowrap flex-shrink-0 group ${
                 activeSection === 'services'
                   ? 'text-white bg-white/[0.05]'
                   : 'text-[#9A9B93] hover:text-white hover:bg-white/[0.03]'
@@ -340,7 +343,7 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
             {/* Performance link */}
             <a
               href="#stats"
-              className={`relative px-3 py-1.5 text-xs font-semibold rounded-lg transition-all duration-150 group ${
+              className={`relative px-2.5 py-1.5 text-xs font-semibold rounded-lg transition-all duration-150 whitespace-nowrap flex-shrink-0 group ${
                 activeSection === 'stats'
                   ? 'text-white bg-white/[0.05]'
                   : 'text-[#9A9B93] hover:text-white hover:bg-white/[0.03]'
@@ -356,14 +359,14 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
 
             {/* ─── Mega-Menu Trigger: Modules ────────────────────── */}
             <div
-              className="relative"
+              className="relative flex-shrink-0"
               onMouseEnter={handleModulesMouseEnter}
               onMouseLeave={handleModulesMouseLeave}
             >
               <button
                 type="button"
                 onClick={() => setIsModulesOpen((prev) => !prev)}
-                className={`relative px-3 py-1.5 text-xs font-semibold rounded-lg transition-all duration-150 flex items-center gap-1 group ${
+                className={`relative px-2.5 py-1.5 text-xs font-semibold rounded-lg transition-all duration-150 flex items-center gap-1 whitespace-nowrap flex-shrink-0 group ${
                   isModulesOpen || activeSection === 'modules'
                     ? 'text-white bg-white/[0.06]'
                     : 'text-[#9A9B93] hover:text-white hover:bg-white/[0.03]'
@@ -373,7 +376,7 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
               >
                 <span>Modules</span>
                 <svg
-                  className={`w-3.5 h-3.5 transition-transform duration-200 text-[#9A9B93] group-hover:text-white ${
+                  className={`w-3.5 h-3.5 transition-transform duration-200 text-[#9A9B93] group-hover:text-white flex-shrink-0 ${
                     isModulesOpen ? 'rotate-180 text-white' : ''
                   }`}
                   fill="none"
@@ -383,7 +386,6 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                 </svg>
-                {/* Sweeping underline */}
                 <span
                   className={`absolute bottom-0.5 left-2 right-2 h-[2px] bg-gradient-to-r from-[#e8623d] to-[#ff8c69] rounded-full transition-all duration-200 ease-out ${
                     activeSection === 'modules' || isModulesOpen
@@ -478,7 +480,7 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
             {/* Architecture link */}
             <a
               href="#architecture"
-              className={`relative px-3 py-1.5 text-xs font-semibold rounded-lg transition-all duration-150 group ${
+              className={`relative px-2.5 py-1.5 text-xs font-semibold rounded-lg transition-all duration-150 whitespace-nowrap flex-shrink-0 group ${
                 activeSection === 'architecture'
                   ? 'text-white bg-white/[0.05]'
                   : 'text-[#9A9B93] hover:text-white hover:bg-white/[0.03]'
@@ -495,7 +497,7 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
             {/* Pricing link */}
             <a
               href="#pricing"
-              className={`relative px-3 py-1.5 text-xs font-semibold rounded-lg transition-all duration-150 group ${
+              className={`relative px-2.5 py-1.5 text-xs font-semibold rounded-lg transition-all duration-150 whitespace-nowrap flex-shrink-0 group ${
                 activeSection === 'pricing'
                   ? 'text-white bg-white/[0.05]'
                   : 'text-[#9A9B93] hover:text-white hover:bg-white/[0.03]'
@@ -509,20 +511,20 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
               />
             </a>
 
-            {/* ─── API Docs (Distinctly Styled Monospace Dev Link) ── */}
-            <div className="h-4 w-[1px] bg-[#33352F] mx-1" aria-hidden="true" />
+            {/* ─── API Docs (Distinctly Styled Monospace Dev Link - Strictly 1 line) ── */}
+            <div className="h-4 w-[1px] bg-[#33352F] mx-1 flex-shrink-0" aria-hidden="true" />
             <a
               href="http://localhost:4000/api/docs"
               target="_blank"
               rel="noreferrer"
-              className="font-mono text-[11px] px-2.5 py-1 rounded-md text-[#8E9088] hover:text-[#F7F6F3] bg-[#222320]/70 hover:bg-[#282924] border border-[#343630] hover:border-[#4E5046] transition-all duration-150 flex items-center gap-1.5 group"
+              className="font-mono text-[11px] px-2.5 py-1 rounded-md text-[#8E9088] hover:text-[#F7F6F3] bg-[#222320]/70 hover:bg-[#282924] border border-[#343630] hover:border-[#4E5046] transition-all duration-150 flex items-center gap-1.5 whitespace-nowrap flex-shrink-0 group"
               aria-label="NestJS Swagger OpenAPI Documentation"
               title="Open OpenAPI/Swagger Docs in Port 4000"
             >
               <span className="text-[#e8623d] opacity-70 group-hover:opacity-100 transition-opacity">$</span>
-              <span>api-docs</span>
+              <span className="whitespace-nowrap">api-docs</span>
               <svg
-                className="w-3 h-3 text-[#75766E] group-hover:text-[#e8623d] transition-colors"
+                className="w-3 h-3 text-[#75766E] group-hover:text-[#e8623d] transition-colors flex-shrink-0"
                 fill="none"
                 viewBox="0 0 24 24"
                 strokeWidth={2}
@@ -533,18 +535,18 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
             </a>
           </nav>
 
-          {/* ── Right: ⌘K Trigger, Sign In, Primary CTA Button ──────── */}
-          <div className="flex items-center gap-2 sm:gap-3">
-            {/* ⌘K Command Palette Trigger (Power-user terminal aesthetic) */}
+          {/* ── Right: ⌘K Trigger, Sign In, Primary CTA Button (Strictly 1 line) ── */}
+          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0 flex-nowrap">
+            {/* ⌘K Command Palette Trigger (Clean keycap, strictly 1 line) */}
             <button
               type="button"
               onClick={() => setIsCommandPaletteOpen(true)}
-              className="hidden sm:flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-[#20211E]/80 hover:bg-[#292A26] border border-[#343630] hover:border-[#4B4D43] text-[#9A9B93] hover:text-[#F7F6F3] text-xs font-mono transition-all duration-150 group"
+              className="hidden sm:flex items-center gap-1.5 px-2 py-1 rounded-lg bg-[#20211E]/80 hover:bg-[#292A26] border border-[#343630] hover:border-[#4B4D43] text-[#9A9B93] hover:text-[#F7F6F3] text-xs font-mono transition-all duration-150 whitespace-nowrap flex-shrink-0 group"
               aria-label="Open Command Palette (Press Command+K or Ctrl+K)"
               title="Command Palette (⌘K / Ctrl+K)"
             >
               <svg
-                className="w-3.5 h-3.5 text-[#75766E] group-hover:text-[#e8623d] transition-colors"
+                className="w-3.5 h-3.5 text-[#75766E] group-hover:text-[#e8623d] transition-colors flex-shrink-0"
                 fill="none"
                 viewBox="0 0 24 24"
                 strokeWidth={2}
@@ -552,29 +554,28 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
               >
                 <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
               </svg>
-              <span className="hidden md:inline text-[11px] text-[#888A82] group-hover:text-[#D5D2CA]">Quick Nav</span>
-              <kbd className="text-[10px] px-1.5 py-0.5 rounded bg-[#151614] border border-[#33352F] text-[#858780] font-mono group-hover:text-[#FAF4F2]">
+              <kbd className="text-[10px] px-1 py-0.5 rounded bg-[#151614] border border-[#33352F] text-[#858780] font-mono group-hover:text-[#FAF4F2] whitespace-nowrap">
                 ⌘K
               </kbd>
             </button>
 
-            {/* Sign In Link */}
+            {/* Sign In Link (Strictly 1 line) */}
             <Link
               href="/dashboard"
-              className="text-xs font-semibold text-[#9A9B93] hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5 transition-colors"
+              className="text-xs font-semibold text-[#9A9B93] hover:text-white px-2.5 py-1.5 rounded-lg hover:bg-white/5 transition-colors whitespace-nowrap flex-shrink-0"
             >
               Sign In
             </Link>
 
-            {/* ─── Primary CTA Button: "Start Free Trial" with Pulsing Orange Glow ─── */}
+            {/* ─── Primary CTA Button: "Start Free Trial" (Strictly 1 line, never wraps!) ─── */}
             <Link
               href="/dashboard"
-              className="relative group inline-flex items-center justify-center gap-2 px-4 py-2 text-xs font-bold text-white rounded-xl bg-gradient-to-r from-[#e8623d] via-[#B7624C] to-[#853526] hover:from-[#f06e4a] hover:to-[#913B26] border border-white/20 shadow-md animate-pulse-glow hover:scale-[1.02] active:scale-[0.98] transition-all duration-150"
+              className="relative group inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 text-xs font-bold text-white rounded-xl bg-gradient-to-r from-[#e8623d] via-[#B7624C] to-[#853526] hover:from-[#f06e4a] hover:to-[#913B26] border border-white/20 shadow-md animate-pulse-glow hover:scale-[1.02] active:scale-[0.98] transition-all duration-150 whitespace-nowrap flex-shrink-0"
               aria-label="Start Free 14-Day Trial"
             >
-              <span>Start Free Trial</span>
+              <span className="whitespace-nowrap">Start Free Trial</span>
               <svg
-                className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform"
+                className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform flex-shrink-0"
                 fill="none"
                 viewBox="0 0 24 24"
                 strokeWidth={2.5}
@@ -588,7 +589,7 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
             <button
               type="button"
               onClick={() => setIsMobileMenuOpen((prev) => !prev)}
-              className="md:hidden p-2 rounded-lg bg-[#20211E] border border-[#343630] text-[#9A9B93] hover:text-white focus:outline-none focus:ring-2 focus:ring-[#e8623d]"
+              className="lg:hidden p-2 rounded-lg bg-[#20211E] border border-[#343630] text-[#9A9B93] hover:text-white focus:outline-none focus:ring-2 focus:ring-[#e8623d] flex-shrink-0"
               aria-label={isMobileMenuOpen ? 'Close Navigation Menu' : 'Open Navigation Menu'}
               aria-expanded={isMobileMenuOpen}
             >

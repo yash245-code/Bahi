@@ -14,7 +14,7 @@ Set up the production-grade monorepo foundation, prerequisite configs, shared da
 
 > [!NOTE]
 > **Modular Monolith Layout:**
-> As specified in §2.4 of the spec, `apps/api` will be structured strictly into decoupled domain modules: `core`, `crm`, `sales`, `inventory`, `accounting`, `hr`, `projects`, and `shared`. All cross-module communication will go through service interfaces, and multi-tenancy will be guarded at the request and database layers.
+> As specified in §2.4 of the spec, `backend` will be structured strictly into decoupled domain modules: `core`, `crm`, `sales`, `inventory`, `accounting`, `hr`, `projects`, and `shared`. All cross-module communication will go through service interfaces, and multi-tenancy will be guarded at the request and database layers.
 
 ---
 
@@ -77,54 +77,56 @@ We will initialize the root workspace structure with Turborepo orchestration, sh
 
 ---
 
-### Backend API (`apps/api`) — NestJS Modular Monolith
+### Backend API (`backend`) — NestJS Modular Monolith
 
 Structured according to §2.4 of the specification:
 
-#### [NEW] [`apps/api/package.json`](file:///c:/Users/rawat/BUIMB%20Projects/Bahi/apps/api/package.json)
+#### [NEW] [`backend/package.json`](file:///c:/Users/rawat/BUIMB%20Projects/Bahi/backend/package.json)
 - NestJS core, common, platform-express, jwt, passport, bcrypt, class-validator, class-transformer, swagger.
 
-#### [NEW] [`apps/api/src/main.ts`](file:///c:/Users/rawat/BUIMB%20Projects/Bahi/apps/api/src/main.ts)
+#### [NEW] [`backend/src/main.ts`](file:///c:/Users/rawat/BUIMB%20Projects/Bahi/backend/src/main.ts)
 - Versioned global prefix `/api/v1`
 - ValidationPipe with transform & whitelist
 - Global exception filter for unified error envelopes
 - Swagger OpenAPI documentation setup at `/api/docs`
 
 #### [NEW] Decoupled Modular Monolith Modules
-- **`src/core/`**:
+- **`src/modules/core/`**:
   - `auth/`: JWT access/refresh token strategy, password hashing, registration, login
-  - `tenancy/`: Tenant resolution middleware & guards, context injection
   - `users/`: User management & invitation
   - `roles/`: RBAC permission gate
   - `audit/`: Polymorphic audit trail service
-- **`src/crm/`**: Leads, opportunities, pipelines service & controller skeletons
-- **`src/sales/`**: Quotations, sales orders skeletons
-- **`src/inventory/`**: Products, warehouses, stock-moves skeletons
-- **`src/accounting/`**: Invoices, payments skeletons
-- **`src/hr/`**: Employees, leave requests skeletons
-- **`src/projects/`**: Projects, tasks, timesheets skeletons
+- **`src/modules/crm/`**: Leads, opportunities, pipelines service & controller skeletons
+- **`src/modules/sales/`**: Quotations, sales orders skeletons
+- **`src/modules/inventory/`**: Products, warehouses, stock-moves skeletons
+- **`src/modules/accounting/`**: Invoices, payments skeletons
+- **`src/modules/hr/`**: Employees, leave requests skeletons
+- **`src/modules/projects/`**: Projects, tasks, timesheets skeletons
 - **`src/shared/`**:
   - `contacts/`: Unified party model API
   - `activities/`: Polymorphic activity timeline API
   - `attachments/`: File storage gateway placeholder
+- **`src/common/`**:
+  - `middleware/`: Tenant resolution middleware
+  - `guards/`: Role/Auth guards
 
 ---
 
-### Frontend Web App (`apps/web`) — Next.js 14/15 + Tailwind CSS
+### Frontend Web App (`frontend`) — Next.js 14/15 + Tailwind CSS
 
 Rich, modern, dark-mode ready application shell following Section 4 of the spec:
 
 #### [NEW] Configuration & Tooling
-- [`apps/web/package.json`](file:///c:/Users/rawat/BUIMB%20Projects/Bahi/apps/web/package.json)
-- [`apps/web/tailwind.config.ts`](file:///c:/Users/rawat/BUIMB%20Projects/Bahi/apps/web/tailwind.config.ts)
-- [`apps/web/src/app/globals.css`](file:///c:/Users/rawat/BUIMB%20Projects/Bahi/apps/web/src/app/globals.css) (CSS tokens, dark mode, smooth transitions, glassmorphism)
+- [`frontend/package.json`](file:///c:/Users/rawat/BUIMB%20Projects/Bahi/frontend/package.json)
+- [`frontend/tailwind.config.ts`](file:///c:/Users/rawat/BUIMB%20Projects/Bahi/frontend/tailwind.config.ts)
+- [`frontend/src/app/globals.css`](file:///c:/Users/rawat/BUIMB%20Projects/Bahi/frontend/src/app/globals.css) (CSS tokens, dark mode, smooth transitions, glassmorphism)
 
 #### [NEW] Core Application Shell & Layout
-- [`apps/web/src/app/layout.tsx`](file:///c:/Users/rawat/BUIMB%20Projects/Bahi/apps/web/src/app/layout.tsx): Root layout with typography and themes.
-- [`apps/web/src/components/shell/Sidebar.tsx`](file:///c:/Users/rawat/BUIMB%20Projects/Bahi/apps/web/src/components/shell/Sidebar.tsx): Odoo-style modular app switcher, showing enabled modules with badges and active states.
-- [`apps/web/src/components/shell/Topbar.tsx`](file:///c:/Users/rawat/BUIMB%20Projects/Bahi/apps/web/src/components/shell/Topbar.tsx): Tenant switcher, global search (Cmd+K trigger), notifications popover, user profile menu.
-- [`apps/web/src/components/shell/CommandPalette.tsx`](file:///c:/Users/rawat/BUIMB%20Projects/Bahi/apps/web/src/components/shell/CommandPalette.tsx): Global shortcut launcher across CRM, Sales, Inventory, Invoices, and Actions.
-- [`apps/web/src/components/ui/StatusBadge.tsx`](file:///c:/Users/rawat/BUIMB%20Projects/Bahi/apps/web/src/components/ui/StatusBadge.tsx): Shared status badge with consistent color codes.
+- [`frontend/src/app/layout.tsx`](file:///c:/Users/rawat/BUIMB%20Projects/Bahi/frontend/src/app/layout.tsx): Root layout with typography and themes.
+- [`frontend/src/components/shell/Sidebar.tsx`](file:///c:/Users/rawat/BUIMB%20Projects/Bahi/frontend/src/components/shell/Sidebar.tsx): Odoo-style modular app switcher, showing enabled modules with badges and active states.
+- [`frontend/src/components/shell/Topbar.tsx`](file:///c:/Users/rawat/BUIMB%20Projects/Bahi/frontend/src/components/shell/Topbar.tsx): Tenant switcher, global search (Cmd+K trigger), notifications popover, user profile menu.
+- [`frontend/src/components/shell/CommandPalette.tsx`](file:///c:/Users/rawat/BUIMB%20Projects/Bahi/frontend/src/components/shell/CommandPalette.tsx): Global shortcut launcher across CRM, Sales, Inventory, Invoices, and Actions.
+- [`frontend/src/components/ui/StatusBadge.tsx`](file:///c:/Users/rawat/BUIMB%20Projects/Bahi/frontend/src/components/ui/StatusBadge.tsx): Shared status badge with consistent color codes.
 
 #### [NEW] Module Starter Pages
 - `src/app/(dashboard)/page.tsx`: Executive dashboard showing module health, recent activities, and quick actions.
@@ -143,12 +145,12 @@ Rich, modern, dark-mode ready application shell following Section 4 of the spec:
 ### Automated Build & Typecheck
 1. **Dependencies installation**: Run `npm install` across the monorepo.
 2. **Prisma generation**: Run `npm run db:generate` to generate the typed client in `packages/database`.
-3. **TypeScript checks**: Run `npm run build` via Turborepo to ensure clean compilation across `packages/types`, `packages/database`, `apps/api`, and `apps/web`.
+3. **TypeScript checks**: Run `npm run build` via Turborepo to ensure clean compilation across `packages/types`, `packages/database`, `backend`, and `frontend`.
 
 ### Manual & Runtime Verification
 1. **API verification**:
-   - Start `apps/api` using `npm run dev --filter=api` or `npm run dev`.
+   - Start `backend` using `npm run dev --filter=backend` or `npm run dev`.
    - Verify health endpoint `GET /api/v1/health` and Swagger UI at `http://localhost:4000/api/docs`.
 2. **Web verification**:
-   - Start `apps/web` using `npm run dev --filter=web`.
+   - Start `frontend` using `npm run dev --filter=frontend`.
    - Verify interactive dashboard shell, sidebar navigation, module toggle behavior, dark/light theme, and Command Palette (`Cmd+K` / `Ctrl+K`) in the browser.

@@ -76,41 +76,68 @@ const modules = [
   },
 ];
 
+const moduleColorMap: Record<string, { badge: string; activeGlow: string }> = {
+  '/crm': {
+    badge: 'bg-module-crm-bg text-module-crm border border-module-crm-border',
+    activeGlow: 'shadow-glow-crm',
+  },
+  '/sales': {
+    badge: 'bg-module-billing-bg text-module-billing border border-module-billing-border',
+    activeGlow: 'shadow-glow-billing',
+  },
+  '/inventory': {
+    badge: 'bg-module-inventory-bg text-module-inventory border border-module-inventory-border',
+    activeGlow: 'shadow-glow-inventory',
+  },
+  '/accounting': {
+    badge: 'bg-module-accounting-bg text-module-accounting border border-module-accounting-border',
+    activeGlow: 'shadow-glow-accounting',
+  },
+  '/hr': {
+    badge: 'bg-module-hr-bg text-module-hr border border-module-hr-border',
+    activeGlow: 'shadow-glow-hr',
+  },
+  '/projects': {
+    badge: 'bg-module-projects-bg text-module-projects border border-module-projects-border',
+    activeGlow: 'shadow-glow-projects',
+  },
+};
+
 export function Sidebar() {
   const pathname = usePathname();
 
   return (
     <aside className="sidebar">
       {/* ─── Brand Logo & Header ─────────────────────── */}
-      <div className="px-5 py-4 border-b border-[#282925] bg-[#141513]">
+      <div className="px-5 py-4 border-b border-neutral-800 bg-neutral-950">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#B7624C] to-[#853526] flex items-center justify-center text-white font-black text-lg shadow-md border border-white/20">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center text-white font-black text-lg shadow-md border border-white/20">
             B
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1.5">
-              <span className="text-base font-extrabold text-[#F7F6F3] tracking-tight">Bahi</span>
-              <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.2 rounded bg-accent/25 text-[#EBD2CB] border border-accent/40">
+              <span className="text-base font-extrabold text-neutral-50 tracking-tight">Bahi</span>
+              <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.2 rounded bg-accent/25 text-brand-200 border border-accent/40">
                 ERP
               </span>
             </div>
-            <p className="text-[11px] text-[#75766E] truncate font-medium">Business Operations OS</p>
+            <p className="text-[11px] text-neutral-500 truncate font-medium">Business Operations OS</p>
           </div>
         </div>
       </div>
 
       {/* ─── Tenant Card ─────────────────────────────── */}
-      <div className="px-3 py-3 border-b border-[#282925]">
-        <div className="p-2.5 rounded-xl bg-[#20221E] border border-[#2D302A] flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-[#1F7A4D]/25 border border-[#1F7A4D]/40 flex items-center justify-center text-[#2ECC71] text-xs font-bold shadow-xs">
+      <div className="px-3 py-3 border-b border-neutral-800">
+        <div className="p-2.5 rounded-xl bg-neutral-900 border border-neutral-800 flex items-center gap-2.5">
+          <div className="w-7 h-7 rounded-lg bg-status-success/25 border border-status-success/40 flex items-center justify-center text-status-success text-xs font-bold shadow-xs">
             A
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-[#F7F6F3] truncate">Acme Corp</span>
-              <span className="flex h-1.5 w-1.5 rounded-full bg-[#1F7A4D]" />
+              <span className="text-xs font-bold text-neutral-50 truncate">Acme Corp</span>
+              <span className="flex h-1.5 w-1.5 rounded-full bg-status-success" />
             </div>
-            <p className="text-[10px] text-[#75766E] font-medium">Business Plan • 12/25 Seats</p>
+            <p className="text-[10px] text-neutral-500 font-medium">Business Plan • 12/25 Seats</p>
           </div>
         </div>
       </div>
@@ -118,24 +145,25 @@ export function Sidebar() {
       {/* ─── Navigation ──────────────────────────────── */}
       <nav className="flex-1 py-3 overflow-y-auto space-y-0.5">
         <div className="px-5 pb-2 pt-1 flex items-center justify-between">
-          <span className="text-[10px] uppercase font-bold text-[#75766E] tracking-wider">
+          <span className="text-[10px] uppercase font-bold text-neutral-500 tracking-wider">
             Workspace Modules
           </span>
-          <span className="text-[9px] text-[#75766E]/70 font-mono">v1.2</span>
+          <span className="text-[9px] text-neutral-500/70 font-mono">v1.2</span>
         </div>
         {modules.map((item) => {
           const isActive = pathname === item.href;
+          const modStyle = moduleColorMap[item.href];
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`sidebar-item ${isActive ? 'active' : ''}`}
+              className={`sidebar-item ${isActive ? `active ${modStyle?.activeGlow || ''}` : ''}`}
             >
               {item.icon}
               <span className="flex-1 truncate">{item.name}</span>
               {item.badge && (
                 <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full transition-colors ${
-                  isActive ? 'bg-white text-[#853526]' : 'bg-[#2A2C27] text-[#9A9B93] group-hover:text-white'
+                  isActive ? 'bg-white text-brand-700' : (modStyle?.badge || 'bg-neutral-800 text-neutral-400 group-hover:text-white')
                 }`}>
                   {item.badge}
                 </span>
@@ -146,24 +174,24 @@ export function Sidebar() {
       </nav>
 
       {/* ─── Database Health Indicator ───────────────── */}
-      <div className="mx-3 my-2 p-2.5 rounded-xl bg-[#1D1E1B] border border-[#292A26] flex items-center justify-between">
+      <div className="mx-3 my-2 p-2.5 rounded-xl bg-neutral-900 border border-neutral-800 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#1F7A4D] opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#1F7A4D]"></span>
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-success opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-status-success"></span>
           </span>
           <div>
-            <p className="text-[10px] font-bold text-[#D5D2CA] leading-tight">MongoDB Atlas</p>
-            <p className="text-[9px] text-[#75766E]">Live Cluster Sync</p>
+            <p className="text-[10px] font-bold text-neutral-200 leading-tight">MongoDB Atlas</p>
+            <p className="text-[9px] text-neutral-500">Live Cluster Sync</p>
           </div>
         </div>
-        <span className="text-[10px] font-mono text-[#1F7A4D] bg-[#1F7A4D]/15 border border-[#1F7A4D]/25 px-1.5 py-0.5 rounded">
+        <span className="text-[10px] font-mono text-status-success bg-status-success/15 border border-status-success/25 px-1.5 py-0.5 rounded">
           12ms
         </span>
       </div>
 
       {/* ─── Footer Controls ─────────────────────────── */}
-      <div className="border-t border-[#282925] p-3 space-y-1 bg-[#151614]">
+      <div className="border-t border-neutral-800 p-3 space-y-1 bg-neutral-950">
         <Link
           href="/settings"
           className={`sidebar-item !m-0 ${pathname === '/settings' ? 'active' : ''}`}
@@ -178,11 +206,11 @@ export function Sidebar() {
           href="/"
           className="sidebar-item !m-0 group"
         >
-          <svg className="w-5 h-5 flex-shrink-0 text-[#75766E] group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" strokeWidth={1.75} stroke="currentColor">
+          <svg className="w-5 h-5 flex-shrink-0 text-neutral-500 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" strokeWidth={1.75} stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
           </svg>
           <span className="flex-1">Website Home</span>
-          <span className="text-[10px] text-[#75766E] group-hover:text-accent transition-colors">↗</span>
+          <span className="text-[10px] text-neutral-500 group-hover:text-accent transition-colors">↗</span>
         </Link>
       </div>
     </aside>

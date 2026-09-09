@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { Navbar } from '@/components/landing/Navbar';
 import { ServicesCarousel } from '@/components/landing/ServicesCarousel';
 
 export default function LandingPage() {
@@ -228,82 +229,20 @@ export default function LandingPage() {
   const currentMod = modulesData[activeTab];
 
   return (
-    <div className="min-h-screen bg-[#222222] text-[#F7F6F3] font-sans selection:bg-accent selection:text-white relative overflow-x-hidden">
+    <div className="min-h-screen bg-[#222222] text-[#F7F6F3] font-sans selection:bg-accent selection:text-white relative overflow-x-clip">
       {/* ─── Grain / Noise Texture Overlay ────────────────────────── */}
       <div className="fixed inset-0 pointer-events-none bg-noise z-40 opacity-40" />
 
       {/* ─── Subtle Dark Grid Background ──────────────────────────── */}
       <div className="fixed inset-0 pointer-events-none bg-dark-grid z-0 opacity-50" />
 
-      {/* ─── Navigation Header (Glassmorphic Dark) ─────────────────── */}
-      <header className="sticky top-0 z-50 backdrop-blur-xl bg-[#222222]/90 border-b border-[#333333] transition-all">
-        <div className="max-w-7xl mx-auto px-6 h-18 flex items-center justify-between">
-          <div className="flex items-center gap-6">
-            <Link href="/" className="flex items-center gap-3 group">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#B7624C] to-[#853526] flex items-center justify-center text-white font-black text-lg shadow-md border border-white/20 group-hover:scale-105 transition-transform">
-                B
-              </div>
-              <div className="flex flex-col">
-                <span className="text-lg font-black text-white tracking-tight flex items-center gap-2">
-                  Bahi
-                  <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.2 rounded bg-accent/20 text-[#EBD2CB] border border-accent/30">
-                    ERP
-                  </span>
-                </span>
-                <span className="text-[10px] text-[#9A9B93] font-medium tracking-wide">Enterprise Operations OS</span>
-              </div>
-            </Link>
+      {/* ─── Redesigned High-Performance Navigation Bar ─────────── */}
+      <Navbar
+        activeModuleTab={activeTab}
+        onSelectModuleTab={(mod) => setActiveTab(mod)}
+        latency={12}
+      />
 
-            <nav className="hidden md:flex items-center gap-1 ml-6">
-              <a href="#hero" className="px-3 py-1.5 text-xs font-semibold text-[#9A9B93] hover:text-white rounded-lg hover:bg-white/5 transition-colors">
-                Overview
-              </a>
-              <a href="#services" className="px-3 py-1.5 text-xs font-semibold text-[#9A9B93] hover:text-white rounded-lg hover:bg-white/5 transition-colors">
-                Services
-              </a>
-              <a href="#stats" className="px-3 py-1.5 text-xs font-semibold text-[#9A9B93] hover:text-white rounded-lg hover:bg-white/5 transition-colors">
-                Performance
-              </a>
-              <a href="#modules" className="px-3 py-1.5 text-xs font-semibold text-[#9A9B93] hover:text-white rounded-lg hover:bg-white/5 transition-colors">
-                Modules
-              </a>
-              <a href="#architecture" className="px-3 py-1.5 text-xs font-semibold text-[#9A9B93] hover:text-white rounded-lg hover:bg-white/5 transition-colors">
-                Architecture
-              </a>
-              <a href="#pricing" className="px-3 py-1.5 text-xs font-semibold text-[#9A9B93] hover:text-white rounded-lg hover:bg-white/5 transition-colors">
-                Pricing
-              </a>
-              <a
-                href="http://localhost:4000/api/docs"
-                target="_blank"
-                rel="noreferrer"
-                className="px-3 py-1.5 text-xs font-semibold text-[#9A9B93] hover:text-white rounded-lg hover:bg-white/5 transition-colors flex items-center gap-1"
-              >
-                API Docs
-                <span className="text-[10px] text-accent">↗</span>
-              </a>
-            </nav>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <Link
-              href="/dashboard"
-              className="text-xs font-semibold text-[#9A9B93] hover:text-white px-3.5 py-2 rounded-lg hover:bg-white/5 transition-colors"
-            >
-              Sign In
-            </Link>
-            <Link
-              href="/dashboard"
-              className="btn-primary text-xs py-2 px-4 shadow-accent"
-            >
-              Launch Dashboard
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-              </svg>
-            </Link>
-          </div>
-        </div>
-      </header>
 
       {/* ─── Asymmetric Split Hero Section ────────────────────────── */}
       <section
@@ -521,10 +460,12 @@ export default function LandingPage() {
       </section>
 
       {/* ─── Mini Square Cards Services Carousel ──────────────────── */}
-      <ServicesCarousel
-        activeModuleId={activeTab}
-        onSelectModule={(mod) => setActiveTab(mod)}
-      />
+      <div id="services">
+        <ServicesCarousel
+          activeModuleId={activeTab}
+          onSelectModule={(mod) => setActiveTab(mod)}
+        />
+      </div>
 
       {/* ─── Uneven Bento-Grid Stats Bar with Counter-Up ─────────── */}
       <section id="stats" className="relative z-10 py-12 px-6 max-w-7xl mx-auto">

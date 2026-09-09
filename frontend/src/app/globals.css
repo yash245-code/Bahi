@@ -427,4 +427,19 @@ body {
     font-weight: 600;
     border-left: 3px solid #A8462F;
   }
+
+  /* ─── Pulsing Brand Orange Glow Animation (Top Nav CTA) ── */
+  @keyframes pulse-orange-glow {
+    0%, 100% {
+      box-shadow: 0 0 14px rgba(232, 98, 61, 0.42), 0 2px 8px rgba(168, 70, 47, 0.35);
+    }
+    50% {
+      box-shadow: 0 0 26px 6px rgba(232, 98, 61, 0.72), 0 4px 16px rgba(232, 98, 61, 0.5);
+    }
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-orange-glow 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
 }
+

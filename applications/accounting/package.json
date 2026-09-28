@@ -1,0 +1,20 @@
+{
+  "name": "@bahi/app-accounting",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./manifest.ts",
+  "types": "./manifest.ts",
+  "exports": {
+    ".": "./manifest.ts",
+    "./manifest": "./manifest.ts",
+    "./api": "./api/index.ts",
+    "./web": "./web/index.ts"
+  },
+  "dependencies": {
+    "@bahi/types": "*"
+  },
+  "devDependencies": {
+    "@bahi/tsconfig": "*",
+    "typescript": "^5.7.3"
+  }
+}

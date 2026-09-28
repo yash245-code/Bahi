@@ -1,0 +1,14 @@
+{
+  "extends": "@bahi/tsconfig/nextjs.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@bahi/applications": ["../applications/registry.ts"],
+      "@bahi/applications/*": ["../applications/*"],
+      "@bahi/app-*": ["../applications/*"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
+}

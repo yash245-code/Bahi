@@ -1,0 +1,44 @@
+{
+  "name": "@bahi/app-inventory",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./dist/manifest.js",
+  "types": "./manifest.ts",
+  "exports": {
+    ".": {
+      "types": "./manifest.ts",
+      "default": "./dist/manifest.js"
+    },
+    "./manifest": {
+      "types": "./manifest.ts",
+      "default": "./dist/manifest.js"
+    },
+    "./api": {
+      "types": "./api/index.ts",
+      "default": "./dist/api/index.js"
+    },
+    "./web": "./web/index.ts"
+  },
+  "scripts": {
+    "build": "tsc",
+    "lint": "tsc --noEmit",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "@bahi/database": "*",
+    "@bahi/types": "*",
+    "@nestjs/common": "^11.0.0",
+    "@nestjs/passport": "^11.0.0",
+    "@nestjs/swagger": "^11.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@bahi/tsconfig": "*",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.7.3"
+  }
+}

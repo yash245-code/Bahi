@@ -1,0 +1,13 @@
+{
+  "extends": "@bahi/tsconfig/node.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./",
+    "baseUrl": ".",
+    "jsx": "react-jsx",
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "include": ["manifest.ts", "api/**/*", "web/**/*"]
+}

@@ -1,0 +1,661 @@
+// ═══════════════════════════════════════════════════════════
+// Bahi — Prisma Schema
+// Multi-tenant ERP platform with shared-schema + tenant_id
+// Database: MongoDB
+// ═══════════════════════════════════════════════════════════
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Core / Platform ──────────────────────────────────────
+
+model Tenant {
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  name           String
+  slug           String       @unique
+  plan           PlanTier     @default(STARTER)
+  status         TenantStatus @default(TRIAL)
+  enabledModules String[]     @default(["core", "crm", "sales"])
+  currency       String       @default("USD")
+  timezone       String       @default("UTC")
+  settings       Json         @default("{}")
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  users       User[]
+  roles       Role[]
+  contacts    Contact[]
+  products    Product[]
+  activities  Activity[]
+  auditLogs   AuditLog[]
+
+  // CRM
+  pipelineStages PipelineStage[]
+  leads          Lead[]
+  opportunities  Opportunity[]
+
+  // Sales
+  quotations  Quotation[]
+  salesOrders SalesOrder[]
+
+  // Inventory
+  warehouses  Warehouse[]
+  stockMoves  StockMove[]
+
+  // Accounting
+  invoices    Invoice[]
+  payments    Payment[]
+
+  // HR
+  employees    Employee[]
+  leaveRequests LeaveRequest[]
+
+  // Projects
+  projects    Project[]
+
+  @@map("tenants")
+}
+
+enum PlanTier {
+  STARTER
+  GROWTH
+  BUSINESS
+}
+
+enum TenantStatus {
+  TRIAL
+  ACTIVE
+  SUSPENDED
+  CANCELLED
+}
+
+model User {
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  tenantId     String     @db.ObjectId
+  email        String
+  passwordHash String
+  firstName    String
+  lastName     String
+  status       UserStatus @default(ACTIVE)
+  roleId       String?    @db.ObjectId
+  avatarUrl    String?
+  lastLoginAt  DateTime?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  tenant     Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  role       Role?       @relation(fields: [roleId], references: [id])
+  activities Activity[]
+  auditLogs  AuditLog[]
+
+  @@unique([tenantId, email])
+  @@index([tenantId])
+  @@map("users")
+}
+
+enum UserStatus {
+  ACTIVE
+  INVITED
+  DISABLED
+}
+
+model Role {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  tenantId    String   @db.ObjectId
+  name        String
+  description String?
+  permissions String[] @default([])
+  isDefault   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  users  User[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@map("roles")
+}
+
+// ─── Shared / Cross-Module ────────────────────────────────
+
+model Contact {
+  id           String      @id @default(auto()) @map("_id") @db.ObjectId
+  tenantId     String      @db.ObjectId
+  type         ContactType
+  name         String
+  email        String?
+  phone        String?
+  company      String?
+  address      String?
+  notes        String?
+  customFields Json        @default("{}")
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  tenant        Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  leads         Lead[]
+  opportunities Opportunity[]
+  quotations    Quotation[]
+  salesOrders   SalesOrder[]
+  invoices      Invoice[]
+  employees     Employee[]
+
+  @@index([tenantId])
+  @@index([tenantId, type])
+  @@map("contacts")
+}
+
+enum ContactType {
+  LEAD
+  CUSTOMER
+  VENDOR
+  EMPLOYEE
+}
+
+model Activity {
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  tenantId    String       @db.ObjectId
+  type        ActivityType
+  relatedType String         // e.g. 'lead', 'opportunity', 'invoice'
+  relatedId   String
+  summary     String
+  body        String?
+  userId      String       @db.ObjectId
+  dueDate     DateTime?
+  completed   Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@index([tenantId])
+  @@index([tenantId, relatedType, relatedId])
+  @@map("activities")
+}
+
+enum ActivityType {
+  NOTE
+  CALL
+  EMAIL
+  MEETING
+  TASK
+}
+
+model AuditLog {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  tenantId   String   @db.ObjectId
+  userId     String   @db.ObjectId
+  action     String   // 'create' | 'update' | 'delete'
+  entityType String
+  entityId   String
+  changes    Json?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@index([tenantId])
+  @@index([tenantId, entityType, entityId])
+  @@map("audit_logs")
+}
+
+// ─── CRM ──────────────────────────────────────────────────
+
+model PipelineStage {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  tenantId String @db.ObjectId
+  name     String
+  order    Int
+  color    String @default("#6366f1")
+
+  tenant        Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  opportunities Opportunity[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@map("pipeline_stages")
+}
+
+model Lead {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  tenantId    String     @db.ObjectId
+  contactId   String     @db.ObjectId
+  source      String?
+  status      LeadStatus @default(NEW)
+  score       Int?
+  assignedTo  String?
+  notes       String?
+  convertedAt DateTime?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  contact Contact @relation(fields: [contactId], references: [id])
+
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@map("leads")
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  CONVERTED
+  LOST
+}
+
+model Opportunity {
+  id              String            @id @default(auto()) @map("_id") @db.ObjectId
+  tenantId        String            @db.ObjectId
+  contactId       String            @db.ObjectId
+  title           String
+  value           Float
+  currency        String            @default("USD")
+  stageId         String            @db.ObjectId
+  probability     Int               @default(0)
+  expectedClose   DateTime?
+  assignedTo      String?
+  notes           String?
+  status          OpportunityStatus @default(OPEN)
+  wonAt           DateTime?
+  lostAt          DateTime?
+  lostReason      String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  tenant  Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  contact Contact       @relation(fields: [contactId], references: [id])
+  stage   PipelineStage @relation(fields: [stageId], references: [id])
+
+  @@index([tenantId])
+  @@index([tenantId, stageId])
+  @@map("opportunities")
+}
+
+enum OpportunityStatus {
+  OPEN
+  WON
+  LOST
+}
+
+// ─── Sales ────────────────────────────────────────────────
+
+model Product {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  tenantId    String  @db.ObjectId
+  name        String
+  sku         String?
+  description String?
+  unitPrice   Float
+  currency    String  @default("USD")
+  category    String?
+  isActive    Boolean @default(true)
+  trackStock  Boolean @default(false)
+  imageUrl    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant         Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  quotationLines QuotationLine[]
+  orderLines     SalesOrderLine[]
+  stockMoves     StockMove[]
+
+  @@unique([tenantId, sku])
+  @@index([tenantId])
+  @@map("products")
+}
+
+model Quotation {
+  id          String          @id @default(auto()) @map("_id") @db.ObjectId
+  tenantId    String          @db.ObjectId
+  contactId   String          @db.ObjectId
+  number      String
+  status      QuotationStatus @default(DRAFT)
+  subtotal    Float           @default(0)
+  taxAmount   Float           @default(0)
+  total       Float           @default(0)
+  currency    String          @default("USD")
+  validUntil  DateTime?
+  notes       String?
+  confirmedAt DateTime?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  tenant     Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  contact    Contact         @relation(fields: [contactId], references: [id])
+  lines      QuotationLine[]
+  salesOrder SalesOrder?
+
+  @@unique([tenantId, number])
+  @@index([tenantId])
+  @@map("quotations")
+}
+
+enum QuotationStatus {
+  DRAFT
+  SENT
+  CONFIRMED
+  CANCELLED
+  EXPIRED
+}
+
+model QuotationLine {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  quotationId String  @db.ObjectId
+  productId   String  @db.ObjectId
+  description String?
+  quantity    Float
+  unitPrice   Float
+  taxRate     Float   @default(0)
+  subtotal    Float
+
+  quotation Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+  product   Product   @relation(fields: [productId], references: [id])
+
+  @@map("quotation_lines")
+}
+
+model SalesOrder {
+  id          String           @id @default(auto()) @map("_id") @db.ObjectId
+  tenantId    String           @db.ObjectId
+  contactId   String           @db.ObjectId
+  quotationId String?          @unique @db.ObjectId
+  number      String
+  status      SalesOrderStatus @default(CONFIRMED)
+  subtotal    Float            @default(0)
+  taxAmount   Float            @default(0)
+  total       Float            @default(0)
+  currency    String           @default("USD")
+  notes       String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  tenant    Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  contact   Contact          @relation(fields: [contactId], references: [id])
+  quotation Quotation?       @relation(fields: [quotationId], references: [id])
+  lines     SalesOrderLine[]
+  invoices  Invoice[]
+
+  @@unique([tenantId, number])
+  @@index([tenantId])
+  @@map("sales_orders")
+}
+
+enum SalesOrderStatus {
+  CONFIRMED
+  IN_PROGRESS
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+model SalesOrderLine {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  orderId     String  @db.ObjectId
+  productId   String  @db.ObjectId
+  description String?
+  quantity    Float
+  unitPrice   Float
+  taxRate     Float   @default(0)
+  subtotal    Float
+
+  order   SalesOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product    @relation(fields: [productId], references: [id])
+
+  @@map("sales_order_lines")
+}
+
+// ─── Inventory ────────────────────────────────────────────
+
+model Warehouse {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  tenantId  String   @db.ObjectId
+  name      String
+  code      String
+  address   String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant     Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  stockMoves StockMove[]
+
+  @@unique([tenantId, code])
+  @@index([tenantId])
+  @@map("warehouses")
+}
+
+model StockMove {
+  id            String        @id @default(auto()) @map("_id") @db.ObjectId
+  tenantId      String        @db.ObjectId
+  productId     String        @db.ObjectId
+  warehouseId   String        @db.ObjectId
+  type          StockMoveType
+  quantity      Float
+  reference     String?
+  notes         String?
+  createdAt     DateTime      @default(now())
+
+  tenant    Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  product   Product   @relation(fields: [productId], references: [id])
+  warehouse Warehouse @relation(fields: [warehouseId], references: [id])
+
+  @@index([tenantId])
+  @@index([tenantId, productId, warehouseId])
+  @@map("stock_moves")
+}
+
+enum StockMoveType {
+  RECEIVE
+  SHIP
+  TRANSFER
+  ADJUSTMENT
+}
+
+// ─── Accounting / Invoicing ───────────────────────────────
+
+model Invoice {
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
+  tenantId     String        @db.ObjectId
+  contactId    String        @db.ObjectId
+  salesOrderId String?       @db.ObjectId
+  number       String
+  status       InvoiceStatus @default(DRAFT)
+  issueDate    DateTime      @default(now())
+  dueDate      DateTime?
+  subtotal     Float         @default(0)
+  taxAmount    Float         @default(0)
+  total        Float         @default(0)
+  paidAmount   Float         @default(0)
+  currency     String        @default("USD")
+  notes        String?
+  sentAt       DateTime?
+  paidAt       DateTime?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  tenant     Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  contact    Contact     @relation(fields: [contactId], references: [id])
+  salesOrder SalesOrder? @relation(fields: [salesOrderId], references: [id])
+  payments   Payment[]
+
+  @@unique([tenantId, number])
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@map("invoices")
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PARTIALLY_PAID
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+model Payment {
+  id        String        @id @default(auto()) @map("_id") @db.ObjectId
+  tenantId  String        @db.ObjectId
+  invoiceId String        @db.ObjectId
+  amount    Float
+  method    PaymentMethod @default(BANK_TRANSFER)
+  reference String?
+  paidAt    DateTime      @default(now())
+  notes     String?
+  createdAt DateTime      @default(now())
+
+  tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  invoice Invoice @relation(fields: [invoiceId], references: [id])
+
+  @@index([tenantId])
+  @@map("payments")
+}
+
+enum PaymentMethod {
+  CASH
+  BANK_TRANSFER
+  CREDIT_CARD
+  CHECK
+  OTHER
+}
+
+// ─── HR ───────────────────────────────────────────────────
+
+model Employee {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  tenantId     String   @db.ObjectId
+  contactId    String   @db.ObjectId
+  department   String?
+  position     String?
+  hireDate     DateTime?
+  salary       Float?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  tenant        Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  contact       Contact        @relation(fields: [contactId], references: [id])
+  leaveRequests LeaveRequest[]
+  timesheets    Timesheet[]
+
+  @@index([tenantId])
+  @@map("employees")
+}
+
+model LeaveRequest {
+  id         String      @id @default(auto()) @map("_id") @db.ObjectId
+  tenantId   String      @db.ObjectId
+  employeeId String      @db.ObjectId
+  type       LeaveType
+  startDate  DateTime
+  endDate    DateTime
+  reason     String?
+  status     LeaveStatus @default(PENDING)
+  approvedBy String?
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  employee Employee @relation(fields: [employeeId], references: [id])
+
+  @@index([tenantId])
+  @@map("leave_requests")
+}
+
+enum LeaveType {
+  ANNUAL
+  SICK
+  PERSONAL
+  UNPAID
+  OTHER
+}
+
+enum LeaveStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+// ─── Projects ─────────────────────────────────────────────
+
+model Project {
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  tenantId    String        @db.ObjectId
+  name        String
+  description String?
+  status      ProjectStatus @default(ACTIVE)
+  startDate   DateTime?
+  endDate     DateTime?
+  managerId   String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tasks  Task[]
+
+  @@index([tenantId])
+  @@map("projects")
+}
+
+enum ProjectStatus {
+  PLANNING
+  ACTIVE
+  ON_HOLD
+  COMPLETED
+  CANCELLED
+}
+
+model Task {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  projectId   String     @db.ObjectId
+  title       String
+  description String?
+  status      TaskStatus @default(TODO)
+  priority    Int        @default(0)
+  assignedTo  String?
+  dueDate     DateTime?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  project    Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  timesheets Timesheet[]
+
+  @@index([projectId])
+  @@map("tasks")
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  IN_REVIEW
+  DONE
+  CANCELLED
+}
+
+model Timesheet {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  taskId      String   @db.ObjectId
+  employeeId  String   @db.ObjectId
+  hours       Float
+  description String?
+  date        DateTime
+  billable    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  task     Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  employee Employee @relation(fields: [employeeId], references: [id])
+
+  @@map("timesheets")
+}

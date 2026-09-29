@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@bahi/applications": "*",
+    "@bahi/app-crm": "*",
     "@bahi/app-inventory": "*",
     "@bahi/database": "*",
     "@bahi/types": "*",

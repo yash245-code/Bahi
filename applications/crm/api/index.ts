@@ -1,3 +1,5 @@
-// TODO(migrate): The CRM backend module currently resides in backend/src/modules/crm.
-// It will be migrated here in a subsequent migration phase.
-export {};
+export * from './crm.module';
+export * from './leads/leads.controller';
+export * from './leads/leads.service';
+export * from './opportunities/opportunities.controller';
+export * from './opportunities/opportunities.service';

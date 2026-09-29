@@ -1,3 +1,9 @@
-// TODO(migrate): The CRM frontend views currently reside in frontend/src/app/(dashboard)/crm.
-// It will be migrated here in a subsequent migration phase.
-export {};
+export * from './components/CrmNav';
+export * from './components/NewDealModal';
+export * from './components/NewLeadModal';
+export * from './views/CrmPipelineView';
+export * from './views/CrmLeadsView';
+export * from './views/CrmCompaniesView';
+export * from './views/CrmContactsView';
+export * from './views/CrmActivitiesView';
+export * from './views/CrmAnalyticsView';

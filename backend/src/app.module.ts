@@ -6,7 +6,7 @@
 import { Module } from '@nestjs/common';
 import { CoreModule } from './modules/core/core.module';
 import { SharedModule } from './shared/shared.module';
-import { CrmModule } from './modules/crm/crm.module';
+import { CrmModule } from '@bahi/app-crm/api';
 import { SalesModule } from './modules/sales/sales.module';
 import { InventoryModule } from '@bahi/app-inventory/api';
 import { AccountingModule } from './modules/accounting/accounting.module';

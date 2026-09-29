@@ -1,8 +1,11 @@
 {
-  "extends": "@bahi/tsconfig/base.json",
+  "extends": "@bahi/tsconfig/node.json",
   "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./",
     "baseUrl": ".",
-    "noEmit": true,
+    "jsx": "react-jsx",
+    "lib": ["esnext", "dom", "dom.iterable"],
     "paths": {
       "@/*": ["./*"]
     }

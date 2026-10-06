@@ -224,7 +224,9 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
     { title: 'Ledger Architecture', subtitle: 'Atomic MongoDB transactions & security', action: () => scrollToSection('architecture'), tag: 'SECTION' },
     { title: 'Pricing Calculator', subtitle: 'Starter, Growth & Business plans', action: () => scrollToSection('pricing'), tag: 'SECTION' },
     { title: 'Swagger API Docs', subtitle: 'Direct OpenAPI 3.0 specification', action: () => window.open('http://localhost:4000/api/docs', '_blank'), tag: 'DEV' },
-    { title: 'Sign In / Dashboard', subtitle: 'Open operational console', action: () => window.location.href = '/dashboard', tag: 'AUTH' },
+    { title: 'Sign In / Account', subtitle: 'Open login or workspace selector', action: () => window.location.href = '/login', tag: 'AUTH' },
+    { title: 'Create Workspace', subtitle: 'Start 14-day free trial', action: () => window.location.href = '/signup', tag: 'AUTH' },
+    { title: 'Applications Suite', subtitle: 'Open applications catalog', action: () => window.location.href = '/applications', tag: 'APPS' },
   ];
 
   const filteredCommands = commandItems.filter(
@@ -561,7 +563,7 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
 
             {/* Sign In Link (Strictly 1 line) */}
             <Link
-              href="/dashboard"
+              href="/login"
               className="text-xs font-semibold text-[#9A9B93] hover:text-white px-2.5 py-1.5 rounded-lg hover:bg-white/5 transition-colors whitespace-nowrap flex-shrink-0"
             >
               Sign In
@@ -569,7 +571,7 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
 
             {/* ─── Primary CTA Button: "Start Free Trial" (Strictly 1 line, never wraps!) ─── */}
             <Link
-              href="/dashboard"
+              href="/signup"
               className="relative group inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 text-xs font-bold text-white rounded-xl bg-gradient-to-r from-[#e8623d] via-[#B7624C] to-[#853526] hover:from-[#f06e4a] hover:to-[#913B26] border border-white/20 shadow-md animate-pulse-glow hover:scale-[1.02] active:scale-[0.98] transition-all duration-150 whitespace-nowrap flex-shrink-0"
               aria-label="Start Free 14-Day Trial"
             >

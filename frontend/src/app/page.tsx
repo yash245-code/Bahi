@@ -292,7 +292,7 @@ export default function LandingPage() {
             {/* CTAs with Magnetic Effect */}
             <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
               <Link
-                href="/dashboard"
+                href="/signup"
                 onMouseMove={handleButtonMouseMove}
                 onMouseLeave={handleButtonMouseLeave}
                 style={{
@@ -307,13 +307,13 @@ export default function LandingPage() {
               </Link>
 
               <Link
-                href="/dashboard"
+                href="/applications"
                 className="inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl font-semibold text-sm text-neutral-50 bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 transition-colors"
               >
                 <svg className="w-4 h-4 text-accent" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z" />
                 </svg>
-                Explore Live Demo
+                Explore Applications
               </Link>
             </div>
 
@@ -450,8 +450,8 @@ export default function LandingPage() {
               {/* Bottom Card Footer */}
               <div className="px-4 py-2.5 bg-neutral-900 border-t border-neutral-800 flex items-center justify-between text-[11px]">
                 <span className="text-neutral-500">Acme Corp • Staging Session</span>
-                <Link href="/dashboard" className="text-accent font-semibold hover:underline flex items-center gap-1">
-                  Open Live Dashboard ↗
+                <Link href="/applications" className="text-accent font-semibold hover:underline flex items-center gap-1">
+                  Open Applications Suite ↗
                 </Link>
               </div>
             </div>
@@ -769,7 +769,7 @@ export default function LandingPage() {
               <li className="flex items-center gap-2">✓ Community Support</li>
             </ul>
             <Link
-              href="/dashboard"
+              href="/signup"
               className="w-full btn-secondary text-xs py-3 text-center block"
             >
               Start Free Trial
@@ -799,7 +799,7 @@ export default function LandingPage() {
               <li className="flex items-center gap-2">✓ Automated Invoice Aging Reminders</li>
             </ul>
             <Link
-              href="/dashboard"
+              href="/signup"
               className="w-full btn-primary text-xs py-3 text-center block shadow-accent"
             >
               Start 14-Day Free Trial
@@ -844,8 +844,8 @@ export default function LandingPage() {
           </div>
 
           <div className="flex items-center gap-6 font-medium">
-            <Link href="/dashboard" className="hover:text-white transition-colors">
-              Dashboard
+            <Link href="/applications" className="hover:text-white transition-colors">
+              Applications
             </Link>
             <Link href="/crm" className="hover:text-white transition-colors">
               CRM

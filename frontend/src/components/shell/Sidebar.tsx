@@ -10,109 +10,38 @@ interface SidebarProps {
   onClose: () => void;
 }
 
-const adminNavItems = [
-  {
-    name: 'Dashboard',
-    href: '/dashboard',
-    badge: null,
-    icon: (
-      <svg className="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.75} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25a2.25 2.25 0 0 1-2.25-2.25v-2.25Z" />
-      </svg>
-    ),
-  },
-  {
-    name: 'Tenants / Organizations',
-    href: '/tenants',
-    badge: '148',
-    icon: (
-      <svg className="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.75} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Z" />
-      </svg>
-    ),
-  },
-  {
-    name: 'Service Management',
-    href: '/services',
-    badge: '6 Units',
-    icon: (
-      <svg className="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.75} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
-      </svg>
-    ),
-  },
-  {
-    name: 'Subscriptions & Billing',
-    href: '/billing',
-    badge: '$184K',
-    icon: (
-      <svg className="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.75} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 21Z" />
-      </svg>
-    ),
-  },
-  {
-    name: 'Usage & Analytics',
-    href: '/analytics',
-    badge: null,
-    icon: (
-      <svg className="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.75} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
-      </svg>
-    ),
-  },
-  {
-    name: 'System Health',
-    href: '/system-health',
-    badge: '99.98%',
-    icon: (
-      <svg className="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.75} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
-      </svg>
-    ),
-  },
-  {
-    name: 'Support / Tickets',
-    href: '/support',
-    badge: '14',
-    icon: (
-      <svg className="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.75} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Zm0 0c0 1.657 1.007 3 2.25 3S21 13.657 21 12a9 9 0 1 0-2.636 6.364M16.5 12V8.25" />
-      </svg>
-    ),
-  },
-  {
-    name: 'Feature Flags / Plans',
-    href: '/feature-flags',
-    badge: null,
-    icon: (
-      <svg className="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.75} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3 3v1.5M3 21v-6m0 0 2.77-.693a9 9 0 0 1 6.208.682l.108.054a9 9 0 0 0 6.086.71l3.114-.732a48.524 48.524 0 0 1-.005-10.499l-3.11.732a9 9 0 0 1-6.085-.711l-.108-.054a9 9 0 0 0-6.208-.682L3 4.5M3 15V4.5" />
-      </svg>
-    ),
-  },
-  {
-    name: 'Team & Roles',
-    href: '/team',
-    badge: null,
-    icon: (
-      <svg className="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.75} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
-      </svg>
-    ),
-  },
-  {
-    name: 'Settings',
-    href: '/settings',
-    badge: null,
-    icon: (
-      <svg className="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.75} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-      </svg>
-    ),
-  },
-];
+const appIcons: Record<string, React.ReactNode> = {
+  crm: (
+    <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+    </svg>
+  ),
+  sales: (
+    <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6H2.25m0 0v1.5a.75.75 0 0 0 .75.75H3m0 0v1.5a.75.75 0 0 1-.75.75H2.25m0 0v1.5a.75.75 0 0 0 .75.75H3m18-6v-.75A.75.75 0 0 0 20.25 4.5H19.5m0 0v1.5a.75.75 0 0 1 .75.75h.75m0 0v1.5a.75.75 0 0 0-.75.75H19.5m0 0v1.5a.75.75 0 0 1 .75.75h.75m0 0v1.5a.75.75 0 0 0-.75.75H19.5M3.75 4.5h16.5M3.75 19.5h16.5M5.25 9h13.5m-13.5 3h13.5m-13.5 3h13.5" />
+    </svg>
+  ),
+  inventory: (
+    <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
+    </svg>
+  ),
+  accounting: (
+    <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+    </svg>
+  ),
+  hr: (
+    <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+    </svg>
+  ),
+  projects: (
+    <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" />
+    </svg>
+  ),
+};
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
@@ -140,6 +69,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     };
   }, [isOpen]);
 
+  const allApps = getAllApplications();
+
   return (
     <>
       {/* ─── Backdrop Overlay ───────────────────────── */}
@@ -152,24 +83,24 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       {/* ─── Collapsible Sidebar Drawer ─────────────── */}
       <aside
         className={`sidebar ${isOpen ? 'open' : ''}`}
-        aria-label="Platform Admin Navigation"
+        aria-label="Applications Suite Navigation"
       >
-        {/* ─── Brand Logo, Environment & Close Button ── */}
+        {/* ─── Brand Logo & Header ── */}
         <div className="px-5 py-4 border-b border-neutral-800 bg-neutral-950 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center text-white font-black text-lg shadow-md border border-white/20">
+          <Link href="/applications" onClick={onClose} className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center text-white font-serif font-black text-lg shadow-md border border-white/20">
               B
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5">
-                <span className="text-base font-extrabold text-neutral-50 tracking-tight">Bahi</span>
-                <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.2 rounded bg-accent/25 text-brand-200 border border-accent/40">
-                  Platform
+                <span className="text-base font-extrabold text-neutral-50 tracking-tight font-serif">Bahi</span>
+                <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-accent/25 text-brand-200 border border-accent/40 font-mono">
+                  Suite
                 </span>
               </div>
-              <p className="text-[11px] text-neutral-500 truncate font-medium">Service Provider Admin</p>
+              <p className="text-[11px] text-neutral-400 truncate font-medium">Business Applications</p>
             </div>
-          </div>
+          </Link>
 
           <button
             type="button"
@@ -184,84 +115,72 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           </button>
         </div>
 
-        {/* ─── Platform Cluster Supervisor Card ───────── */}
+        {/* ─── Active Organization Tenant Card ───────── */}
         <div className="px-3 py-3 border-b border-neutral-800">
-          <div className="p-2.5 rounded-xl bg-neutral-900 border border-neutral-800 flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-status-success/25 border border-status-success/40 flex items-center justify-center text-status-success text-xs font-bold shadow-xs">
-              ⚡
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-neutral-100 truncate">Production Core</span>
-                <span className="flex h-1.5 w-1.5 rounded-full bg-status-success" />
+          <div className="p-2.5 rounded-xl bg-neutral-900 border border-neutral-800 flex items-center justify-between">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-7 h-7 rounded-lg bg-accent/20 border border-accent/30 flex items-center justify-center text-accent text-xs font-bold">
+                🏢
               </div>
-              <p className="text-[10px] text-neutral-400 font-medium">148 Tenants • Cluster v2.4</p>
+              <div className="min-w-0">
+                <p className="text-xs font-bold text-neutral-100 truncate">Acme Global Inc</p>
+                <p className="text-[10px] text-neutral-400 font-mono truncate">acme.bahi.io</p>
+              </div>
             </div>
+            <span className="flex h-2 w-2 rounded-full bg-status-success animate-pulse flex-shrink-0" title="Connected" />
           </div>
         </div>
 
         {/* ─── Navigation Links ────────────────────────── */}
-        <nav className="flex-1 py-3 overflow-y-auto space-y-0.5 no-scrollbar">
-          <div className="px-5 pb-2 pt-1 flex items-center justify-between">
-            <span className="text-[10px] uppercase font-bold text-neutral-500 tracking-wider">
-              Platform Control
-            </span>
-            <span className="text-[9px] text-neutral-500/80 font-mono">Supervisor</span>
+        <nav className="flex-1 py-3 overflow-y-auto space-y-1 no-scrollbar">
+          {/* Applications Hub Launcher */}
+          <div className="px-3">
+            <Link
+              href="/applications"
+              onClick={onClose}
+              className={`sidebar-item ${pathname === '/applications' ? 'active' : ''}`}
+            >
+              <svg className="w-5 h-5 flex-shrink-0 text-accent" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25a2.25 2.25 0 0 1-2.25-2.25v-2.25Z" />
+              </svg>
+              <span className="flex-1 font-semibold">Applications Hub</span>
+              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-accent/20 text-accent border border-accent/30 font-mono">
+                {allApps.length} Apps
+              </span>
+            </Link>
           </div>
 
-          {adminNavItems.map((item) => {
-            const isActive = pathname === item.href;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={onClose}
-                className={`sidebar-item ${isActive ? 'active' : ''}`}
-              >
-                {item.icon}
-                <span className="flex-1 truncate">{item.name}</span>
-                {item.badge && (
-                  <span
-                    className={`text-[10px] font-bold px-2 py-0.5 rounded-full transition-colors ${
-                      isActive
-                        ? 'bg-white text-brand-700'
-                        : item.badge === '14'
-                        ? 'bg-amber-900/40 text-amber-300 border border-amber-800/60'
-                        : 'bg-neutral-800 text-neutral-400 group-hover:text-white'
-                    }`}
-                  >
-                    {item.badge}
-                  </span>
-                )}
-              </Link>
-            );
-          })}
-
-          {/* ─── Business Applications (from Registry) ─── */}
+          {/* ─── Business Applications Section ─── */}
           <div className="px-5 pb-2 pt-4 flex items-center justify-between">
-            <span className="text-[10px] uppercase font-bold text-neutral-500 tracking-wider">
+            <span className="text-[10px] uppercase font-bold text-neutral-400 tracking-wider">
               Installed Applications
             </span>
-            <span className="text-[9px] text-accent font-mono font-semibold">Registry</span>
+            <span className="text-[9px] text-accent font-mono font-semibold">Live</span>
           </div>
 
-          {getAllApplications().map((app) => {
-            const isActive = pathname.startsWith(app.routePrefix);
-            return (
-              <Link
-                key={app.id}
-                href={app.routePrefix}
-                onClick={onClose}
-                className={`sidebar-item ${isActive ? 'active' : ''}`}
-              >
-                <span className="w-2 h-2 rounded-full inline-block flex-shrink-0 bg-neutral-600 group-hover:bg-accent transition-colors" />
-                <span className="flex-1 truncate">{app.name}</span>
-                <span className="text-[10px] font-mono text-neutral-500">
-                  v{app.version}
-                </span>
-              </Link>
-            );
-          })}
+          <div className="px-3 space-y-0.5">
+            {allApps.map((app) => {
+              const isActive = pathname.startsWith(app.routePrefix);
+              return (
+                <Link
+                  key={app.id}
+                  href={app.routePrefix}
+                  onClick={onClose}
+                  className={`sidebar-item ${isActive ? 'active' : ''}`}
+                >
+                  <span className={`${isActive ? 'text-accent' : 'text-neutral-400'}`}>
+                    {appIcons[app.id] || (
+                      <span className="w-2 h-2 rounded-full inline-block bg-neutral-500" />
+                    )}
+                  </span>
+                  <span className="flex-1 truncate">{app.name}</span>
+                  <span className="text-[10px] font-mono text-neutral-400">
+                    v{app.version}
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
         </nav>
 
         {/* ─── Infrastructure Sync Widget ──────────────── */}
@@ -272,8 +191,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               <span className="relative inline-flex rounded-full h-2 w-2 bg-status-success"></span>
             </span>
             <div>
-              <p className="text-[10px] font-bold text-neutral-200 leading-tight">Mesh Network Sync</p>
-              <p className="text-[9px] text-neutral-500">6 Services • 148 Tenants</p>
+              <p className="text-[10px] font-bold text-neutral-200 leading-tight">Mongo Atlas Engine</p>
+              <p className="text-[9px] text-neutral-400 font-mono">Sync Nominal • 14ms</p>
             </div>
           </div>
           <span className="text-[10px] font-mono text-status-success bg-status-success/15 border border-status-success/25 px-1.5 py-0.5 rounded">
@@ -281,29 +200,30 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           </span>
         </div>
 
-        {/* ─── Footer Controls ─────────────────────────── */}
+        {/* ─── Footer Controls & Sign Out ───────────────── */}
         <div className="border-t border-neutral-800 p-3 space-y-1 bg-neutral-950">
-          <Link
-            href="/services"
-            onClick={onClose}
-            className="sidebar-item !m-0 group text-neutral-300 hover:text-white"
-          >
-            <svg className="w-5 h-5 flex-shrink-0 text-neutral-500 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" strokeWidth={1.75} stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
-            </svg>
-            <span className="flex-1">Service Registry</span>
-            <span className="text-[10px] text-accent font-semibold">Active</span>
-          </Link>
           <Link
             href="/"
             onClick={onClose}
-            className="sidebar-item !m-0 group"
+            className="sidebar-item !m-0 group text-neutral-400 hover:text-white"
           >
-            <svg className="w-5 h-5 flex-shrink-0 text-neutral-500 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" strokeWidth={1.75} stroke="currentColor">
+            <svg className="w-5 h-5 flex-shrink-0 text-neutral-400 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" strokeWidth={1.75} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
             </svg>
-            <span className="flex-1">Website Home</span>
-            <span className="text-[10px] text-neutral-500 group-hover:text-accent transition-colors">↗</span>
+            <span className="flex-1">Landing Page</span>
+            <span className="text-[10px] text-neutral-400 group-hover:text-accent transition-colors">↗</span>
+          </Link>
+
+          <Link
+            href="/login"
+            onClick={onClose}
+            className="sidebar-item !m-0 group text-rose-400/90 hover:text-rose-300 hover:bg-rose-500/10"
+          >
+            <svg className="w-5 h-5 flex-shrink-0 text-rose-400 group-hover:text-rose-300 transition-colors" fill="none" viewBox="0 0 24 24" strokeWidth={1.75} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75" />
+            </svg>
+            <span className="flex-1 font-medium">Sign Out</span>
+            <span className="text-[10px] font-mono text-neutral-400">Exit</span>
           </Link>
         </div>
       </aside>

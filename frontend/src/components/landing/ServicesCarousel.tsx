@@ -134,7 +134,7 @@ export const servicesList: ServiceItem[] = [
     category: 'Telemetry & GMV',
     description: 'Real-time GMV aggregations, revenue velocity forecasting, and low-latency cluster telemetry.',
     metric: 'P99 < 85ms Latency',
-    href: '/dashboard',
+    href: '/applications',
     accentColor: '#FB7185',
     badgeBg: 'rgba(251, 113, 133, 0.15)',
     iconBg: 'from-[#FB7185]/25 to-[#E11D48]/10',
@@ -536,10 +536,10 @@ export function ServicesCarousel({ activeModuleId, onSelectModule }: ServicesCar
         <div className="flex items-center gap-2 text-xs">
           <span className="text-neutral-500">Want to test them live?</span>
           <Link
-            href="/dashboard"
+            href="/applications"
             className="text-accent hover:text-brand-400 font-semibold flex items-center gap-1 transition-colors"
           >
-            Launch All Services Sandbox
+            Launch Applications Suite Sandbox
             <span className="text-[10px]">→</span>
           </Link>
         </div>

@@ -4,30 +4,26 @@ import { useState, useEffect, useRef } from 'react';
 import { getAllApplications } from '@bahi/applications';
 
 const commands = [
-  { category: 'Platform Navigation', items: [
-    { label: 'Go to Operations Dashboard', shortcut: 'D', action: '/dashboard' },
-    { label: 'Go to Tenants & Organizations', shortcut: 'T', action: '/tenants' },
-    { label: 'Go to Service Management', shortcut: 'S', action: '/services' },
-    { label: 'Go to Subscriptions & Billing', shortcut: 'B', action: '/billing' },
-    { label: 'Go to Usage & Analytics', shortcut: 'A', action: '/analytics' },
-    { label: 'Go to System Health & Telemetry', shortcut: 'H', action: '/system-health' },
-    { label: 'Go to Support & Tickets', shortcut: '', action: '/support' },
-    { label: 'Go to Feature Flags & Plans', shortcut: 'F', action: '/feature-flags' },
-    { label: 'Go to Team & Permissions', shortcut: '', action: '/team' },
-    { label: 'Go to Platform Settings', shortcut: '', action: '/settings' },
-  ]},
-  { category: 'Business Applications', items: getAllApplications().map((app) => ({
-    label: `Open ${app.name}`,
-    shortcut: app.id.charAt(0).toUpperCase(),
-    action: app.routePrefix,
-  }))},
-  { category: 'Platform Quick Actions', items: [
-    { label: 'Provision new Tenant / Org', shortcut: 'N', action: '/tenants' },
-    { label: 'Inspect Service Registry', shortcut: 'R', action: '/services' },
-    { label: 'Review Failed Invoices / Retries', shortcut: '$', action: '/billing' },
-    { label: 'Run Global Schema Sync', shortcut: '', action: '/system-health' },
-    { label: 'Broadcast Maintenance Notice', shortcut: 'M', action: '/settings' },
-  ]},
+  {
+    category: 'Applications Suite',
+    items: [
+      { label: 'Go to Applications Hub', shortcut: 'H', action: '/applications' },
+      ...getAllApplications().map((app) => ({
+        label: `Launch ${app.name}`,
+        shortcut: app.id.charAt(0).toUpperCase(),
+        action: app.routePrefix,
+      })),
+    ],
+  },
+  {
+    category: 'Account & Workspace',
+    items: [
+      { label: 'Sign In / Switch Account', shortcut: 'L', action: '/login' },
+      { label: 'Create New Organization', shortcut: 'N', action: '/signup' },
+      { label: 'Go to Landing Website', shortcut: 'W', action: '/' },
+      { label: 'API Documentation (Swagger)', shortcut: 'D', action: 'http://localhost:4000/api/docs' },
+    ],
+  },
 ];
 
 export function CommandPalette({ onClose }: { onClose: () => void }) {
@@ -53,7 +49,11 @@ export function CommandPalette({ onClose }: { onClose: () => void }) {
       if (e.key === 'ArrowUp') { e.preventDefault(); setActiveIndex((i) => Math.max(i - 1, 0)); }
       if (e.key === 'Enter' && allItems[activeIndex]) {
         const item = allItems[activeIndex];
-        if (item.action.startsWith('/')) window.location.href = item.action;
+        if (item.action.startsWith('http')) {
+          window.open(item.action, '_blank');
+        } else if (item.action.startsWith('/')) {
+          window.location.href = item.action;
+        }
         onClose();
       }
     };
@@ -87,7 +87,7 @@ export function CommandPalette({ onClose }: { onClose: () => void }) {
             ref={inputRef}
             type="text"
             className="command-input border-0 py-3.5"
-            placeholder="Search commands, records, actions..."
+            placeholder="Search applications, actions, shortcuts..."
             value={query}
             onChange={(e) => { setQuery(e.target.value); setActiveIndex(0); }}
           />
@@ -110,7 +110,9 @@ export function CommandPalette({ onClose }: { onClose: () => void }) {
                     key={item.label}
                     className={`command-item ${isCurrent ? 'active' : ''}`}
                     onClick={() => {
-                      if (item.action.startsWith('/')) {
+                      if (item.action.startsWith('http')) {
+                        window.open(item.action, '_blank');
+                      } else if (item.action.startsWith('/')) {
                         window.location.href = item.action;
                       }
                       onClose();

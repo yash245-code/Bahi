@@ -1,0 +1,33 @@
+<svg width="380" height="64" viewBox="0 0 380 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="hzBahiRust" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#C2542F" />
+      <stop offset="100%" stop-color="#853526" />
+    </linearGradient>
+  </defs>
+
+  <!-- Icon Seal -->
+  <g transform="translate(0, 4)">
+    <rect width="56" height="56" rx="14" fill="url(#hzBahiRust)" />
+    <rect x="0.5" y="0.5" width="55" height="55" rx="13.5" stroke="#FFFFFF" stroke-opacity="0.2" />
+    <!-- Ledger spine lines -->
+    <rect x="9" y="14" width="2" height="28" rx="1" fill="#FFFFFF" fill-opacity="0.4" />
+    <rect x="13" y="14" width="1" height="28" rx="0.5" fill="#FFFFFF" fill-opacity="0.25" />
+    <!-- B Monogram -->
+    <path d="M22 15H36C41.5 15 45.5 18.5 45.5 23C45.5 26.5 43.5 29 40 30.5C44 32 46.5 35 46.5 39C46.5 44 42 47 36.5 47H22C20.9 47 20 46.1 20 45V17C20 15.9 20.9 15 22 15Z" fill="#FFFFFF" />
+    <path d="M26.5 21H35C38 21 40 22.8 40 25C40 27.2 38 29 35 29H26.5V21Z" fill="#853526" />
+    <path d="M26.5 33H35.5C38.5 33 41 35 41 37.5C41 40 38.5 42 35.5 42H26.5V33Z" fill="#853526" />
+  </g>
+
+  <!-- Typography: Bahi -->
+  <text x="74" y="44" font-family="'Newsreader', Georgia, 'Times New Roman', serif" font-size="34" font-weight="700" fill="#20211F" letter-spacing="-0.5">Bahi</text>
+
+  <!-- Artisan ERP Badge -->
+  <g transform="translate(176, 19)">
+    <rect width="44" height="22" rx="6" fill="#FAF4F2" stroke="#EBD2CB" stroke-width="1" />
+    <text x="22" y="15" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="800" fill="#A8462F" text-anchor="middle" letter-spacing="1.2">ERP</text>
+  </g>
+
+  <!-- Tagline -->
+  <text x="232" y="34" font-family="'Inter', -apple-system, sans-serif" font-size="12" font-weight="500" fill="#75766E" letter-spacing="-0.2">Enterprise Suite</text>
+</svg>

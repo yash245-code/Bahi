@@ -1,0 +1,16 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="crmGrad" x1="0" y1="0" x2="128" y2="128" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#DE653D" />
+      <stop offset="100%" stop-color="#A8462F" />
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="28" fill="url(#crmGrad)" />
+  <rect x="1" y="1" width="126" height="126" rx="27" stroke="#FFFFFF" stroke-opacity="0.2" stroke-width="2" />
+  
+  <!-- Pipeline / Leads Deal Flow Icon -->
+  <path d="M42 44C42 38.4772 46.4772 34 52 34H76C81.5228 34 86 38.4772 86 44V50H42V44Z" fill="#FFFFFF" fill-opacity="0.9" />
+  <path d="M46 54H82L86 86C86 91.5228 81.5228 96 76 96H52C46.4772 96 42 91.5228 42 86L46 54Z" fill="#FFFFFF" fill-opacity="0.75" />
+  <circle cx="64" cy="72" r="10" fill="#A8462F" />
+  <path d="M64 67V77M59 72H69" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" />
+</svg>

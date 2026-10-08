@@ -1,0 +1,18 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="invGrad" x1="0" y1="0" x2="128" y2="128" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#4C96DE" />
+      <stop offset="100%" stop-color="#265E99" />
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="28" fill="url(#invGrad)" />
+  <rect x="1" y="1" width="126" height="126" rx="27" stroke="#FFFFFF" stroke-opacity="0.2" stroke-width="2" />
+  
+  <!-- Isometric Warehouse Box -->
+  <path d="M64 34L94 51V77L64 94L34 77V51L64 34Z" fill="#FFFFFF" fill-opacity="0.25" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round" />
+  <path d="M64 34V94" stroke="#FFFFFF" stroke-width="3" />
+  <path d="M64 64L94 51" stroke="#FFFFFF" stroke-width="3" />
+  <path d="M64 64L34 51" stroke="#FFFFFF" stroke-width="3" />
+  <!-- Center Tag -->
+  <circle cx="64" cy="64" r="6" fill="#FFFFFF" />
+</svg>

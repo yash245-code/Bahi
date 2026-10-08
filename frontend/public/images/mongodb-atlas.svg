@@ -1,0 +1,13 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="atlasLeaf" x1="64" y1="20" x2="64" y2="108" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#00ED64" />
+      <stop offset="100%" stop-color="#00684A" />
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="28" fill="#131B16" />
+  <rect x="1" y="1" width="126" height="126" rx="27" stroke="#00ED64" stroke-opacity="0.25" stroke-width="2" />
+  <!-- MongoDB Leaf Emblem -->
+  <path d="M64 24C64 24 45 49 45 71C45 84 53 95 64 104C75 95 83 84 83 71C83 49 64 24 64 24Z" fill="url(#atlasLeaf)" />
+  <path d="M64 24V104C64 104 63.8 85 64 71" stroke="#FFFFFF" stroke-opacity="0.3" stroke-width="2" />
+</svg>

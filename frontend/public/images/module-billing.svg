@@ -1,0 +1,19 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="billGrad" x1="0" y1="0" x2="128" y2="128" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#9E9E96" />
+      <stop offset="100%" stop-color="#5B5D55" />
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="28" fill="url(#billGrad)" />
+  <rect x="1" y="1" width="126" height="126" rx="27" stroke="#FFFFFF" stroke-opacity="0.2" stroke-width="2" />
+  
+  <!-- Invoice Slip with Zigzag receipt edge -->
+  <path d="M40 32H88V96L82 92L76 96L70 92L64 96L58 92L52 96L46 92L40 96V32Z" fill="#FFFFFF" fill-opacity="0.9" />
+  <rect x="48" y="44" width="22" height="4" rx="2" fill="#5B5D55" />
+  <rect x="48" y="54" width="32" height="3" rx="1.5" fill="#5B5D55" fill-opacity="0.4" />
+  <rect x="48" y="62" width="32" height="3" rx="1.5" fill="#5B5D55" fill-opacity="0.4" />
+  <!-- Currency symbol badge -->
+  <circle cx="72" cy="76" r="8" fill="#A8462F" />
+  <path d="M72 72V80M69 74H75M69 77H75" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" />
+</svg>

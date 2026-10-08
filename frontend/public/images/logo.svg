@@ -1,0 +1,35 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bahiRustGrad" x1="28" y1="28" x2="228" y2="228" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#C2542F" />
+      <stop offset="50%" stop-color="#A8462F" />
+      <stop offset="100%" stop-color="#7A2E1E" />
+    </linearGradient>
+    <linearGradient id="bahiGoldGlow" x1="40" y1="40" x2="216" y2="216" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFE6D9" stop-opacity="0.25" />
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+    </linearGradient>
+    <filter id="bahiShadow" x="0" y="8" width="256" height="256" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#A8462F" flood-opacity="0.32" />
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#20211F" flood-opacity="0.12" />
+    </filter>
+  </defs>
+
+  <!-- Base Rounded Container with subtle border -->
+  <rect x="28" y="28" width="200" height="200" rx="48" fill="url(#bahiRustGrad)" filter="url(#bahiShadow)" />
+  <rect x="28.75" y="28.75" width="198.5" height="198.5" rx="47.25" stroke="url(#bahiGoldGlow)" stroke-width="1.5" />
+
+  <!-- Artisan Ledger Spine / Folio Lines (Left edge accent) -->
+  <rect x="52" y="58" width="4" height="140" rx="2" fill="#FFFFFF" fill-opacity="0.35" />
+  <rect x="62" y="58" width="2" height="140" rx="1" fill="#FFFFFF" fill-opacity="0.18" />
+
+  <!-- Monogram "B" with artisan serifs and precision curves -->
+  <path d="M96 66H144C163.882 66 180 80.118 180 97.5C180 110.15 172.5 120.9 161.5 126C174.5 131.5 184 143.5 184 158.5C184 177.002 167.002 192 147 192H96C91.5817 192 88 188.418 88 184V74C88 69.5817 91.5817 66 96 66Z" fill="#FFFFFF" />
+  
+  <!-- Inner B counter-spaces in warm rust cutout -->
+  <path d="M116 88H142C151.389 88 159 94.7157 159 103C159 111.284 151.389 118 142 118H116V88Z" fill="#853526" />
+  <path d="M116 138H144C154.493 138 163 145.611 163 155C163 164.389 154.493 172 144 172H116V138Z" fill="#853526" />
+
+  <!-- Precision Corner Seal Micro-dot -->
+  <circle cx="186" cy="70" r="4" fill="#FFE6D9" fill-opacity="0.75" />
+</svg>

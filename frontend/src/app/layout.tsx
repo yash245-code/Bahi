@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Bahi — Multi-Tenant Business Suite',
+  title: 'Bahi — The Simple All-in-One Business App',
   description:
-    'Run CRM, Sales, Inventory, Accounting, HR, and Project Management on one unified platform. Built for modern businesses.',
+    'The easiest way to run your business. Track customers, make sales, count stock, send bills, manage your team, and organize tasks all in one place.',
 };
 
 export default function RootLayout({

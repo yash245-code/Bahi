@@ -4,10 +4,27 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Navbar } from '@/components/landing/Navbar';
 import { ServicesCarousel } from '@/components/landing/ServicesCarousel';
+import { LiveWorkflowCard } from '@/components/landing/LiveWorkflowCard';
+
+interface ModuleDetail {
+  tag: string;
+  title: string;
+  desc: string;
+  metrics: Array<{ label: string; value: string }>;
+  features: string[];
+  previewCard: {
+    title: string;
+    client: string;
+    value: string;
+    stage: string;
+    priority: string;
+  };
+}
 
 export default function LandingPage() {
-  const [activeTab, setActiveTab] = useState<'crm' | 'sales' | 'inventory' | 'accounting' | 'hr' | 'projects'>('crm');
-  const [terminalTab, setTerminalTab] = useState<'terminal' | 'schema' | 'telemetry'>('terminal');
+  const [activeTab, setActiveTab] = useState<
+    'finance' | 'sales' | 'websites' | 'supply-chain' | 'hr' | 'marketing' | 'services' | 'projects' | 'crm' | 'inventory' | 'accounting'
+  >('finance');
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('annual');
 
   // Mouse position for cursor-following gradient blob
@@ -53,7 +70,7 @@ export default function LandingPage() {
       const ease = 1 - Math.pow(1 - progress, 3);
 
       setCounters({
-        modules: Math.round(ease * 6),
+        modules: Math.round(ease * 8),
         uptime: +(90.0 + ease * 9.99).toFixed(2),
         gmv: Math.round(ease * 450),
         latency: Math.round(250 - ease * 165),
@@ -61,172 +78,271 @@ export default function LandingPage() {
 
       if (step >= steps) {
         clearInterval(timer);
-        setCounters({ modules: 6, uptime: 99.99, gmv: 450, latency: 85 });
+        setCounters({ modules: 8, uptime: 99.99, gmv: 450, latency: 85 });
       }
     }, stepTime);
 
     return () => clearInterval(timer);
   }, []);
 
-  // Live Typing Terminal Simulation
-  const terminalLines = [
-    { text: '$ bahi cluster:sync --live --atlas', color: 'text-white font-bold' },
-    { text: '✓ Authenticated to cluster0.hquokkc.mongodb.net (12ms)', color: 'text-status-success' },
-    { text: '✓ 23 collections & cross-tenant indexes verified', color: 'text-neutral-200' },
-    { text: '✓ Multi-tenant session initialized: Acme Corp', color: 'text-brand-400' },
-    { text: '→ Core ERP engine ready at port 4000 (P99 < 85ms)', color: 'text-accent font-semibold' },
-  ];
-
-  const [visibleLinesCount, setVisibleLinesCount] = useState(1);
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setVisibleLinesCount((prev) => (prev < terminalLines.length ? prev + 1 : 1));
-    }, 1800);
-    return () => clearInterval(interval);
-  }, [terminalLines.length]);
-
-  const modulesData = {
-    crm: {
-      tag: 'Customer Relationship Management',
-      title: 'Precision Pipelines & Inbound Conversions',
-      desc: 'Track leads from cold discovery to qualified contract with fluid Kanban columns, automated deal scoring, and 360-degree company directory sync.',
+  const modulesData: Record<string, ModuleDetail> = {
+    finance: {
+      tag: 'Finance & Invoicing',
+      title: 'Get Paid on Time and Watch Your Savings Grow',
+      desc: 'Send clean bills and track every dollar coming in. See who has paid, who still owes you, connect bank sync, and know your daily profit.',
       metrics: [
-        { label: 'Avg Close Rate', value: '+34%' },
-        { label: 'Deal Velocity', value: '2.4x' },
-        { label: 'Pipeline Visibility', value: '100%' },
+        { label: 'Paid Quicker', value: '14 Days Faster' },
+        { label: 'Automatic Invoicing', value: '100%' },
+        { label: 'Tax Prep Time', value: 'Cut in Half' },
       ],
       features: [
-        'Visual multi-stage Kanban pipelines with close probability forecasting',
-        'Shared contact and vendor directory with real-time party indexing',
-        'Automatic activity logs (calls, meetings, tasks, follow-up notes)',
-        '1-click lead-to-opportunity qualification engine',
+        'Bills created and emailed right away when an order is completed',
+        'Easily track cash, card, and bank transfers',
+        'Polite automatic reminders sent to customers who forgot to pay',
+        'Simple profit and expense summaries so tax season is totally relaxed',
       ],
       previewCard: {
-        title: 'Enterprise OS Suite',
-        client: 'NexGen Systems',
-        value: '$15,000',
-        stage: 'Qualified (65%)',
-        priority: '🔥 Hot Deal',
+        title: 'Invoice #084',
+        client: 'Green Garden Cafe',
+        value: '$2,200',
+        stage: 'Paid in Full',
+        priority: '✓ Money in Bank',
       },
     },
     sales: {
-      tag: 'Sales & Quotation Engine',
-      title: 'Turn Signed Proposals into Confirmed Orders',
-      desc: 'Generate professional multi-currency quotations, automate line-item tax calculation, and convert approved proposals into confirmed sales orders seamlessly.',
+      tag: 'Quotes & POS Checkout',
+      title: 'Send Clear Price Quotes and Ring Up Sales Fast',
+      desc: 'Create pretty, professional price quotes in seconds, handle fast POS sales, and turn accepted quotes straight into confirmed orders.',
       metrics: [
-        { label: 'Quote Turnaround', value: '< 5 min' },
-        { label: 'Order Accuracy', value: '99.8%' },
-        { label: 'Revenue Growth', value: '+28%' },
+        { label: 'Quote Speed', value: '< 2 mins' },
+        { label: 'Math Mistakes', value: '0' },
+        { label: 'Sales Growth', value: '+34%' },
       ],
       features: [
-        'Dynamic proposal builder with live totals, discounts, and tiered approvals',
-        '1-click proposal confirmation to Sales Order (SO-XXXX)',
-        'Custom multi-tier discount matrix and manager sign-off workflows',
-        'PDF exports, audit trails, and automatic email dispatching',
+        'Automatic price and tax math so you never make calculation mistakes',
+        'Turn accepted price quotes into confirmed orders with 1 click',
+        'Send neat PDF receipts straight to your customer’s email or WhatsApp',
+        'Clear sales history showing who bought what and when',
       ],
       previewCard: {
-        title: 'Quote QT-00014',
-        client: 'Summit Digital',
-        value: '$22,000',
-        stage: 'Confirmed',
-        priority: '⚡ Order Placed',
+        title: 'Price Quote #104',
+        client: 'Green Garden Cafe',
+        value: '$2,200',
+        stage: 'Accepted',
+        priority: '⚡ Order Confirmed',
       },
     },
-    inventory: {
-      tag: 'Multi-Warehouse Inventory Control',
-      title: 'Zero Stockouts Across Global Warehouses',
-      desc: 'Real-time visibility over multi-location stock movements, SKU catalogs, automated reorder thresholds, and inbound/outbound transfer ledgers.',
+    websites: {
+      tag: 'Online Store & Booking',
+      title: 'Open Your Digital Storefront to the Whole World',
+      desc: 'Launch your modern online shop, publish your product catalog, and take customer bookings 24/7 without technical hurdles.',
       metrics: [
-        { label: 'Stock Accuracy', value: '99.9%' },
-        { label: 'Fulfillment Speed', value: '+45%' },
-        { label: 'Shrinkage Reduction', value: '-80%' },
+        { label: 'Online Store Hours', value: '24/7 Open' },
+        { label: 'Mobile Friendly', value: '100%' },
+        { label: 'Setup Time', value: '10 mins' },
       ],
       features: [
-        'Multi-warehouse location mapping (WH-MAIN, WH-WEST, WH-SOUTH)',
-        'Stock move ledgers (RECEIPT, SHIPMENT, TRANSFER, AUDIT)',
-        'Real-time low stock warnings and automated reorder alerts',
-        'Direct synchronization with sales orders and supplier shipments',
+        'Clean mobile-friendly product catalog with instant checkout',
+        'Accept customer bookings and reservations straight from your site',
+        'Automatically syncs online sales with your inventory shelves',
+        'Social media sharing links and SEO built in automatically',
       ],
       previewCard: {
-        title: 'WH-MAIN Restock',
-        client: 'Wireless Keyboard Pro',
-        value: '500 units',
+        title: 'Online Store Order #312',
+        client: 'Liam Walker',
+        value: '$180',
+        stage: 'New Order',
+        priority: '🌐 Placed Online',
+      },
+    },
+    'supply-chain': {
+      tag: 'Stock & Warehouses',
+      title: 'Always Know What is Sitting on Your Shelves',
+      desc: 'Never run out of your best-selling items. Check stock levels across all rooms, reorder on time, and track incoming boxes with zero stress.',
+      metrics: [
+        { label: 'Count Accuracy', value: '99.9%' },
+        { label: 'Packing Speed', value: '2x Faster' },
+        { label: 'Lost Items', value: '0' },
+      ],
+      features: [
+        'See stock across all your rooms, stores, or shelves on one screen',
+        'Friendly warnings before your most popular products run out',
+        'Easy logs showing when boxes arrive and when they go out',
+        'Updates automatically every time a customer buys something',
+      ],
+      previewCard: {
+        title: 'Shelf Restock',
+        client: 'Wireless Headphones',
+        value: '150 in box',
         stage: 'Received',
-        priority: '✓ In Stock',
-      },
-    },
-    accounting: {
-      tag: 'Automated Invoicing & Reconciliation',
-      title: 'Instant Cashflow Visibility & Ledger Auditing',
-      desc: 'Streamline the entire cash cycle from sales order billing to partial wire payments, overdue aging notices, and real-time P&L ledger tracking.',
-      metrics: [
-        { label: 'Days Sales Outstanding', value: '-14 Days' },
-        { label: 'Automated Billing', value: '94%' },
-        { label: 'Reconciliation Time', value: '-60%' },
-      ],
-      features: [
-        'Automated invoice generation directly from confirmed sales orders',
-        'Multi-method payment tracking (Bank Transfer, Credit Card, Cash)',
-        'Overdue aging buckets and payment status lifecycle',
-        'Full financial ledger audit trails and tax compliance reporting',
-      ],
-      previewCard: {
-        title: 'Invoice INV-00048',
-        client: 'Summit Digital',
-        value: '$22,000',
-        stage: 'Paid (Wire)',
-        priority: '✓ Reconciled',
+        priority: '✓ On the Shelf',
       },
     },
     hr: {
-      tag: 'Human Resources & Attendance',
-      title: 'Unified Workforce Directory & Leave Workflows',
-      desc: 'Centralize employee profiles, department headcount indexing, multi-tier leave approvals, and attendance records without messy spreadsheets.',
+      tag: 'Team & Staff',
+      title: 'Take Great Care of Your Team with Zero Drama',
+      desc: 'Keep staff contact info handy, approve time off with one tap, and see who is at work today without messy paper forms.',
       metrics: [
-        { label: 'Leave Processing', value: 'Same Day' },
-        { label: 'Admin Overhead', value: '-40%' },
-        { label: 'Employee NPS', value: '88' },
+        { label: 'Vacation Approval', value: 'Instant' },
+        { label: 'Lost Paperwork', value: '0' },
+        { label: 'Team Happiness', value: '10/10' },
       ],
       features: [
-        'Unified staff directory with department and position hierarchy indexing',
-        'Multi-type leave management (Annual, Sick, Personal, Unpaid)',
-        'Manager routing workflows with 1-click approvals or rejections',
-        'Seamless integration with project timesheets and payroll accounting',
+        'Simple staff directory with phone numbers, emails, and job roles',
+        'Easy time-off requests: employees tap to ask, managers tap to say yes',
+        'See at a glance who is in the shop, working from home, or on holiday',
+        'Connects with work hours so paying everyone is fast and fair',
       ],
       previewCard: {
-        title: 'Annual Leave Req',
-        client: 'Sarah Chen (Finance)',
-        value: '6 Days',
+        title: 'Summer Holiday Request',
+        client: 'Alex Rivera (Designer)',
+        value: '4 Days',
         stage: 'Approved',
-        priority: '🌴 Leave Scheduled',
+        priority: '🌴 Vacation Booked',
+      },
+    },
+    marketing: {
+      tag: 'Broadcasts & Promos',
+      title: 'Bring Shoppers Back with WhatsApp & Email Promos',
+      desc: 'Send promotional announcements, flash sale discount coupons, and SMS alerts that bring customers back again and again.',
+      metrics: [
+        { label: 'Repeat Buyers', value: '3x More' },
+        { label: 'Coupon Redemptions', value: '+42%' },
+        { label: 'Setup Time', value: '2 mins' },
+      ],
+      features: [
+        'Send promotional announcements via email, SMS, and WhatsApp',
+        'Create seasonal coupon codes and flash discounts in seconds',
+        'Collect customer phone numbers and emails automatically at checkout',
+        'See which promotion brought in the most sales and repeat shoppers',
+      ],
+      previewCard: {
+        title: 'Flash Sale (20% Off)',
+        client: 'All VIP Customers',
+        value: '1,420 Sent',
+        stage: 'Active',
+        priority: '🔥 High Response',
+      },
+    },
+    services: {
+      tag: 'Field Jobs & Tickets',
+      title: 'Schedule Appointments and Dispatch Jobs with Ease',
+      desc: 'Assign repair jobs or customer visits to your team, schedule appointments on a calendar, and track job completion from start to finish.',
+      metrics: [
+        { label: 'Jobs on Schedule', value: '100%' },
+        { label: 'Dispatcher Time', value: 'Saved 2h/day' },
+        { label: 'Customer Rating', value: '4.9 / 5' },
+      ],
+      features: [
+        'Visual calendar showing all technician jobs and appointments',
+        'One-tap dispatch: assign work tickets to technicians in the field',
+        'Customer gets automated SMS notifications when technician is on the way',
+        'Signatures and completed job photos attached right to the invoice',
+      ],
+      previewCard: {
+        title: 'Service Ticket #49',
+        client: 'Highland Residency',
+        value: 'Scheduled 2 PM',
+        stage: 'Assigned',
+        priority: '🔧 In Field',
       },
     },
     projects: {
-      tag: 'Project Management & Timesheets',
-      title: 'Deliver Client Projects On-Time and On-Budget',
-      desc: 'Execute client deliverables with sprint task boards, priority tracking, billable timesheets, and direct profitability analytics.',
+      tag: 'Tasks & To-Dos',
+      title: 'Finish Every Job on Time with Zero Stress',
+      desc: 'Turn big jobs into simple to-do cards. Give tasks to your teammates, set clear due dates, and watch everything get checked off happily.',
       metrics: [
-        { label: 'On-Time Delivery', value: '96%' },
-        { label: 'Billable Utilization', value: '+22%' },
-        { label: 'Sprint Velocity', value: '+30%' },
+        { label: 'Jobs on Time', value: '98%' },
+        { label: 'Team Focus', value: '+30%' },
+        { label: 'Forgotten Tasks', value: '0' },
       ],
       features: [
-        'Agile task tracking with status workflows (TODO, IN PROGRESS, DONE)',
-        'Granular task priority levels and manager assignments',
-        'Billable timesheets linked directly to employees and tasks',
-        'Project budget vs actual performance tracking',
+        'Fun to-do columns: Things To Do, Doing Right Now, and Finished!',
+        'Assign tasks to teammates with clear due dates and reminders',
+        'Track hours spent on client jobs so you charge fairly',
+        'See if a job is making money or taking too much time',
       ],
       previewCard: {
-        title: 'Mobile App MVP',
-        client: 'TechStart Inc.',
-        value: '312h Logged',
-        stage: 'Sprint 12 (88%)',
-        priority: '⚡ Ahead of Plan',
+        title: 'New Store Launch',
+        client: 'Sunny Bakery',
+        value: '18 of 20 Done',
+        stage: 'Almost Finished',
+        priority: '⚡ Finishing Today',
+      },
+    },
+    // Backwards-compatibility aliases
+    crm: {
+      tag: 'Find & Keep Customers',
+      title: 'Never Forget a Customer or Follow-Up',
+      desc: 'Keep all your customer phone numbers, emails, and notes in one friendly list. See who wants to buy, what they like, and when to call them back.',
+      metrics: [
+        { label: 'Happy Customers', value: '100%' },
+        { label: 'More Sales Made', value: '+34%' },
+        { label: 'Forgotten Calls', value: '0' },
+      ],
+      features: [
+        'Color-coded boards showing where each customer is in their journey',
+        'One simple address book for all client contacts and notes',
+        'Helpful reminders so you never forget a meeting or phone call',
+        'Turn an interested lead into a paying customer with 1 click',
+      ],
+      previewCard: {
+        title: 'Interested Customer',
+        client: 'Sarah Johnson',
+        value: '$1,500',
+        stage: 'Ready to Buy',
+        priority: '⭐ Very Interested',
+      },
+    },
+    inventory: {
+      tag: 'Stock & Warehouses',
+      title: 'Always Know What is Sitting on Your Shelves',
+      desc: 'Never run out of your best-selling items. Check stock levels across all shelves and track incoming boxes.',
+      metrics: [
+        { label: 'Count Accuracy', value: '99.9%' },
+        { label: 'Packing Speed', value: '2x Faster' },
+        { label: 'Lost Items', value: '0' },
+      ],
+      features: [
+        'See stock across all rooms, stores, or shelves on one screen',
+        'Friendly warnings before your most popular products run out',
+        'Easy logs showing when boxes arrive and when they go out',
+        'Updates automatically every time a customer buys something',
+      ],
+      previewCard: {
+        title: 'Shelf Restock',
+        client: 'Wireless Headphones',
+        value: '150 in box',
+        stage: 'Received',
+        priority: '✓ On the Shelf',
+      },
+    },
+    accounting: {
+      tag: 'Bills & Money',
+      title: 'Get Paid on Time and Watch Your Savings Grow',
+      desc: 'Send clear bills and track every dollar coming in. See who has paid and what your profit is.',
+      metrics: [
+        { label: 'Paid Quicker', value: '14 Days Faster' },
+        { label: 'Automatic Invoicing', value: '100%' },
+        { label: 'Tax Prep Time', value: 'Cut in Half' },
+      ],
+      features: [
+        'Bills created and emailed right away when an order is completed',
+        'Easily track cash, card, and bank payments',
+        'Polite automated reminders sent to customers',
+        'Simple profit and expense summaries',
+      ],
+      previewCard: {
+        title: 'Invoice #084',
+        client: 'Green Garden Cafe',
+        value: '$2,200',
+        stage: 'Paid in Full',
+        priority: '✓ Money in Bank',
       },
     },
   };
 
-  const currentMod = modulesData[activeTab];
+  const currentMod: ModuleDetail = (modulesData[activeTab] || modulesData['finance']) as ModuleDetail;
 
   return (
     <div className="min-h-screen bg-neutral-900 text-neutral-50 font-sans selection:bg-accent selection:text-white relative overflow-x-clip">
@@ -272,21 +388,21 @@ export default function LandingPage() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-success opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-status-success"></span>
               </span>
-              <span className="text-xs font-semibold text-brand-200">MongoDB Atlas Cluster Live</span>
-              <span className="text-xs text-neutral-400">• Latency: 12ms</span>
+              <span className="text-xs font-semibold text-brand-200">✨ The Easy Business App</span>
+              <span className="text-xs text-neutral-400">• Simple for Everyone</span>
             </div>
 
             {/* Main Headline with Typographic Contrast */}
             <h1 className="text-4xl sm:text-6xl font-black text-white tracking-tight leading-[1.12]">
-              Run Your Entire Enterprise on{' '}
+              Run Your Entire Business on{' '}
               <span className="block mt-1 font-serif italic font-normal text-transparent bg-clip-text bg-gradient-to-r from-brand-300 via-white to-brand-200 tracking-normal">
-                One Unified Platform.
+                One Simple App.
               </span>
             </h1>
 
             {/* Subtext */}
             <p className="text-base sm:text-lg text-neutral-400 max-w-xl font-normal leading-relaxed">
-              Consolidate CRM, Quotations, Multi-Warehouse Inventory, Invoicing, HR, and Sprints into a single high-velocity operations OS with zero synchronization lag.
+              Tired of messy papers and 10 confusing apps? Bahi puts your customers, sales, stock, bills, and team in one happy place — so running your business is as easy as playing with blocks.
             </p>
 
             {/* CTAs with Magnetic Effect */}
@@ -300,7 +416,7 @@ export default function LandingPage() {
                 }}
                 className="btn-primary text-sm py-3.5 px-6 shadow-accent transition-transform duration-100 flex items-center justify-center gap-2.5 group"
               >
-                <span>Start Free 14-Day Trial</span>
+                <span>Try It Free for 14 Days</span>
                 <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                 </svg>
@@ -313,7 +429,7 @@ export default function LandingPage() {
                 <svg className="w-4 h-4 text-accent" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z" />
                 </svg>
-                Explore Applications
+                See How It Works
               </Link>
             </div>
 
@@ -323,138 +439,26 @@ export default function LandingPage() {
                 <svg className="w-4 h-4 text-status-success" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
-                <span>No Credit Card Required</span>
+                <span>No Credit Card Needed</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <svg className="w-4 h-4 text-status-success" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
-                <span>Multi-Tenant Ready</span>
+                <span>Ready in 2 Minutes</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <svg className="w-4 h-4 text-status-success" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
-                <span>MongoDB Atlas Native</span>
+                <span>100% Safe &amp; Private</span>
               </div>
             </div>
           </div>
 
-          {/* ── Right Column (~42%): Live Interactive Terminal Widget ─ */}
-          <div className="lg:col-span-5 relative">
-            {/* Ambient Backlight Glow */}
-            <div className="absolute -inset-2 bg-gradient-to-r from-accent/30 to-brand-700/20 rounded-2xl blur-xl -z-10 opacity-70" />
-
-            <div className="rounded-2xl bg-neutral-950 border border-neutral-700 shadow-2xl overflow-hidden">
-              {/* Window Header with Pulsing Dot */}
-              <div className="px-4 py-3 bg-neutral-950 border-b border-neutral-800 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="w-3 h-3 rounded-full bg-status-danger/80 inline-block" />
-                  <span className="w-3 h-3 rounded-full bg-status-warning/80 inline-block" />
-                  <span className="w-3 h-3 rounded-full bg-status-success/80 inline-block" />
-                  <span className="text-[11px] font-mono text-neutral-400 ml-2">bahi-engine v1.2</span>
-                </div>
-
-                {/* Pulsing MongoDB Indicator */}
-                <div className="flex items-center gap-2">
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-success opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-status-success"></span>
-                  </span>
-                  <span className="text-[10px] font-mono text-status-success font-bold">
-                    MongoDB Connected
-                  </span>
-                </div>
-              </div>
-
-              {/* Tab Selector */}
-              <div className="flex border-b border-neutral-800 bg-neutral-900 text-xs font-mono">
-                <button
-                  onClick={() => setTerminalTab('terminal')}
-                  className={`px-4 py-2 border-r border-neutral-800 transition-colors ${
-                    terminalTab === 'terminal' ? 'bg-neutral-950 text-accent font-bold' : 'text-neutral-500 hover:text-white'
-                  }`}
-                >
-                  ⚡ Engine Log
-                </button>
-                <button
-                  onClick={() => setTerminalTab('schema')}
-                  className={`px-4 py-2 border-r border-neutral-800 transition-colors ${
-                    terminalTab === 'schema' ? 'bg-neutral-950 text-accent font-bold' : 'text-neutral-500 hover:text-white'
-                  }`}
-                >
-                  📄 Schema Ledger
-                </button>
-                <button
-                  onClick={() => setTerminalTab('telemetry')}
-                  className={`px-4 py-2 transition-colors ${
-                    terminalTab === 'telemetry' ? 'bg-neutral-950 text-accent font-bold' : 'text-neutral-500 hover:text-white'
-                  }`}
-                >
-                  📊 Telemetry
-                </button>
-              </div>
-
-              {/* Window Body with Live Simulated Typing */}
-              <div className="p-5 font-mono text-xs min-h-[260px] bg-neutral-950">
-                {terminalTab === 'terminal' && (
-                  <div className="space-y-2.5">
-                    {terminalLines.slice(0, visibleLinesCount).map((l, idx) => (
-                      <div key={idx} className={`${l.color} leading-relaxed animate-fade-in`}>
-                        {l.text}
-                      </div>
-                    ))}
-                    <div className="flex items-center gap-1 text-neutral-500">
-                      <span className="animate-pulse">▋</span>
-                      <span className="text-[11px]">listening for operations...</span>
-                    </div>
-                  </div>
-                )}
-
-                {terminalTab === 'schema' && (
-                  <div className="space-y-1 text-neutral-200 text-[11px] leading-relaxed">
-                    <p className="text-neutral-400">// Multi-Tenant Enterprise Schema (MongoDB)</p>
-                    <p><span className="text-accent">model</span> <span className="text-white font-bold">Tenant</span> &#123;</p>
-                    <p className="pl-4">id String @id @default(auto()) @map(&quot;_id&quot;)</p>
-                    <p className="pl-4">name String</p>
-                    <p className="pl-4">users User[]</p>
-                    <p className="pl-4">pipelines PipelineStage[]</p>
-                    <p className="pl-4">invoices Invoice[]</p>
-                    <p>&#125;</p>
-                    <p className="text-status-success pt-1">✓ 23 models compiled and synced</p>
-                  </div>
-                )}
-
-                {terminalTab === 'telemetry' && (
-                  <div className="space-y-3 text-xs">
-                    <div className="flex justify-between items-center py-1 border-b border-neutral-800">
-                      <span className="text-neutral-400">Cluster Latency</span>
-                      <span className="font-bold text-status-success">12ms (P99)</span>
-                    </div>
-                    <div className="flex justify-between items-center py-1 border-b border-neutral-800">
-                      <span className="text-neutral-400">Active Connections</span>
-                      <span className="font-bold text-white">42 Concurrent</span>
-                    </div>
-                    <div className="flex justify-between items-center py-1 border-b border-neutral-800">
-                      <span className="text-neutral-400">Memory Usage</span>
-                      <span className="font-bold text-accent">142 MB / 512 MB</span>
-                    </div>
-                    <div className="flex justify-between items-center py-1">
-                      <span className="text-neutral-400">Tenant Isolation</span>
-                      <span className="font-bold text-status-success">Strict Row-Level</span>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Bottom Card Footer */}
-              <div className="px-4 py-2.5 bg-neutral-900 border-t border-neutral-800 flex items-center justify-between text-[11px]">
-                <span className="text-neutral-500">Acme Corp • Staging Session</span>
-                <Link href="/applications" className="text-accent font-semibold hover:underline flex items-center gap-1">
-                  Open Applications Suite ↗
-                </Link>
-              </div>
-            </div>
+          {/* ── Right Column (~42%): Animated Live Workflow Card ───── */}
+          <div className="lg:col-span-5 relative flex justify-center">
+            <LiveWorkflowCard />
           </div>
         </div>
       </section>
@@ -463,7 +467,7 @@ export default function LandingPage() {
       <div id="services">
         <ServicesCarousel
           activeModuleId={activeTab}
-          onSelectModule={(mod) => setActiveTab(mod)}
+          onSelectModule={(mod) => setActiveTab(mod as any)}
         />
       </div>
 
@@ -473,49 +477,49 @@ export default function LandingPage() {
           {/* Card 1: Prominent Feature Bento (5 cols) */}
           <div className="md:col-span-5 rounded-2xl bg-neutral-800 border border-neutral-700 p-6 hover:border-neutral-600 transition-all relative overflow-hidden group">
             <div className="flex items-center justify-between mb-4">
-              <span className="text-xs uppercase tracking-wider font-bold text-accent">Platform Scale</span>
+              <span className="text-xs uppercase tracking-wider font-bold text-accent">Real Results</span>
               <span className="text-[10px] font-mono text-neutral-400 bg-neutral-900 px-2 py-0.5 rounded border border-neutral-700">
-                FY 2026
+                Loved by Owners
               </span>
             </div>
             <div className="text-4xl sm:text-5xl font-black text-white tracking-tight font-mono">
               ${counters.gmv}M+
             </div>
-            <p className="text-sm font-semibold text-white mt-1">Annual GMV Managed</p>
+            <p className="text-sm font-semibold text-white mt-1">Real Sales Handled</p>
             <p className="text-xs text-neutral-400 mt-1 leading-relaxed">
-              Powering global transactions across high-volume supply chains and multi-currency billing accounts.
+              Hardworking businesses use Bahi every single day to sell products, make customers smile, and grow.
             </p>
           </div>
 
           {/* Card 2: Enterprise SLA (3 cols) */}
           <div className="md:col-span-3 rounded-2xl bg-neutral-800 border border-neutral-700 p-6 hover:border-neutral-600 transition-all relative group">
             <div className="flex items-center justify-between mb-4">
-              <span className="text-xs uppercase tracking-wider font-bold text-status-success">Reliability</span>
+              <span className="text-xs uppercase tracking-wider font-bold text-status-success">Always Open</span>
               <span className="flex h-2 w-2 rounded-full bg-status-success" />
             </div>
             <div className="text-4xl font-black text-status-success tracking-tight font-mono">
               {counters.uptime}%
             </div>
-            <p className="text-sm font-semibold text-white mt-1">Enterprise Uptime SLA</p>
+            <p className="text-sm font-semibold text-white mt-1">Always Works, Day &amp; Night</p>
             <p className="text-xs text-neutral-400 mt-1">
-              Zero planned maintenance windows with automatic multi-region cluster failover.
+              Your business never sleeps, and neither does Bahi. Reliable 365 days a year.
             </p>
           </div>
 
           {/* Card 3: Terracotta Accent Bento (4 cols) */}
           <div className="md:col-span-4 rounded-2xl bg-gradient-to-br from-accent to-brand-800 border border-brand-400/40 p-6 text-white hover:brightness-105 transition-all shadow-accent">
             <div className="flex items-center justify-between mb-4">
-              <span className="text-xs uppercase tracking-wider font-bold text-white/90">Speed SLA</span>
+              <span className="text-xs uppercase tracking-wider font-bold text-white/90">Blink of an Eye</span>
               <span className="text-[10px] font-mono text-white/90 bg-black/20 px-2 py-0.5 rounded border border-white/20">
-                P99 Peak
+                Instant
               </span>
             </div>
             <div className="text-4xl sm:text-5xl font-black text-white tracking-tight font-mono">
-              &lt; {counters.latency}ms
+              &lt; 0.1s
             </div>
-            <p className="text-sm font-bold text-white mt-1">API Execution Latency</p>
+            <p className="text-sm font-bold text-white mt-1">Super Fast &amp; Smooth</p>
             <p className="text-xs text-white/80 mt-1 leading-relaxed">
-              Engineered with NestJS fast-path routing and MongoDB Atlas replica sets.
+              Pages and buttons open right away. No waiting around, no spinning wheels.
             </p>
           </div>
         </div>
@@ -524,41 +528,61 @@ export default function LandingPage() {
       {/* ─── Layered & Overlapping Module Showcase ─────────────────── */}
       <section id="modules" className="relative z-10 py-20 px-6 max-w-7xl mx-auto">
         <div className="text-center max-w-2xl mx-auto mb-12">
-          <span className="text-xs uppercase font-bold tracking-widest text-accent">Unified Business Suite</span>
+          <span className="text-xs uppercase font-bold tracking-widest text-accent">All The Apps You Need</span>
           <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight mt-2">
-            Six Modular Systems.{' '}
+            Eight Connected Apps.{' '}
             <span className="font-serif italic text-transparent bg-clip-text bg-gradient-to-r from-brand-300 to-brand-200">
-              One Shared Engine.
+              One Happy Business.
             </span>
           </h2>
           <p className="mt-3 text-neutral-400 text-sm sm:text-base">
-            Every department accesses the exact same operational dataset. No disconnected APIs, no sync delays.
+            When you make a sale, your stock updates, your bill is sent, and your team gets notified automatically. No lost papers, no confusing spreadsheets.
           </p>
         </div>
 
-        {/* Tab Switcher */}
+        {/* Tab Switcher for the 8 Apps */}
         <div className="flex flex-wrap items-center justify-center gap-2 mb-12">
-          {(Object.keys(modulesData) as Array<keyof typeof modulesData>).map((tabKey) => {
+          {([
+            'finance',
+            'sales',
+            'websites',
+            'supply-chain',
+            'hr',
+            'marketing',
+            'services',
+            'projects',
+          ] as const).map((tabKey) => {
             const isActive = activeTab === tabKey;
             const moduleActiveClasses: Record<string, string> = {
-              crm: 'bg-module-crm text-white shadow-glow-crm border border-module-crm-border',
-              sales: 'bg-module-billing text-white shadow-glow-billing border border-module-billing-border',
-              inventory: 'bg-module-inventory text-white shadow-glow-inventory border border-module-inventory-border',
-              accounting: 'bg-module-accounting text-white shadow-glow-accounting border border-module-accounting-border',
-              hr: 'bg-module-hr text-white shadow-glow-hr border border-module-hr-border',
-              projects: 'bg-module-projects text-white shadow-glow-projects border border-module-projects-border',
+              finance: 'bg-emerald-600/30 text-emerald-300 border border-emerald-500/50 shadow-md shadow-emerald-500/20',
+              sales: 'bg-purple-600/30 text-purple-300 border border-purple-500/50 shadow-md shadow-purple-500/20',
+              websites: 'bg-cyan-600/30 text-cyan-300 border border-cyan-500/50 shadow-md shadow-cyan-500/20',
+              'supply-chain': 'bg-blue-600/30 text-blue-300 border border-blue-500/50 shadow-md shadow-blue-500/20',
+              hr: 'bg-rose-600/30 text-rose-300 border border-rose-500/50 shadow-md shadow-rose-500/20',
+              marketing: 'bg-orange-600/30 text-orange-300 border border-orange-500/50 shadow-md shadow-orange-500/20',
+              services: 'bg-teal-600/30 text-teal-300 border border-teal-500/50 shadow-md shadow-teal-500/20',
+              projects: 'bg-amber-600/30 text-amber-300 border border-amber-500/50 shadow-md shadow-amber-500/20',
+            };
+            const tabNames: Record<string, string> = {
+              finance: 'Finance',
+              sales: 'Sales',
+              websites: 'Websites',
+              'supply-chain': 'Supply Chain',
+              hr: 'Human Resources',
+              marketing: 'Marketing',
+              services: 'Services',
+              projects: 'Projects',
             };
             return (
               <button
                 key={tabKey}
                 onClick={() => setActiveTab(tabKey)}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all capitalize ${
-                  isActive
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${isActive
                     ? (moduleActiveClasses[tabKey] || 'bg-accent text-white shadow-accent border border-accent/40')
                     : 'bg-neutral-800 text-neutral-400 hover:text-white border border-neutral-700 hover:bg-neutral-700'
-                }`}
+                  }`}
               >
-                {tabKey === 'crm' ? 'CRM & Deals' : tabKey === 'hr' ? 'HR & Teams' : tabKey}
+                {tabNames[tabKey] || tabKey}
               </button>
             );
           })}
@@ -598,7 +622,7 @@ export default function LandingPage() {
                 href={`/${activeTab}`}
                 className="inline-flex items-center gap-2 font-bold text-xs text-accent hover:text-brand-400 transition-colors"
               >
-                Open {activeTab.toUpperCase()} Module in Dashboard →
+                Try this app in Bahi →
               </Link>
 
               <div className="flex items-center gap-4 text-xs">
@@ -617,17 +641,17 @@ export default function LandingPage() {
             {/* Background Under-Card with slight counter-rotation */}
             <div className="w-full max-w-sm rounded-2xl bg-neutral-900 border border-neutral-700 p-5 shadow-2xl transform -rotate-2 hover:rotate-0 transition-transform duration-300">
               <div className="flex items-center justify-between mb-3 text-xs text-neutral-400">
-                <span>Status Audit Log</span>
-                <span className="font-mono text-[10px]">#OP-8921</span>
+                <span>Safety &amp; Protection</span>
+                <span className="font-mono text-[10px] text-status-success">✓ 100% Safe</span>
               </div>
               <div className="space-y-2 text-xs">
                 <div className="p-2.5 rounded-lg bg-neutral-800 border border-neutral-700 flex justify-between">
-                  <span className="text-white font-medium">Record Created</span>
-                  <span className="text-status-success">✓ Live in MongoDB</span>
+                  <span className="text-white font-medium">Saved to Cloud</span>
+                  <span className="text-status-success font-semibold">✓ Safe &amp; Sound</span>
                 </div>
                 <div className="p-2.5 rounded-lg bg-neutral-800 border border-neutral-700 flex justify-between">
-                  <span className="text-white font-medium">RBAC Permission</span>
-                  <span className="text-neutral-400">Admin Role (Yash)</span>
+                  <span className="text-white font-medium">Who Can Edit</span>
+                  <span className="text-neutral-300">Manager &amp; Team Only</span>
                 </div>
               </div>
             </div>
@@ -668,47 +692,47 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             <div className="lg:col-span-7 space-y-4">
               <span className="text-xs uppercase font-extrabold tracking-widest px-3 py-1 rounded-full bg-black/25 text-brand-50 border border-white/20">
-                Enterprise Ledger Security
+                Rock-Solid Reliability
               </span>
               <h2 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight">
-                Architected for Zero-Drift Financial Integrity.
+                Your Business Numbers Always Match. Guaranteed.
               </h2>
               <p className="text-white/85 text-base leading-relaxed">
-                Most platforms stitch together separate databases with delayed webhooks. Bahi executes every transaction inside an atomic MongoDB replica transaction—ensuring invoices, stock moves, and lead qualifications reconcile simultaneously.
+                Other software uses messy connections that lose data or make numbers disagree. Bahi keeps all your information in one unbreakable vault — so your stock count, sales total, and bank balance always match up perfectly.
               </p>
               <div className="pt-2 flex flex-wrap gap-4 text-xs font-semibold">
                 <div className="flex items-center gap-2 bg-black/20 px-3.5 py-2 rounded-xl border border-white/15">
-                  <span>🔒 Multi-Tenant Tenant Isolation</span>
+                  <span>🔒 100% Private (Only your team sees your data)</span>
                 </div>
                 <div className="flex items-center gap-2 bg-black/20 px-3.5 py-2 rounded-xl border border-white/15">
-                  <span>⚡ P99 Sub-100ms Queries</span>
+                  <span>⚡ Super Fast (Zero waiting, zero spinning wheels)</span>
                 </div>
                 <div className="flex items-center gap-2 bg-black/20 px-3.5 py-2 rounded-xl border border-white/15">
-                  <span>📑 Double-Entry Ledger Ready</span>
+                  <span>📑 Saved Forever (Never lose an order or receipt)</span>
                 </div>
               </div>
             </div>
 
             <div className="lg:col-span-5 rounded-2xl bg-black/30 border border-white/20 p-6 backdrop-blur-md space-y-4">
-              <h3 className="text-base font-bold text-white">Production Cluster Health</h3>
+              <h3 className="text-base font-bold text-white">Why You Can Sleep Easy with Bahi</h3>
               <div className="space-y-3 text-xs">
                 <div className="flex justify-between items-center pb-2 border-b border-white/15">
-                  <span className="text-white/75">Active Database</span>
-                  <span className="font-mono font-bold text-brand-200">cluster0.hquokkc (Atlas)</span>
+                  <span className="text-white/75">Always Backed Up</span>
+                  <span className="font-medium text-brand-200">Saved every second</span>
                 </div>
                 <div className="flex justify-between items-center pb-2 border-b border-white/15">
-                  <span className="text-white/75">Collections Active</span>
-                  <span className="font-bold text-white">23 Collections</span>
+                  <span className="text-white/75">Bank-Grade Protection</span>
+                  <span className="font-bold text-status-success">✓ Locked &amp; Encrypted</span>
                 </div>
                 <div className="flex justify-between items-center pb-2 border-b border-white/15">
-                  <span className="text-white/75">Data Encryption</span>
-                  <span className="font-bold text-status-success">TLS 1.3 + AES-256</span>
+                  <span className="text-white/75">Runs 24 Hours a Day</span>
+                  <span className="font-medium text-white">Never takes a holiday</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-white/75">Cluster Status</span>
+                  <span className="text-white/75">Works Everywhere</span>
                   <span className="inline-flex items-center gap-1.5 font-bold text-status-success">
                     <span className="w-2 h-2 rounded-full bg-status-success animate-pulse" />
-                    Optimal (0% Packet Loss)
+                    Phone, Tablet &amp; Laptop
                   </span>
                 </div>
               </div>
@@ -717,34 +741,32 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ─── Pricing Section (Dark Dev-Tool Cards) ────────────────── */}
+      {/* ─── Pricing Section ────────────────────────────────────── */}
       <section id="pricing" className="relative z-10 py-20 px-6 max-w-7xl mx-auto">
         <div className="text-center max-w-2xl mx-auto mb-12">
-          <span className="text-xs uppercase font-bold tracking-widest text-accent">Transparent Pricing</span>
+          <span className="text-xs uppercase font-bold tracking-widest text-accent">Simple, Honest Pricing</span>
           <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight mt-2">
-            Predictable Plans for Scaling Teams.
+            Pick the Plan That Fits Your Business.
           </h2>
           <p className="mt-3 text-neutral-400 text-sm">
-            All plans include CRM, Sales, Inventory, Accounting, HR, and Projects with unlimited records.
+            Every plan includes all 6 business tools. No hidden fees. Upgrade or cancel anytime.
           </p>
 
           {/* Billing Cycle Toggle */}
           <div className="mt-6 inline-flex items-center p-1 rounded-xl bg-neutral-800 border border-neutral-700 text-xs">
             <button
               onClick={() => setBillingCycle('monthly')}
-              className={`px-4 py-1.5 rounded-lg font-bold transition-all ${
-                billingCycle === 'monthly' ? 'bg-neutral-700 text-white shadow-xs' : 'text-neutral-400 hover:text-white'
-              }`}
+              className={`px-4 py-1.5 rounded-lg font-bold transition-all ${billingCycle === 'monthly' ? 'bg-neutral-700 text-white shadow-xs' : 'text-neutral-400 hover:text-white'
+                }`}
             >
-              Monthly
+              Pay Monthly
             </button>
             <button
               onClick={() => setBillingCycle('annual')}
-              className={`px-4 py-1.5 rounded-lg font-bold transition-all ${
-                billingCycle === 'annual' ? 'bg-accent text-white shadow-accent' : 'text-neutral-400 hover:text-white'
-              }`}
+              className={`px-4 py-1.5 rounded-lg font-bold transition-all ${billingCycle === 'annual' ? 'bg-accent text-white shadow-accent' : 'text-neutral-400 hover:text-white'
+                }`}
             >
-              Annual (Save 20%)
+              Pay Yearly (Save 20%)
             </button>
           </div>
         </div>
@@ -754,7 +776,7 @@ export default function LandingPage() {
           <div className="rounded-2xl bg-neutral-800 border border-neutral-700 p-8 space-y-6 hover:border-neutral-600 transition-all">
             <div>
               <h3 className="text-lg font-bold text-white">Starter</h3>
-              <p className="text-xs text-neutral-400 mt-1">For early-stage operations & boutiques</p>
+              <p className="text-xs text-neutral-400 mt-1">For small shops, boutiques &amp; solo founders</p>
             </div>
             <div className="flex items-baseline gap-1">
               <span className="text-4xl font-black text-white font-mono">
@@ -763,10 +785,10 @@ export default function LandingPage() {
               <span className="text-xs text-neutral-400">/ month</span>
             </div>
             <ul className="space-y-2.5 text-xs text-neutral-200 border-t border-neutral-700 pt-4">
-              <li className="flex items-center gap-2">✓ Up to 5 Team Seats</li>
-              <li className="flex items-center gap-2">✓ All 6 Core ERP Modules</li>
-              <li className="flex items-center gap-2">✓ 1 Warehouse Location</li>
-              <li className="flex items-center gap-2">✓ Community Support</li>
+              <li className="flex items-center gap-2">✓ Up to 5 Team Members</li>
+              <li className="flex items-center gap-2">✓ All 6 Business Tools Included</li>
+              <li className="flex items-center gap-2">✓ 1 Shop or Warehouse Location</li>
+              <li className="flex items-center gap-2">✓ Friendly, Helpful Support</li>
             </ul>
             <Link
               href="/signup"
@@ -783,7 +805,7 @@ export default function LandingPage() {
             </div>
             <div>
               <h3 className="text-lg font-bold text-white">Business</h3>
-              <p className="text-xs text-brand-200 mt-1">For scaling teams with multi-warehouse needs</p>
+              <p className="text-xs text-brand-200 mt-1">For growing businesses with multiple stores</p>
             </div>
             <div className="flex items-baseline gap-1">
               <span className="text-4xl font-black text-white font-mono">
@@ -792,11 +814,11 @@ export default function LandingPage() {
               <span className="text-xs text-neutral-400">/ month</span>
             </div>
             <ul className="space-y-2.5 text-xs text-neutral-200 border-t border-neutral-700 pt-4">
-              <li className="flex items-center gap-2">✓ Up to 25 Team Seats</li>
-              <li className="flex items-center gap-2">✓ Multi-Warehouse Sync (Unlimited)</li>
-              <li className="flex items-center gap-2">✓ Custom Approval Routing</li>
-              <li className="flex items-center gap-2">✓ Priority API Access & Webhooks</li>
-              <li className="flex items-center gap-2">✓ Automated Invoice Aging Reminders</li>
+              <li className="flex items-center gap-2">✓ Up to 25 Team Members</li>
+              <li className="flex items-center gap-2">✓ Unlimited Stores &amp; Warehouses</li>
+              <li className="flex items-center gap-2">✓ 1-Tap Manager Approvals</li>
+              <li className="flex items-center gap-2">✓ Fast Priority Help</li>
+              <li className="flex items-center gap-2">✓ Automatic Reminders for Late Bills</li>
             </ul>
             <Link
               href="/signup"
@@ -810,23 +832,23 @@ export default function LandingPage() {
           <div className="rounded-2xl bg-neutral-800 border border-neutral-700 p-8 space-y-6 hover:border-neutral-600 transition-all">
             <div>
               <h3 className="text-lg font-bold text-white">Enterprise</h3>
-              <p className="text-xs text-neutral-400 mt-1">For organizations requiring dedicated clusters</p>
+              <p className="text-xs text-neutral-400 mt-1">For large companies with lots of staff</p>
             </div>
             <div className="flex items-baseline gap-1">
               <span className="text-4xl font-black text-white font-mono">Custom</span>
             </div>
             <ul className="space-y-2.5 text-xs text-neutral-200 border-t border-neutral-700 pt-4">
-              <li className="flex items-center gap-2">✓ Unlimited Team Seats</li>
-              <li className="flex items-center gap-2">✓ Dedicated MongoDB Atlas Instance</li>
-              <li className="flex items-center gap-2">✓ 99.99% Uptime Guarantee with SLA</li>
-              <li className="flex items-center gap-2">✓ Dedicated Account Manager</li>
-              <li className="flex items-center gap-2">✓ Custom ERP Module Development</li>
+              <li className="flex items-center gap-2">✓ Unlimited Team Members</li>
+              <li className="flex items-center gap-2">✓ Private, Super-Fast Server</li>
+              <li className="flex items-center gap-2">✓ 99.99% Reliability Promise</li>
+              <li className="flex items-center gap-2">✓ Dedicated Personal Account Helper</li>
+              <li className="flex items-center gap-2">✓ Custom Setup &amp; Training for Staff</li>
             </ul>
             <a
               href="mailto:sales@bahi.io"
               className="w-full btn-secondary text-xs py-3 text-center block"
             >
-              Contact Sales
+              Talk to Our Friendly Team
             </a>
           </div>
         </div>
@@ -839,25 +861,25 @@ export default function LandingPage() {
             <div className="w-7 h-7 rounded-lg bg-accent flex items-center justify-center text-white font-bold text-sm">
               B
             </div>
-            <span className="font-bold text-white">Bahi ERP Platform</span>
-            <span>• Built for high-velocity modern enterprises.</span>
+            <span className="font-bold text-white">Bahi Platform</span>
+            <span>• Simple software for hardworking businesses.</span>
           </div>
 
           <div className="flex items-center gap-6 font-medium">
             <Link href="/applications" className="hover:text-white transition-colors">
-              Applications
+              All Apps
             </Link>
             <Link href="/crm" className="hover:text-white transition-colors">
-              CRM
+              Customers
             </Link>
             <Link href="/sales" className="hover:text-white transition-colors">
               Sales
             </Link>
             <Link href="/accounting" className="hover:text-white transition-colors">
-              Accounting
+              Bills
             </Link>
             <a href="http://localhost:4000/api/docs" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">
-              Swagger API
+              Help &amp; Docs
             </a>
           </div>
         </div>

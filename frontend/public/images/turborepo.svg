@@ -1,0 +1,13 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="turboGrad" x1="0" y1="0" x2="128" y2="128" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0096FF" />
+      <stop offset="100%" stop-color="#FF0080" />
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="28" fill="#141513" />
+  <rect x="1" y="1" width="126" height="126" rx="27" stroke="#33352F" stroke-width="2" />
+  <!-- Turbo Circles -->
+  <circle cx="52" cy="64" r="22" stroke="#0096FF" stroke-width="7" />
+  <circle cx="76" cy="64" r="22" stroke="#FF0080" stroke-width="7" />
+</svg>

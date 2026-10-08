@@ -1,0 +1,14 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="favRust" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#C2542F" />
+      <stop offset="100%" stop-color="#853526" />
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="url(#favRust)" />
+  <rect x="1" y="1" width="62" height="62" rx="15" stroke="#FFFFFF" stroke-opacity="0.25" stroke-width="2" />
+  <!-- B Monogram -->
+  <path d="M22 14H37C43 14 47.5 17.5 47.5 22.5C47.5 26.2 45 29 41.5 30.5C45.5 32 48 35.5 48 40C48 45.5 43.5 49 37.5 49H22C20.9 49 20 48.1 20 47V16C20 14.9 20.9 14 22 14Z" fill="#FFFFFF" />
+  <path d="M27 20H36.5C39.5 20 42 21.8 42 24.5C42 27.2 39.5 29 36.5 29H27V20Z" fill="#853526" />
+  <path d="M27 34H37.5C40.8 34 43 35.8 43 38.8C43 41.8 40.8 43.5 37.5 43.5H27V34Z" fill="#853526" />
+</svg>

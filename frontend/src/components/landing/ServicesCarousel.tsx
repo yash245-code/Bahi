@@ -11,7 +11,7 @@ export interface ServiceItem {
   description: string;
   metric: string;
   href: string;
-  moduleId?: 'crm' | 'sales' | 'inventory' | 'accounting' | 'hr' | 'projects';
+  moduleId?: string;
   accentColor: string;
   badgeBg: string;
   iconBg: string;
@@ -20,35 +20,17 @@ export interface ServiceItem {
 
 export const servicesList: ServiceItem[] = [
   {
-    id: 'crm',
-    code: 'MOD-01',
-    name: 'CRM & Pipelines',
-    category: 'Deals & Leads',
-    description: 'Visual Kanban pipelines, lead scoring, deal velocity forecasting, and 360° party sync.',
-    metric: '+34% Close Rate',
-    href: '/crm',
-    moduleId: 'crm',
-    accentColor: '#C2542F',
-    badgeBg: '#3A2318',
-    iconBg: 'from-[#C2542F]/25 to-[#3A2318]/20',
-    icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
-      </svg>
-    ),
-  },
-  {
-    id: 'sales',
-    code: 'MOD-02',
-    name: 'Sales & Quotes',
-    category: 'Proposals & SO',
-    description: 'Dynamic quotation generator, multi-tier discount matrix, and 1-click sales order booking.',
-    metric: '< 5m Turnaround',
-    href: '/sales',
-    moduleId: 'sales',
-    accentColor: '#8B8D85',
-    badgeBg: '#26271F',
-    iconBg: 'from-[#8B8D85]/25 to-[#26271F]/20',
+    id: 'finance',
+    code: 'APP-01',
+    name: 'Finance & Invoicing',
+    category: 'Finance',
+    description: 'Send instant invoices, track daily expenses, connect bank accounts, and see your exact profit.',
+    metric: 'Paid 2x Faster',
+    href: '/finance',
+    moduleId: 'finance',
+    accentColor: '#34D399',
+    badgeBg: 'rgba(52, 211, 153, 0.15)',
+    iconBg: 'from-emerald-500/25 to-teal-500/20',
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
@@ -56,17 +38,53 @@ export const servicesList: ServiceItem[] = [
     ),
   },
   {
-    id: 'inventory',
-    code: 'MOD-03',
-    name: 'Multi-Warehouse',
-    category: 'Stock & Logistics',
-    description: 'Multi-location inventory tracking, stock movements ledger, and zero-stockout reorder alerts.',
+    id: 'sales',
+    code: 'APP-02',
+    name: 'Sales & POS',
+    category: 'Sales',
+    description: 'Create clear price quotes, ring up POS checkout, manage orders, and collect payments easily.',
+    metric: '+34% More Sales',
+    href: '/sales',
+    moduleId: 'sales',
+    accentColor: '#C084FC',
+    badgeBg: 'rgba(192, 132, 252, 0.15)',
+    iconBg: 'from-purple-500/25 to-pink-500/20',
+    icon: (
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.141a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+      </svg>
+    ),
+  },
+  {
+    id: 'websites',
+    code: 'APP-03',
+    name: 'Websites & Store',
+    category: 'Websites',
+    description: 'Launch your modern digital storefront, show your product catalog, and take bookings 24/7.',
+    metric: '24/7 Online',
+    href: '/websites',
+    moduleId: 'websites',
+    accentColor: '#38BDF8',
+    badgeBg: 'rgba(56, 189, 248, 0.15)',
+    iconBg: 'from-cyan-500/25 to-blue-500/20',
+    icon: (
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-1.605.42-3.113 1.157-4.418" />
+      </svg>
+    ),
+  },
+  {
+    id: 'supply-chain',
+    code: 'APP-04',
+    name: 'Supply Chain',
+    category: 'Supply Chain',
+    description: 'Count warehouse stock live, get low-inventory warnings, print packing slips, and reorder on time.',
     metric: '99.9% Accuracy',
-    href: '/inventory',
-    moduleId: 'inventory',
-    accentColor: '#3E7FBF',
-    badgeBg: '#16283A',
-    iconBg: 'from-[#3E7FBF]/25 to-[#16283A]/20',
+    href: '/supply-chain',
+    moduleId: 'supply-chain',
+    accentColor: '#60A5FA',
+    badgeBg: 'rgba(96, 165, 250, 0.15)',
+    iconBg: 'from-blue-500/25 to-indigo-500/20',
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
@@ -74,35 +92,17 @@ export const servicesList: ServiceItem[] = [
     ),
   },
   {
-    id: 'accounting',
-    code: 'MOD-04',
-    name: 'Accounting & Ledger',
-    category: 'Finance & Invoicing',
-    description: 'Automated billing from orders, multi-currency ledger, aging buckets, and reconciliation.',
-    metric: '-60% Audit Time',
-    href: '/accounting',
-    moduleId: 'accounting',
-    accentColor: '#2E9169',
-    badgeBg: '#123322',
-    iconBg: 'from-[#2E9169]/25 to-[#123322]/20',
-    icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-      </svg>
-    ),
-  },
-  {
     id: 'hr',
-    code: 'MOD-05',
-    name: 'HR & Workforce',
-    category: 'Teams & Leaves',
-    description: 'Centralized staff hierarchy, attendance logs, department indexing, and 1-click leave approvals.',
-    metric: 'Same-Day Approvals',
+    code: 'APP-05',
+    name: 'Human Resources',
+    category: 'Team & Staff',
+    description: 'Keep staff contact cards, track attendance and clock-ins, manage work shifts, and approve leave in 1 tap.',
+    metric: 'Instant Approvals',
     href: '/hr',
     moduleId: 'hr',
-    accentColor: '#C24A6B',
-    badgeBg: '#3A1B24',
-    iconBg: 'from-[#C24A6B]/25 to-[#3A1B24]/20',
+    accentColor: '#FB7185',
+    badgeBg: 'rgba(251, 113, 133, 0.15)',
+    iconBg: 'from-rose-500/25 to-red-500/20',
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
@@ -110,66 +110,66 @@ export const servicesList: ServiceItem[] = [
     ),
   },
   {
+    id: 'marketing',
+    code: 'APP-06',
+    name: 'Marketing',
+    category: 'Marketing',
+    description: 'Send broadcast promo emails, alert shoppers with WhatsApp/SMS discounts, and turn visitors into buyers.',
+    metric: '3x Repeat Buyers',
+    href: '/marketing',
+    moduleId: 'marketing',
+    accentColor: '#FB923C',
+    badgeBg: 'rgba(251, 146, 60, 0.15)',
+    iconBg: 'from-orange-500/25 to-amber-500/20',
+    icon: (
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M10.34 15.84c-.688-.06-1.386-.09-2.09-.09H7.5a4.5 4.5 0 1 1 0-9h.75c.704 0 1.402-.03 2.09-.09m0 9.18c.253.962.584 1.892.985 2.783.247.55.06 1.21-.463 1.511l-.657.38c-.551.318-1.26.111-1.53-.448a20.024 20.024 0 0 1-1.34-3.77m3.005-.456a48.81 48.81 0 0 0 8.016-1.306A1.875 1.875 0 0 0 19.5 12.6V6.9a1.875 1.875 0 0 0-1.344-1.798 48.774 48.774 0 0 0-7.816-1.262m0 9.18V3.84" />
+      </svg>
+    ),
+  },
+  {
+    id: 'services',
+    code: 'APP-07',
+    name: 'Services',
+    category: 'Field Work',
+    description: 'Book field appointments, dispatch work tickets, manage client repair jobs, and track maintenance contracts.',
+    metric: '100% On-Schedule',
+    href: '/services',
+    moduleId: 'services',
+    accentColor: '#2DD4BF',
+    badgeBg: 'rgba(45, 212, 191, 0.15)',
+    iconBg: 'from-teal-500/25 to-emerald-500/20',
+    icon: (
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.07a4.5 4.5 0 0 0 4.486-6.32l-3.27 3.27-2.5-2.5 3.27-3.27a4.5 4.5 0 0 0-6.32 4.486c.118.58.094 1.193-.07 1.743" />
+      </svg>
+    ),
+  },
+  {
     id: 'projects',
-    code: 'MOD-06',
-    name: 'Projects & Sprints',
-    category: 'Tasks & Timesheets',
-    description: 'Sprint delivery boards, billable timesheets, velocity metrics, and budget vs actual burn.',
-    metric: '96% On-Time',
+    code: 'APP-08',
+    name: 'Projects',
+    category: 'Projects',
+    description: 'Manage client work on clear Kanban boards, set milestones, track deadlines, and deliver results on time.',
+    metric: '98% On-Time',
     href: '/projects',
     moduleId: 'projects',
-    accentColor: '#D1A536',
-    badgeBg: '#332A11',
-    iconBg: 'from-[#D1A536]/25 to-[#332A11]/20',
+    accentColor: '#FBBF24',
+    badgeBg: 'rgba(251, 191, 36, 0.15)',
+    iconBg: 'from-amber-500/25 to-yellow-500/20',
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M6 6.878V6a2.25 2.25 0 0 1 2.25-2.25h7.5A2.25 2.25 0 0 1 18 6v.878m-12 0c.235-.083.487-.128.75-.128h10.5c.263 0 .515.045.75.128m-12 0A2.25 2.25 0 0 0 4.5 9v.878m13.5-3A2.25 2.25 0 0 1 19.5 9v.878m0 0a2.246 2.246 0 0 0-.75-.128H5.25c-.263 0-.515.045-.75.128m15 0A2.25 2.25 0 0 1 21 12v6a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18v-6c0-.98.626-1.813 1.5-2.122" />
-      </svg>
-    ),
-  },
-  {
-    id: 'analytics',
-    code: 'MOD-07',
-    name: 'Executive BI',
-    category: 'Telemetry & GMV',
-    description: 'Real-time GMV aggregations, revenue velocity forecasting, and low-latency cluster telemetry.',
-    metric: 'P99 < 85ms Latency',
-    href: '/applications',
-    accentColor: '#FB7185',
-    badgeBg: 'rgba(251, 113, 133, 0.15)',
-    iconBg: 'from-[#FB7185]/25 to-[#E11D48]/10',
-    icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
-      </svg>
-    ),
-  },
-  {
-    id: 'security',
-    code: 'MOD-08',
-    name: 'Security & RBAC',
-    category: 'Governance & Atlas',
-    description: 'Strict row-level tenant isolation, tamper-proof audit trails, and granular RBAC policies.',
-    metric: 'SOC2 & TLS 1.3',
-    href: '/settings',
-    accentColor: '#A78BFA',
-    badgeBg: 'rgba(167, 139, 250, 0.15)',
-    iconBg: 'from-[#A78BFA]/25 to-[#7C3AED]/10',
-    icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" />
       </svg>
     ),
   },
 ];
 
-// Navigator dots: remove the last 3 denoting dots as the carousel viewport displays
-// multiple cards at once, meaning the last 3 indices can never be scrolled into first position.
-export const navigatorDots = servicesList.slice(0, Math.max(1, servicesList.length - 3));
+export const navigatorDots = servicesList;
 
 interface ServicesCarouselProps {
   activeModuleId?: string;
-  onSelectModule?: (moduleId: 'crm' | 'sales' | 'inventory' | 'accounting' | 'hr' | 'projects') => void;
+  onSelectModule?: (moduleId: string) => void;
 }
 
 export function ServicesCarousel({ activeModuleId, onSelectModule }: ServicesCarouselProps) {
@@ -197,11 +197,11 @@ export function ServicesCarousel({ activeModuleId, onSelectModule }: ServicesCar
 
     // When scrolled at or near the end, highlight the final navigator dot
     if (scrollLeft + clientWidth >= scrollWidth - 25) {
-      setActiveSlideIndex(navigatorDots.length - 1);
+      setActiveSlideIndex(servicesList.length - 1);
     } else {
-      const cardWidth = 260 + 16; // width + gap
+      const cardWidth = (clientWidth > 640 ? 260 : 230) + (clientWidth > 640 ? 20 : 16);
       const index = Math.round(scrollLeft / cardWidth);
-      setActiveSlideIndex(Math.min(Math.max(0, index), navigatorDots.length - 1));
+      setActiveSlideIndex(Math.min(Math.max(0, index), servicesList.length - 1));
     }
   }, []);
 
@@ -253,9 +253,9 @@ export function ServicesCarousel({ activeModuleId, onSelectModule }: ServicesCar
   const scrollToSlide = (index: number) => {
     const el = scrollContainerRef.current;
     if (!el) return;
-    const cardWidth = 260 + 16;
+    const cardWidth = (el.clientWidth > 640 ? 260 : 230) + (el.clientWidth > 640 ? 20 : 16);
     const maxScroll = el.scrollWidth - el.clientWidth;
-    const target = index >= navigatorDots.length - 1
+    const target = index >= servicesList.length - 1
       ? maxScroll
       : Math.min(index * cardWidth, maxScroll);
 
@@ -278,7 +278,7 @@ export function ServicesCarousel({ activeModuleId, onSelectModule }: ServicesCar
         // Rewind smoothly to start
         el.scrollTo({ left: 0, behavior: 'smooth' });
       } else {
-        const step = 276; // one card + gap
+        const step = el.clientWidth > 640 ? 280 : 246; // one card + gap
         el.scrollBy({ left: step, behavior: 'smooth' });
       }
     }, 3200);
@@ -326,18 +326,18 @@ export function ServicesCarousel({ activeModuleId, onSelectModule }: ServicesCar
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/15 border border-accent/30 mb-3">
             <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
-            <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-brand-200">
-              Full Stack SaaS Suite • 8 Integrated Services
+            <span className="text-[11px] font-bold tracking-wider text-brand-200">
+              Everything in One Place • 8 Core Business Apps
             </span>
           </div>
           <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
-            Every Engine Your Business Runs On.{' '}
+            Every App Your Business Needs.{' '}
             <span className="font-serif italic font-normal text-transparent bg-clip-text bg-gradient-to-r from-brand-300 via-white to-brand-200">
-              Zero Add-Ons.
+              Nothing Extra to Buy.
             </span>
           </h2>
           <p className="mt-2 text-neutral-400 text-xs sm:text-sm max-w-2xl">
-            Swipe or slide through our mini square cards. Click any service to inspect its live pipeline, telemetry, or launch directly into the dashboard.
+            Swipe or click through the 8 apps below to see how Bahi helps you every day. Tap any card to explore!
           </p>
         </div>
 
@@ -395,25 +395,19 @@ export function ServicesCarousel({ activeModuleId, onSelectModule }: ServicesCar
         </div>
       </div>
 
-      {/* ─── Carousel Wrapper with Side Vignettes ─────────────────── */}
+      {/* ─── Carousel Wrapper (No blurry vignettes so front and last cards remain 100% crystal clear) ─── */}
       <div 
         className="relative group"
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
       >
-        {/* Left Vignette Fade */}
-        <div className="absolute left-0 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-r from-neutral-900 via-neutral-900/80 to-transparent z-20 pointer-events-none" />
-
-        {/* Right Vignette Fade */}
-        <div className="absolute right-0 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-l from-neutral-900 via-neutral-900/80 to-transparent z-20 pointer-events-none" />
-
         {/* ─── Mini Square Cards Carousel Track ─────────────────── */}
         <div
           ref={scrollContainerRef}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUpOrLeave}
-          className="flex gap-4 sm:gap-5 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory py-4 px-2 cursor-grab active:cursor-grabbing select-none"
+          className="flex gap-4 sm:gap-5 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory py-4 px-2 sm:px-3 cursor-grab active:cursor-grabbing select-none"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {servicesList.map((service) => {
@@ -487,9 +481,9 @@ export function ServicesCarousel({ activeModuleId, onSelectModule }: ServicesCar
                   {service.moduleId ? (
                     <span
                       className="text-[11px] font-semibold text-accent flex items-center gap-0.5 group-hover:translate-x-1 transition-transform"
-                      title="Inspect Module"
+                      title="See details"
                     >
-                      Inspect
+                      See details
                       <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
                       </svg>
@@ -500,7 +494,7 @@ export function ServicesCarousel({ activeModuleId, onSelectModule }: ServicesCar
                       onClick={(e) => e.stopPropagation()}
                       className="text-[11px] font-semibold text-accent flex items-center gap-0.5 hover:underline group-hover:translate-x-1 transition-transform"
                     >
-                      Launch
+                      Open
                       <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
                       </svg>
@@ -516,13 +510,14 @@ export function ServicesCarousel({ activeModuleId, onSelectModule }: ServicesCar
       {/* ─── Pagination Dots & Direct Module Jump ─────────────────── */}
       <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-neutral-400">
         <div className="flex items-center gap-2">
-          <span className="text-[11px] font-mono text-neutral-500">Services Navigator:</span>
+          <span className="text-[11px] font-medium text-neutral-400">Explore Apps:</span>
           <div className="flex items-center gap-1.5">
-            {navigatorDots.map((_, idx) => (
+            {servicesList.map((service, idx) => (
               <button
-                key={idx}
+                key={service.id}
                 onClick={() => scrollToSlide(idx)}
-                aria-label={`Jump to service slide ${idx + 1}`}
+                aria-label={`Jump to ${service.name}`}
+                title={service.name}
                 className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
                   activeSlideIndex === idx
                     ? 'w-6 bg-accent'
@@ -534,12 +529,12 @@ export function ServicesCarousel({ activeModuleId, onSelectModule }: ServicesCar
         </div>
 
         <div className="flex items-center gap-2 text-xs">
-          <span className="text-neutral-500">Want to test them live?</span>
+          <span className="text-neutral-400">Want to test them live?</span>
           <Link
             href="/applications"
             className="text-accent hover:text-brand-400 font-semibold flex items-center gap-1 transition-colors"
           >
-            Launch Applications Suite Sandbox
+            Try the demo app
             <span className="text-[10px]">→</span>
           </Link>
         </div>

@@ -1,0 +1,13 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Clean outline container -->
+  <rect x="28" y="28" width="200" height="200" rx="48" fill="#FFFFFF" fill-opacity="0.08" stroke="#FFFFFF" stroke-opacity="0.25" stroke-width="2" />
+  
+  <!-- Subtle Ledger Lines -->
+  <rect x="52" y="58" width="4" height="140" rx="2" fill="#FFFFFF" fill-opacity="0.6" />
+  <rect x="62" y="58" width="2" height="140" rx="1" fill="#FFFFFF" fill-opacity="0.3" />
+
+  <!-- Monogram "B" -->
+  <path d="M96 66H144C163.882 66 180 80.118 180 97.5C180 110.15 172.5 120.9 161.5 126C174.5 131.5 184 143.5 184 158.5C184 177.002 167.002 192 147 192H96C91.5817 192 88 188.418 88 184V74C88 69.5817 91.5817 66 96 66Z" fill="#FFFFFF" />
+  <path d="M116 88H142C151.389 88 159 94.7157 159 103C159 111.284 151.389 118 142 118H116V88Z" fill="#20211F" />
+  <path d="M116 138H144C154.493 138 163 145.611 163 155C163 164.389 154.493 172 144 172H116V138Z" fill="#20211F" />
+</svg>

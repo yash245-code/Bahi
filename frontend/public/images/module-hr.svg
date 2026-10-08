@@ -1,0 +1,21 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="hrGrad" x1="0" y1="0" x2="128" y2="128" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#DE5B7E" />
+      <stop offset="100%" stop-color="#9C2D4A" />
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="28" fill="url(#hrGrad)" />
+  <rect x="1" y="1" width="126" height="126" rx="27" stroke="#FFFFFF" stroke-opacity="0.2" stroke-width="2" />
+  
+  <!-- Team / People Glyph -->
+  <!-- Center Person -->
+  <circle cx="64" cy="48" r="12" fill="#FFFFFF" />
+  <path d="M44 86C44 75 53 70 64 70C75 70 84 75 84 86V88H44V86Z" fill="#FFFFFF" />
+  <!-- Side Member 1 -->
+  <circle cx="38" cy="54" r="8" fill="#FFFFFF" fill-opacity="0.6" />
+  <path d="M26 84C26 76 32 72 39 72C41.5 72 43.8 72.8 45.7 74.1C44.6 77.2 44 80.5 44 84H26Z" fill="#FFFFFF" fill-opacity="0.6" />
+  <!-- Side Member 2 -->
+  <circle cx="90" cy="54" r="8" fill="#FFFFFF" fill-opacity="0.6" />
+  <path d="M102 84C102 76 96 72 89 72C86.5 72 84.2 72.8 82.3 74.1C83.4 77.2 84 80.5 84 84H102Z" fill="#FFFFFF" fill-opacity="0.6" />
+</svg>

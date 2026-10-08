@@ -1,0 +1,18 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="projGrad" x1="0" y1="0" x2="128" y2="128" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#E5B942" />
+      <stop offset="100%" stop-color="#A87F18" />
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="28" fill="url(#projGrad)" />
+  <rect x="1" y="1" width="126" height="126" rx="27" stroke="#FFFFFF" stroke-opacity="0.2" stroke-width="2" />
+  
+  <!-- Gantt / Milestone Bars -->
+  <rect x="36" y="42" width="34" height="10" rx="5" fill="#FFFFFF" />
+  <rect x="52" y="58" width="40" height="10" rx="5" fill="#FFFFFF" fill-opacity="0.8" />
+  <rect x="42" y="74" width="50" height="10" rx="5" fill="#FFFFFF" fill-opacity="0.6" />
+  <!-- Connecting dependency line -->
+  <path d="M70 47V63" stroke="#FFFFFF" stroke-width="2" stroke-dasharray="2 2" />
+  <path d="M72 68V79" stroke="#FFFFFF" stroke-width="2" stroke-dasharray="2 2" />
+</svg>

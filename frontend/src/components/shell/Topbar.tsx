@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { getAllApplications } from '@bahi/applications';
 
 const appRouteTitles: Record<string, string> = {
-  '/applications': 'Applications Suite & Portal',
+  '/applications': 'User Overview',
   '/crm': 'Customer Relationship Management',
   '/sales': 'Sales Orders & Quotations',
   '/inventory': 'Inventory & Stock Control',

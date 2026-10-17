@@ -10,5 +10,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["manifest.ts", "api/**/*", "web/**/*"]
+  "include": ["manifest.ts", "api/**/*", "web/**/*"],
+  "exclude": ["**/*.spec.ts", "node_modules", "dist"]
 }

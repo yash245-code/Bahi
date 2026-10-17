@@ -16,14 +16,14 @@ export class OrdersService {
   async findOne(tenantId: string, id: string) {
     return this.prisma.salesOrder.findFirst({
       where: { id, tenantId },
-      include: { contact: true, lines: { include: { product: true } }, invoices: true },
+      include: { contact: true, lines: { include: { product: true } } },
     });
   }
 
   async updateStatus(tenantId: string, id: string, status: string) {
     return this.prisma.salesOrder.updateMany({
       where: { id, tenantId },
-      data: { status: status as any },
+      data: { status },
     });
   }
 }

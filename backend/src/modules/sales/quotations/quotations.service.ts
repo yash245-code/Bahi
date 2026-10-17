@@ -5,9 +5,9 @@ import { PrismaService } from '../../core/prisma/prisma.service';
 export class QuotationsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(tenantId: string) {
+  async findAll(tenantId: string, status?: string) {
     return this.prisma.quotation.findMany({
-      where: { tenantId },
+      where: { tenantId, ...(status ? { status } : {}) },
       include: { contact: true, lines: { include: { product: true } } },
       orderBy: { createdAt: 'desc' },
     });
@@ -21,47 +21,52 @@ export class QuotationsService {
   }
 
   async create(tenantId: string, dto: any) {
-    const count = await this.prisma.quotation.count({ where: { tenantId } });
-    const number = `QT-${String(count + 1).padStart(5, '0')}`;
+    const { lines, ...data } = dto;
     return this.prisma.quotation.create({
-      data: { tenantId, number, ...dto },
+      data: {
+        tenantId,
+        ...data,
+        lines: lines
+          ? {
+              create: lines.map((l: any) => ({
+                productId: l.productId,
+                quantity: l.quantity,
+                unitPrice: l.unitPrice,
+                total: l.quantity * l.unitPrice,
+              })),
+            }
+          : undefined,
+      },
+      include: { lines: true },
     });
   }
 
   async confirm(tenantId: string, id: string) {
-    // Convert quotation → sales order in a transaction
     const quotation = await this.prisma.quotation.findFirst({
       where: { id, tenantId },
       include: { lines: true },
     });
     if (!quotation) throw new Error('Quotation not found');
 
-    const orderCount = await this.prisma.salesOrder.count({ where: { tenantId } });
-    const orderNumber = `SO-${String(orderCount + 1).padStart(5, '0')}`;
-
     const [_, order] = await this.prisma.$transaction([
       this.prisma.quotation.update({
         where: { id },
-        data: { status: 'CONFIRMED', confirmedAt: new Date() },
+        data: { status: 'CONFIRMED' },
       }),
       this.prisma.salesOrder.create({
         data: {
           tenantId,
           contactId: quotation.contactId,
           quotationId: id,
-          number: orderNumber,
           subtotal: quotation.subtotal,
-          taxAmount: quotation.taxAmount,
+          tax: quotation.tax,
           total: quotation.total,
-          currency: quotation.currency,
           lines: {
             create: quotation.lines.map((line) => ({
               productId: line.productId,
-              description: line.description,
               quantity: line.quantity,
               unitPrice: line.unitPrice,
-              taxRate: line.taxRate,
-              subtotal: line.subtotal,
+              total: line.total,
             })),
           },
         },

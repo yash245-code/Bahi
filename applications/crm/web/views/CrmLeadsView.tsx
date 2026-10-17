@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { CrmNav } from '../components/CrmNav';
 import { NewLeadModal } from '../components/NewLeadModal';
 import { NewDealModal } from '../components/NewDealModal';
+import { crmApi } from '../lib/api-client';
 
 interface LeadItem {
   id: string;
@@ -14,9 +15,11 @@ interface LeadItem {
   phone: string;
   source: string;
   score: number;
-  status: 'New' | 'Contacted' | 'Qualified' | 'Converted' | 'Lost';
+  rating: 'HOT' | 'WARM' | 'COLD';
+  status: 'New' | 'Contacted' | 'Working' | 'Qualified' | 'Converted' | 'Unqualified';
   createdAt: string;
   assignedTo: string;
+  disqualifiedReason?: string;
 }
 
 const initialLeads: LeadItem[] = [
@@ -29,6 +32,7 @@ const initialLeads: LeadItem[] = [
     phone: '+1 (555) 234-8901',
     source: 'Inbound Website',
     score: 92,
+    rating: 'HOT',
     status: 'Qualified',
     createdAt: 'Sep 27, 2026',
     assignedTo: 'Alex Morgan',
@@ -42,7 +46,8 @@ const initialLeads: LeadItem[] = [
     phone: '+1 (555) 890-1234',
     source: 'Partner Referral',
     score: 85,
-    status: 'Contacted',
+    rating: 'HOT',
+    status: 'Working',
     createdAt: 'Sep 26, 2026',
     assignedTo: 'Priya Sharma',
   },
@@ -55,47 +60,23 @@ const initialLeads: LeadItem[] = [
     phone: '+49 30 901820',
     source: 'Product Trial',
     score: 78,
+    rating: 'WARM',
     status: 'New',
     createdAt: 'Sep 25, 2026',
     assignedTo: 'Daniel Kim',
   },
   {
     id: 'LD-804',
-    name: 'David Okafor',
-    title: 'Chief Financial Officer',
-    company: 'Apex Health Ltd',
-    email: 'david.o@apexhealth.co',
-    phone: '+44 20 7946 0192',
-    source: 'Direct Outreach',
-    score: 88,
-    status: 'Qualified',
-    createdAt: 'Sep 24, 2026',
-    assignedTo: 'Alex Morgan',
-  },
-  {
-    id: 'LD-805',
-    name: 'Lisa Tanaka',
-    title: 'Procurement Specialist',
-    company: 'BrightWave Retailers',
-    email: 'l.tanaka@brightwave.jp',
-    phone: '+81 3 5555 0143',
-    source: 'Inbound Website',
-    score: 64,
-    status: 'Contacted',
-    createdAt: 'Sep 23, 2026',
-    assignedTo: 'Priya Sharma',
-  },
-  {
-    id: 'LD-806',
-    name: 'Julian Sterling',
+    name: 'Robert Hastings',
     title: 'Managing Director',
-    company: 'Sterling Freight Global',
-    email: 'julian@sterlingfreight.com',
-    phone: '+1 (555) 789-0123',
-    source: 'Webinar/Event',
-    score: 95,
-    status: 'Converted',
-    createdAt: 'Sep 20, 2026',
+    company: 'Hastings Manufacturing',
+    email: 'r.hastings@hastingsmfg.com',
+    phone: '+1 (555) 345-6789',
+    source: 'Outbound Prospecting',
+    score: 64,
+    rating: 'WARM',
+    status: 'Contacted',
+    createdAt: 'Sep 24, 2026',
     assignedTo: 'Alex Morgan',
   },
 ];
@@ -104,16 +85,100 @@ export function CrmLeadsView() {
   const [leads, setLeads] = useState<LeadItem[]>(initialLeads);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [leadModalOpen, setLeadModalOpen] = useState(false);
-  const [dealModalOpen, setDealModalOpen] = useState(false);
+  const [selectedLeads, setSelectedLeads] = useState<string[]>([]);
+  const [newLeadModalOpen, setNewLeadModalOpen] = useState(false);
+  const [newDealModalOpen, setNewDealModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [disqualifyId, setDisqualifyId] = useState<string | null>(null);
+  const [disqualifyReason, setDisqualifyReason] = useState('No budget / authority');
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage((c) => (c === msg ? null : c)), 3500);
   };
 
-  const handleCreateLead = (lead: {
+  const loadLeads = useCallback(async () => {
+    try {
+      const data = await crmApi.leads.list();
+      if (data && data.length > 0) {
+        setLeads(
+          data.map((l: any) => ({
+            id: l.id,
+            name: l.contact ? `${l.contact.firstName} ${l.contact.lastName}` : l.title,
+            title: l.contact?.jobTitle || l.title,
+            company: l.companyName || l.contact?.company || 'Organization',
+            email: l.contact?.emails?.[0]?.email || 'N/A',
+            phone: l.contact?.phones?.[0]?.phone || 'N/A',
+            source: l.source || 'Inbound Website',
+            score: l.score || 50,
+            rating: l.rating || 'WARM',
+            status: l.status === 'NEW' ? 'New' : l.status === 'WORKING' ? 'Working' : l.status === 'QUALIFIED' ? 'Qualified' : l.status === 'CONVERTED' ? 'Converted' : l.status === 'UNQUALIFIED' ? 'Unqualified' : 'Contacted',
+            createdAt: new Date(l.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+            assignedTo: l.owner ? `${l.owner.firstName} ${l.owner.lastName || ''}`.trim() : 'Unassigned',
+            disqualifiedReason: l.disqualifiedReason,
+          }))
+        );
+      }
+    } catch {
+      // Keep initialLeads fallback
+    }
+  }, []);
+
+  useEffect(() => {
+    loadLeads();
+  }, [loadLeads]);
+
+  const handleConvert = async (leadId: string) => {
+    const lead = leads.find((l) => l.id === leadId);
+    if (!lead) return;
+
+    setLeads((prev) =>
+      prev.map((l) => (l.id === leadId ? { ...l, status: 'Converted' } : l))
+    );
+    showToast(`Lead "${lead.name}" converted to Deal and Account!`);
+
+    try {
+      await crmApi.leads.convert(leadId, { dealTitle: `${lead.company} — New Opportunity` });
+      loadLeads();
+    } catch {
+      // Local state was already updated
+    }
+  };
+
+  const handleDisqualify = async () => {
+    if (!disqualifyId) return;
+    setLeads((prev) =>
+      prev.map((l) =>
+        l.id === disqualifyId ? { ...l, status: 'Unqualified', disqualifiedReason: disqualifyReason } : l
+      )
+    );
+    showToast(`Lead disqualified: ${disqualifyReason}`);
+
+    try {
+      await crmApi.leads.disqualify(disqualifyId, disqualifyReason);
+      loadLeads();
+    } catch {
+      // Keep optimistic
+    } finally {
+      setDisqualifyId(null);
+    }
+  };
+
+  const handleRecycle = async (leadId: string) => {
+    setLeads((prev) =>
+      prev.map((l) => (l.id === leadId ? { ...l, status: 'New', disqualifiedReason: undefined } : l))
+    );
+    showToast('Lead recycled back into active qualification queue');
+
+    try {
+      await crmApi.leads.recycle(leadId);
+      loadLeads();
+    } catch {
+      // Keep optimistic
+    }
+  };
+
+  const handleAddLead = async (data: {
     name: string;
     company: string;
     email: string;
@@ -122,131 +187,107 @@ export function CrmLeadsView() {
     score: number;
     notes?: string;
   }) => {
-    const newLead: LeadItem = {
-      id: `LD-${Math.floor(800 + Math.random() * 200)}`,
-      name: lead.name,
-      title: 'Prospect Contact',
-      company: lead.company,
-      email: lead.email,
-      phone: lead.phone || '+1 (555) 000-0000',
-      source: lead.source,
-      score: lead.score,
-      status: 'New',
-      createdAt: 'Just now',
-      assignedTo: 'Alex Morgan',
-    };
-
-    setLeads([newLead, ...leads]);
-    showToast(`Captured lead for ${lead.name} (${lead.company})`);
+    try {
+      await crmApi.leads.create({
+        title: `${data.name} — ${data.company}`,
+        firstName: data.name.split(' ')[0],
+        lastName: data.name.split(' ').slice(1).join(' '),
+        companyName: data.company,
+        email: data.email,
+        phone: data.phone,
+        source: data.source,
+        score: data.score,
+        interestNotes: data.notes,
+      });
+      showToast(`Lead "${data.name}" added to intake queue`);
+      loadLeads();
+    } catch {
+      const newLead: LeadItem = {
+        id: `LD-${Date.now().toString().slice(-3)}`,
+        name: data.name,
+        title: 'Prospect',
+        company: data.company,
+        email: data.email,
+        phone: data.phone,
+        source: data.source,
+        score: data.score,
+        rating: data.score >= 80 ? 'HOT' : 'WARM',
+        status: 'New',
+        createdAt: 'Today',
+        assignedTo: 'You',
+      };
+      setLeads((prev) => [newLead, ...prev]);
+      showToast(`Lead "${data.name}" added`);
+    }
   };
 
-  const handleConvertLead = (leadId: string) => {
-    setLeads((prev) =>
-      prev.map((ld) => {
-        if (ld.id === leadId) {
-          showToast(`Converted lead ${ld.name} into an active Deal & Customer Account!`);
-          return { ...ld, status: 'Converted' };
-        }
-        return ld;
-      })
+  const toggleSelectLead = (id: string) => {
+    setSelectedLeads((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
   };
 
+  const toggleSelectAll = () => {
+    if (selectedLeads.length === filteredLeads.length) {
+      setSelectedLeads([]);
+    } else {
+      setSelectedLeads(filteredLeads.map((l) => l.id));
+    }
+  };
+
   const filteredLeads = leads.filter((lead) => {
-    const matchesQuery =
+    const matchesSearch =
       lead.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       lead.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      lead.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      lead.source.toLowerCase().includes(searchQuery.toLowerCase());
+      lead.email.toLowerCase().includes(searchQuery.toLowerCase());
 
     const matchesStatus =
       statusFilter === 'all' || lead.status.toLowerCase() === statusFilter.toLowerCase();
 
-    return matchesQuery && matchesStatus;
+    return matchesSearch && matchesStatus;
   });
 
-  const qualifiedCount = leads.filter((l) => l.status === 'Qualified').length;
-  const hotLeadsCount = leads.filter((l) => l.score >= 80).length;
-  const convertedCount = leads.filter((l) => l.status === 'Converted').length;
-
   return (
-    <div className="animate-fade-in space-y-6">
-      {/* ── Persistent CRM Navigation Header ─────────── */}
+    <div className="space-y-6">
       <CrmNav
-        onNewDeal={() => setDealModalOpen(true)}
-        onNewLead={() => setLeadModalOpen(true)}
+        onNewDeal={() => setNewDealModalOpen(true)}
+        onNewLead={() => setNewLeadModalOpen(true)}
+        totalPipelineValue={`$272,000`}
+        activeDealsCount={11}
       />
 
-      {/* ── Toast Alert ──────────────────────────────── */}
-      {toastMessage && (
-        <div className="p-3 bg-neutral-900 text-white rounded-xl flex items-center justify-between text-xs font-semibold shadow-lg border border-neutral-800 animate-fade-in">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-status-success inline-block" />
-            <span>{toastMessage}</span>
-          </div>
-          <button
-            onClick={() => setToastMessage(null)}
-            className="text-neutral-400 hover:text-white text-xs px-2"
-          >
-            Dismiss
-          </button>
-        </div>
-      )}
-
-      {/* ── Metric Cards ─────────────────────────────── */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="card p-4">
-          <span className="text-ink-muted text-xs font-semibold block">Total Inbound Leads</span>
-          <span className="text-2xl font-black text-ink mt-1 font-mono">{leads.length}</span>
-          <span className="text-[11px] text-[#1F7A4D] font-medium block mt-1">+14% this month</span>
-        </div>
-
-        <div className="card p-4">
-          <span className="text-ink-muted text-xs font-semibold block">High-Score Hot Leads</span>
-          <span className="text-2xl font-black text-accent mt-1 font-mono">{hotLeadsCount}</span>
-          <span className="text-[11px] text-ink-muted block mt-1">Score &gt;= 80 points</span>
-        </div>
-
-        <div className="card p-4">
-          <span className="text-ink-muted text-xs font-semibold block">Qualified Pipeline</span>
-          <span className="text-2xl font-black text-[#1F7A4D] mt-1 font-mono">{qualifiedCount}</span>
-          <span className="text-[11px] text-ink-muted block mt-1">Ready for proposal</span>
-        </div>
-
-        <div className="card p-4">
-          <span className="text-ink-muted text-xs font-semibold block">Converted Deals</span>
-          <span className="text-2xl font-black text-purple-700 mt-1 font-mono">{convertedCount}</span>
-          <span className="text-[11px] text-purple-600 block mt-1">Converted to orders</span>
-        </div>
-      </div>
-
-      {/* ── Search & Filter Bar ──────────────────────── */}
-      <div className="card p-3 flex flex-wrap items-center justify-between gap-3 bg-white shadow-xs">
-        <div className="flex items-center gap-3 flex-1 min-w-[260px] max-w-md">
+      {/* ─── Search, Filters & Bulk Actions Bar ── */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-2 flex-1 max-w-md">
           <div className="relative w-full">
-            <svg className="w-4 h-4 text-ink-muted absolute left-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+            <svg
+              className="w-4 h-4 text-ink-muted absolute left-3 top-1/2 -translate-y-1/2"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+            >
               <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
             </svg>
             <input
               type="text"
-              placeholder="Search leads by name, company, email..."
+              placeholder="Search leads by name, company, or email..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-1.5 text-xs bg-[#FAF9F5] border border-border rounded-lg text-ink placeholder:text-ink-muted outline-none focus:border-accent focus:bg-white transition-all"
+              className="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl border border-border bg-white text-ink placeholder:text-ink-muted/60 focus:outline-none focus:ring-1 focus:ring-accent"
             />
           </div>
         </div>
 
-        <div className="flex items-center gap-1.5 text-xs flex-wrap">
-          <span className="text-ink-muted text-[11px] font-medium mr-1">Status:</span>
-          {['all', 'New', 'Contacted', 'Qualified', 'Converted'].map((st) => (
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
+          {['all', 'new', 'working', 'qualified', 'converted', 'unqualified'].map((st) => (
             <button
               key={st}
               onClick={() => setStatusFilter(st)}
-              className={`px-3 py-1 rounded-md font-semibold transition-all cursor-pointer ${
-                statusFilter.toLowerCase() === st.toLowerCase()
-                  ? 'bg-accent text-white shadow-xs'
-                  : 'bg-[#FAF9F5] text-ink-muted hover:text-ink border border-border'
+              className={`px-3 py-1.5 text-xs font-semibold rounded-lg border capitalize transition-colors cursor-pointer ${
+                statusFilter === st
+                  ? 'bg-[#20211F] text-white border-[#20211F]'
+                  : 'bg-white text-ink-muted border-border hover:bg-neutral-100'
               }`}
             >
               {st}
@@ -255,124 +296,213 @@ export function CrmLeadsView() {
         </div>
       </div>
 
-      {/* ── Leads Data Table ─────────────────────────── */}
-      <div className="card overflow-hidden shadow-xs">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-border bg-[#FAF9F5]">
-              <th className="text-left px-5 py-3.5 font-bold text-ink-muted text-xs uppercase tracking-wider">
-                Lead Contact
-              </th>
-              <th className="text-left px-5 py-3.5 font-bold text-ink-muted text-xs uppercase tracking-wider">
-                Company &amp; Source
-              </th>
-              <th className="text-center px-5 py-3.5 font-bold text-ink-muted text-xs uppercase tracking-wider">
-                Qualification Score
-              </th>
-              <th className="text-center px-5 py-3.5 font-bold text-ink-muted text-xs uppercase tracking-wider">
-                Status
-              </th>
-              <th className="text-left px-5 py-3.5 font-bold text-ink-muted text-xs uppercase tracking-wider">
-                Owner
-              </th>
-              <th className="text-right px-5 py-3.5 font-bold text-ink-muted text-xs uppercase tracking-wider">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border">
-            {filteredLeads.map((lead) => (
-              <tr key={lead.id} className="hover:bg-[#FAF9F5] transition-colors">
-                {/* Contact Name & Title */}
-                <td className="px-5 py-4">
-                  <div className="font-bold text-ink text-sm">{lead.name}</div>
-                  <div className="text-xs text-ink-muted">{lead.title}</div>
-                  <div className="text-[11px] text-ink-muted font-mono mt-0.5">{lead.email}</div>
-                </td>
+      {/* ── Bulk Actions Floating Ribbon ── */}
+      {selectedLeads.length > 0 && (
+        <div className="p-3 bg-[#20211F] text-white rounded-xl flex items-center justify-between gap-4 text-xs animate-fade-in shadow-xl">
+          <div className="flex items-center gap-2 font-bold">
+            <span className="w-2 h-2 rounded-full bg-accent" />
+            <span>{selectedLeads.length} leads selected</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => {
+                showToast(`Reassigned ${selectedLeads.length} leads to Alex Morgan`);
+                setSelectedLeads([]);
+              }}
+              className="px-2.5 py-1 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold transition-colors cursor-pointer"
+            >
+              Assign Rep
+            </button>
+            <button
+              onClick={() => {
+                setLeads((prev) => prev.filter((l) => !selectedLeads.includes(l.id)));
+                showToast(`Deleted ${selectedLeads.length} leads`);
+                setSelectedLeads([]);
+              }}
+              className="px-2.5 py-1 rounded-lg bg-red-800 hover:bg-red-700 text-xs font-semibold transition-colors cursor-pointer"
+            >
+              Bulk Delete
+            </button>
+          </div>
+        </div>
+      )}
 
-                {/* Company & Source */}
-                <td className="px-5 py-4">
-                  <div className="font-semibold text-ink flex items-center gap-1.5">
-                    <span className="w-4 h-4 rounded bg-[#FAF4F2] text-accent flex items-center justify-center text-[10px] font-bold">
-                      {lead.company.charAt(0)}
-                    </span>
-                    {lead.company}
-                  </div>
-                  <span className="inline-block mt-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#FAF9F5] border border-border text-ink-muted">
-                    {lead.source}
-                  </span>
-                </td>
-
-                {/* Score Meter */}
-                <td className="px-5 py-4 text-center">
-                  <div className="inline-flex flex-col items-center">
-                    <span className={`text-xs font-mono font-bold ${
-                      lead.score >= 85 ? 'text-accent' : lead.score >= 70 ? 'text-[#1F7A4D]' : 'text-ink-muted'
-                    }`}>
-                      {lead.score} / 100
-                    </span>
-                    <div className="w-16 h-1.5 bg-[#FAF9F5] border border-border rounded-full mt-1 overflow-hidden">
-                      <div
-                        className={`h-full rounded-full ${
-                          lead.score >= 85 ? 'bg-accent' : lead.score >= 70 ? 'bg-[#1F7A4D]' : 'bg-neutral-400'
-                        }`}
-                        style={{ width: `${lead.score}%` }}
-                      />
-                    </div>
-                  </div>
-                </td>
-
-                {/* Status Badge */}
-                <td className="px-5 py-4 text-center">
-                  <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full border ${
-                    lead.status === 'Qualified'
-                      ? 'bg-emerald-100 text-emerald-800 border-emerald-200'
-                      : lead.status === 'Converted'
-                      ? 'bg-purple-100 text-purple-800 border-purple-200'
-                      : lead.status === 'Contacted'
-                      ? 'bg-blue-100 text-blue-800 border-blue-200'
-                      : 'bg-neutral-100 text-neutral-700 border-neutral-200'
-                  }`}>
-                    {lead.status}
-                  </span>
-                </td>
-
-                {/* Assigned Sales Rep */}
-                <td className="px-5 py-4 text-xs font-medium text-ink">
-                  {lead.assignedTo}
-                </td>
-
-                {/* Actions */}
-                <td className="px-5 py-4 text-right">
-                  {lead.status !== 'Converted' ? (
-                    <button
-                      type="button"
-                      onClick={() => handleConvertLead(lead.id)}
-                      className="text-xs font-bold text-accent hover:text-[#853526] bg-[#FAF4F2] hover:bg-[#F3E3DF] px-3 py-1.5 rounded-lg border border-[#EBD2CB] transition-all cursor-pointer"
-                    >
-                      Convert to Deal →
-                    </button>
-                  ) : (
-                    <span className="text-xs font-semibold text-purple-700">✓ In Deal Pipeline</span>
-                  )}
-                </td>
+      {/* ── Leads Data Table ── */}
+      <div className="bg-white rounded-2xl border border-border overflow-hidden shadow-xs">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr className="bg-[#FAF9F5] border-b border-border text-[11px] font-bold text-ink-muted uppercase tracking-wider">
+                <th className="p-3.5 w-10 text-center">
+                  <input
+                    type="checkbox"
+                    checked={selectedLeads.length === filteredLeads.length && filteredLeads.length > 0}
+                    onChange={toggleSelectAll}
+                    className="rounded border-border text-accent focus:ring-accent"
+                  />
+                </th>
+                <th className="p-3.5">Lead / Contact</th>
+                <th className="p-3.5">Company</th>
+                <th className="p-3.5">Source</th>
+                <th className="p-3.5">Score</th>
+                <th className="p-3.5">Status</th>
+                <th className="p-3.5">Assigned Rep</th>
+                <th className="p-3.5 text-right">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-border/60">
+              {filteredLeads.length === 0 ? (
+                <tr>
+                  <td colSpan={8} className="p-8 text-center text-ink-muted">
+                    No leads found matching your filter criteria.
+                  </td>
+                </tr>
+              ) : (
+                filteredLeads.map((lead) => (
+                  <tr key={lead.id} className="hover:bg-neutral-50/80 transition-colors">
+                    <td className="p-3.5 text-center">
+                      <input
+                        type="checkbox"
+                        checked={selectedLeads.includes(lead.id)}
+                        onChange={() => toggleSelectLead(lead.id)}
+                        className="rounded border-border text-accent focus:ring-accent"
+                      />
+                    </td>
+                    <td className="p-3.5">
+                      <div className="font-bold text-ink">{lead.name}</div>
+                      <div className="text-[11px] text-ink-muted">{lead.email}</div>
+                    </td>
+                    <td className="p-3.5 font-medium text-ink">
+                      {lead.company}
+                    </td>
+                    <td className="p-3.5 text-ink-muted">
+                      {lead.source}
+                    </td>
+                    <td className="p-3.5">
+                      <div className="flex items-center gap-1.5">
+                        <span className={`font-mono font-bold ${lead.score >= 80 ? 'text-red-700' : 'text-amber-700'}`}>
+                          {lead.score}
+                        </span>
+                        <div className="w-12 h-1.5 bg-neutral-100 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full ${lead.score >= 80 ? 'bg-red-600' : 'bg-amber-600'}`}
+                            style={{ width: `${lead.score}%` }}
+                          />
+                        </div>
+                      </div>
+                    </td>
+                    <td className="p-3.5">
+                      <span
+                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${
+                          lead.status === 'Converted'
+                            ? 'bg-[#1F7A4D]/15 text-[#1F7A4D] border border-[#1F7A4D]/30'
+                            : lead.status === 'Qualified'
+                            ? 'bg-blue-100 text-blue-800 border border-blue-200'
+                            : lead.status === 'Working'
+                            ? 'bg-amber-100 text-amber-800 border border-amber-200'
+                            : lead.status === 'Unqualified'
+                            ? 'bg-neutral-200 text-neutral-700 border border-neutral-300'
+                            : 'bg-neutral-100 text-neutral-800'
+                        }`}
+                      >
+                        {lead.status}
+                      </span>
+                    </td>
+                    <td className="p-3.5 text-ink-muted font-medium">
+                      {lead.assignedTo}
+                    </td>
+                    <td className="p-3.5 text-right">
+                      <div className="flex items-center justify-end gap-1.5">
+                        {lead.status !== 'Converted' && lead.status !== 'Unqualified' && (
+                          <button
+                            onClick={() => handleConvert(lead.id)}
+                            className="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-accent text-white hover:bg-[#853526] transition-colors cursor-pointer shadow-xs"
+                          >
+                            Convert to Deal
+                          </button>
+                        )}
+                        {lead.status !== 'Converted' && lead.status !== 'Unqualified' && (
+                          <button
+                            onClick={() => setDisqualifyId(lead.id)}
+                            className="px-2 py-1 text-[11px] font-medium rounded-lg text-neutral-600 hover:bg-neutral-100 transition-colors cursor-pointer"
+                          >
+                            Disqualify
+                          </button>
+                        )}
+                        {lead.status === 'Unqualified' && (
+                          <button
+                            onClick={() => handleRecycle(lead.id)}
+                            className="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-neutral-800 text-white hover:bg-neutral-900 transition-colors cursor-pointer"
+                          >
+                            Recycle
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      {/* ── Modals ───────────────────────────────────── */}
+      {/* ── Disqualify Modal ── */}
+      {disqualifyId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+          <div className="bg-white rounded-2xl border border-border shadow-2xl max-w-md w-full p-6 space-y-4">
+            <h3 className="text-base font-bold text-ink">Disqualify Inbound Lead</h3>
+            <p className="text-xs text-ink-muted">
+              Select the reason why this lead is not qualified for sales engagement:
+            </p>
+            <select
+              value={disqualifyReason}
+              onChange={(e) => setDisqualifyReason(e.target.value)}
+              className="w-full text-xs p-2.5 rounded-xl border border-border bg-white text-ink"
+            >
+              <option value="No budget / authority">No Budget / Authority</option>
+              <option value="Unresponsive after outreach">Unresponsive After 5 Outreach Attempts</option>
+              <option value="Competitor / Student">Competitor / Researcher / Student</option>
+              <option value="Feature not supported">Required Feature Not Supported</option>
+              <option value="Outside target geography">Outside Target Territory</option>
+            </select>
+            <div className="flex justify-end gap-2 pt-2">
+              <button
+                onClick={() => setDisqualifyId(null)}
+                className="px-3 py-1.5 text-xs rounded-lg border border-border text-ink-muted hover:bg-neutral-100"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDisqualify}
+                className="px-4 py-1.5 text-xs font-bold rounded-lg bg-red-700 text-white hover:bg-red-800"
+              >
+                Disqualify Lead
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modals */}
       <NewLeadModal
-        isOpen={leadModalOpen}
-        onClose={() => setLeadModalOpen(false)}
-        onSubmit={handleCreateLead}
+        isOpen={newLeadModalOpen}
+        onClose={() => setNewLeadModalOpen(false)}
+        onSubmit={handleAddLead}
       />
+
       <NewDealModal
-        isOpen={dealModalOpen}
-        onClose={() => setDealModalOpen(false)}
-        onSubmit={() => showToast('Deal created from modal')}
+        isOpen={newDealModalOpen}
+        onClose={() => setNewDealModalOpen(false)}
+        onSubmit={() => showToast('Deal created')}
       />
+
+      {toastMessage && (
+        <div className="fixed bottom-6 right-6 z-50 bg-[#20211F] text-white text-xs font-medium px-4 py-2.5 rounded-xl shadow-2xl flex items-center gap-2 border border-white/10 animate-fade-in">
+          <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+          {toastMessage}
+        </div>
+      )}
     </div>
   );
 }

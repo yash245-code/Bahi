@@ -1,50 +1,104 @@
-import { Controller, Get, Post, Patch, Param, Body, Query, UseGuards, Req } from '@nestjs/common';
+// ═══════════════════════════════════════════════════════════
+// OpportunitiesController — Deal Pipeline REST Endpoints
+// ═══════════════════════════════════════════════════════════
+
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Delete,
+  Param,
+  Body,
+  Query,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { RequireApplication } from '@bahi/types';
-import { OpportunitiesService } from './opportunities.service';
+import {
+  OpportunitiesService,
+  CreateDealDto,
+  UpdateDealDto,
+} from './opportunities.service';
 
-@ApiTags('crm')
+@ApiTags('crm-opportunities')
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
 @RequireApplication('crm')
-@Controller('crm')
+@Controller('crm/opportunities')
 export class OpportunitiesController {
   constructor(private readonly opportunitiesService: OpportunitiesService) {}
 
-  @Get('pipelines')
-  @ApiOperation({ summary: 'Get all pipeline stages with active opportunities' })
-  getPipelines(@Req() req: any) {
-    return this.opportunitiesService.getPipelineStages(req.user.tenantId);
+  @Get('board')
+  @ApiOperation({ summary: 'Get visual Kanban board for pipeline with rotting and weighted metrics' })
+  getBoard(@Req() req: any, @Query('pipelineId') pipelineId?: string) {
+    return this.opportunitiesService.getPipelineBoard(req.user.tenantId, pipelineId);
   }
 
-  @Get('opportunities')
-  @ApiOperation({ summary: 'List opportunities, optionally filtered by stage' })
-  findAll(@Req() req: any, @Query('stage') stage?: string) {
-    return this.opportunitiesService.findAll(req.user.tenantId, stage);
+  @Get()
+  @ApiOperation({ summary: 'List deals with optional filtering' })
+  findAll(
+    @Req() req: any,
+    @Query('pipelineId') pipelineId?: string,
+    @Query('stageId') stageId?: string,
+    @Query('ownerId') ownerId?: string,
+    @Query('forecastCategory') forecastCategory?: string,
+    @Query('search') search?: string,
+  ) {
+    return this.opportunitiesService.findAll(req.user.tenantId, {
+      pipelineId,
+      stageId,
+      ownerId,
+      forecastCategory,
+      search,
+    });
   }
 
-  @Get('opportunities/:id')
-  @ApiOperation({ summary: 'Get single opportunity by ID' })
+  @Get(':id')
+  @ApiOperation({ summary: 'Get deal details including line items, stage history, and contacts' })
   findOne(@Req() req: any, @Param('id') id: string) {
     return this.opportunitiesService.findOne(req.user.tenantId, id);
   }
 
-  @Post('opportunities')
+  @Post()
   @ApiOperation({ summary: 'Create a new opportunity / deal' })
-  create(@Req() req: any, @Body() body: any) {
-    return this.opportunitiesService.create(req.user.tenantId, body);
+  create(@Req() req: any, @Body() body: CreateDealDto) {
+    return this.opportunitiesService.create(req.user.tenantId, body, req.user.id);
   }
 
-  @Patch('opportunities/:id/stage')
-  @ApiOperation({ summary: 'Move an opportunity to a different pipeline stage' })
-  updateStage(@Req() req: any, @Param('id') id: string, @Body() body: { stageId: string }) {
-    return this.opportunitiesService.updateStage(req.user.tenantId, id, body.stageId);
+  @Patch(':id')
+  @ApiOperation({ summary: 'Update deal metadata' })
+  update(@Req() req: any, @Param('id') id: string, @Body() body: UpdateDealDto) {
+    return this.opportunitiesService.update(req.user.tenantId, id, body, req.user.id);
   }
 
-  @Patch('opportunities/:id')
-  @ApiOperation({ summary: 'Update opportunity attributes' })
-  update(@Req() req: any, @Param('id') id: string, @Body() body: any) {
-    return this.opportunitiesService.update(req.user.tenantId, id, body);
+  @Patch(':id/stage')
+  @ApiOperation({ summary: 'Move deal to a new stage (Kanban drag-and-drop)' })
+  updateStage(
+    @Req() req: any,
+    @Param('id') id: string,
+    @Body('stageId') stageId: string,
+  ) {
+    return this.opportunitiesService.updateStage(req.user.tenantId, id, stageId, req.user.id);
+  }
+
+  @Post(':id/won')
+  @ApiOperation({ summary: 'Mark deal won with reason' })
+  markWon(@Req() req: any, @Param('id') id: string, @Body('reason') reason?: string) {
+    return this.opportunitiesService.markWon(req.user.tenantId, id, reason, req.user.id);
+  }
+
+  @Post(':id/lost')
+  @ApiOperation({ summary: 'Mark deal lost with reason' })
+  markLost(@Req() req: any, @Param('id') id: string, @Body('reason') reason: string) {
+    return this.opportunitiesService.markLost(req.user.tenantId, id, reason, req.user.id);
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: 'Soft-delete deal' })
+  remove(@Req() req: any, @Param('id') id: string) {
+    return this.opportunitiesService.remove(req.user.tenantId, id, req.user.id);
   }
 }

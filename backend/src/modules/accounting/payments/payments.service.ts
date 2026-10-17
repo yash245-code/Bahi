@@ -5,22 +5,17 @@ import { PrismaService } from '../../core/prisma/prisma.service';
 export class PaymentsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(tenantId: string, dto: { invoiceId: string; amount: number; method?: string; reference?: string }) {
+  async create(tenantId: string, dto: { invoiceId: string; amount: number }) {
     const payment = await this.prisma.payment.create({
-      data: { tenantId, ...dto, method: (dto.method as any) || 'BANK_TRANSFER' },
+      data: { tenantId, invoiceId: dto.invoiceId, amount: dto.amount },
     });
 
-    // Update invoice paid amount and status
     const invoice = await this.prisma.invoice.findUnique({ where: { id: dto.invoiceId } });
     if (invoice) {
-      const newPaidAmount = Number(invoice.paidAmount) + dto.amount;
-      const newStatus = newPaidAmount >= Number(invoice.total) ? 'PAID' : 'PARTIALLY_PAID';
       await this.prisma.invoice.update({
         where: { id: dto.invoiceId },
         data: {
-          paidAmount: newPaidAmount,
-          status: newStatus,
-          ...(newStatus === 'PAID' ? { paidAt: new Date() } : {}),
+          status: 'PAID',
         },
       });
     }

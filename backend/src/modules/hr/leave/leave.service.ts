@@ -9,10 +9,10 @@ export class LeaveService {
     return this.prisma.leaveRequest.create({ data: { tenantId, ...dto } });
   }
 
-  async approve(tenantId: string, id: string, approvedBy: string) {
+  async approve(tenantId: string, id: string) {
     return this.prisma.leaveRequest.updateMany({
       where: { id, tenantId },
-      data: { status: 'APPROVED', approvedBy },
+      data: { status: 'APPROVED' },
     });
   }
 
@@ -20,7 +20,7 @@ export class LeaveService {
     return this.prisma.leaveRequest.findMany({
       where: { tenantId, ...(employeeId ? { employeeId } : {}) },
       include: { employee: { include: { contact: true } } },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { startDate: 'desc' },
     });
   }
 }

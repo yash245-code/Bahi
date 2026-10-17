@@ -7,15 +7,15 @@ export class ActivitiesService {
 
   async findForEntity(tenantId: string, relatedType: string, relatedId: string) {
     return this.prisma.activity.findMany({
-      where: { tenantId, relatedType, relatedId },
-      include: { user: { select: { firstName: true, lastName: true, email: true } } },
+      where: { tenantId, relatedType, relatedId, deletedAt: null },
+      include: { assignee: { select: { firstName: true, lastName: true, email: true } } },
       orderBy: { createdAt: 'desc' },
     });
   }
 
   async create(tenantId: string, userId: string, dto: any) {
     return this.prisma.activity.create({
-      data: { tenantId, userId, ...dto },
+      data: { tenantId, assigneeId: userId, ...dto },
     });
   }
 }

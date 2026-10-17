@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════
-// @bahi/database — PrismaClient singleton export
+// @bahi/database — PrismaClient singleton & Tenancy exports
 // ═══════════════════════════════════════════════════════════
 
 import { PrismaClient } from '@prisma/client';
@@ -13,7 +13,7 @@ export const prisma =
   new PrismaClient({
     log:
       process.env.NODE_ENV === 'development'
-        ? ['query', 'error', 'warn']
+        ? ['error', 'warn']
         : ['error'],
   });
 
@@ -22,4 +22,5 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 export * from '@prisma/client';
+export * from './tenancy';
 export default prisma;

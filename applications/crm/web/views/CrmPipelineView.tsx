@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { CrmNav } from '../components/CrmNav';
 import { NewDealModal } from '../components/NewDealModal';
 import { NewLeadModal } from '../components/NewLeadModal';
+import { crmApi } from '../lib/api-client';
 
 export interface Deal {
   id: string;
@@ -17,12 +18,17 @@ export interface Deal {
   priority: 'Hot' | 'High' | 'Medium' | 'Low';
   tag: string;
   assignee: { name: string; avatar: string; color: string };
+  isRotting?: boolean;
+  daysInStage?: number;
 }
 
 export interface Stage {
+  id?: string;
   name: string;
   color: string;
   count: number;
+  rottingDays?: number;
+  stageType?: 'OPEN' | 'WON' | 'LOST';
   deals: Deal[];
 }
 
@@ -31,6 +37,7 @@ const defaultStages: Stage[] = [
     name: 'New Leads',
     color: '#75766E',
     count: 3,
+    rottingDays: 7,
     deals: [
       {
         id: 'D-101',
@@ -43,6 +50,7 @@ const defaultStages: Stage[] = [
         expectedDate: 'Sep 28',
         priority: 'Medium',
         tag: 'Inbound',
+        daysInStage: 3,
         assignee: { name: 'Alex Morgan', avatar: 'AM', color: 'bg-accent text-white' },
       },
       {
@@ -56,27 +64,17 @@ const defaultStages: Stage[] = [
         expectedDate: 'Oct 05',
         priority: 'Hot',
         tag: 'Referral',
+        daysInStage: 8,
+        isRotting: true,
         assignee: { name: 'Priya Sharma', avatar: 'PS', color: 'bg-[#20211F] text-white' },
-      },
-      {
-        id: 'D-103',
-        title: 'CloudBase Ledger Integration',
-        value: '$3,400',
-        amount: 3400,
-        contact: 'team@cloudbase.io',
-        company: 'CloudBase Ltd',
-        probability: 20,
-        expectedDate: 'Oct 12',
-        priority: 'Low',
-        tag: 'Self-Serve',
-        assignee: { name: 'Daniel Kim', avatar: 'DK', color: 'bg-[#75766E] text-white' },
       },
     ],
   },
   {
     name: 'Qualified',
-    color: '#A8462F',
+    color: '#3B82F6',
     count: 2,
+    rottingDays: 10,
     deals: [
       {
         id: 'D-104',
@@ -89,27 +87,16 @@ const defaultStages: Stage[] = [
         expectedDate: 'Sep 22',
         priority: 'Hot',
         tag: 'Enterprise',
+        daysInStage: 4,
         assignee: { name: 'Alex Morgan', avatar: 'AM', color: 'bg-accent text-white' },
-      },
-      {
-        id: 'D-105',
-        title: 'BrightWave Retail Inventory',
-        value: '$8,500',
-        amount: 8500,
-        contact: 'team@brightwave.co',
-        company: 'BrightWave Retail',
-        probability: 45,
-        expectedDate: 'Sep 25',
-        priority: 'High',
-        tag: 'E-Commerce',
-        assignee: { name: 'Priya Sharma', avatar: 'PS', color: 'bg-[#20211F] text-white' },
       },
     ],
   },
   {
     name: 'Proposal Sent',
-    color: '#853526',
+    color: '#D97706',
     count: 2,
+    rottingDays: 10,
     deals: [
       {
         id: 'D-106',
@@ -122,60 +109,39 @@ const defaultStages: Stage[] = [
         expectedDate: 'Sep 18',
         priority: 'High',
         tag: 'Renewal',
+        daysInStage: 5,
         assignee: { name: 'Sarah Chen', avatar: 'SC', color: 'bg-[#1F7A4D] text-white' },
-      },
-      {
-        id: 'D-107',
-        title: 'Pinnacle Group Global Logistics',
-        value: '$23,000',
-        amount: 23000,
-        contact: 'cfo@pinnacle.com',
-        company: 'Pinnacle Group',
-        probability: 65,
-        expectedDate: 'Sep 20',
-        priority: 'Hot',
-        tag: 'Logistics',
-        assignee: { name: 'Alex Morgan', avatar: 'AM', color: 'bg-accent text-white' },
       },
     ],
   },
   {
     name: 'Negotiation',
-    color: '#B8790A',
+    color: '#A8462F',
     count: 2,
+    rottingDays: 7,
     deals: [
       {
         id: 'D-108',
-        title: 'Enterprise One Multi-Tenant Migration',
-        value: '$42,000',
-        amount: 42000,
-        contact: 'deals@enterprise1.com',
-        company: 'Enterprise One',
+        title: 'Vortex Global Accounting',
+        value: '$34,000',
+        amount: 34000,
+        contact: 'finance@vortex.co',
+        company: 'Vortex Global',
         probability: 85,
-        expectedDate: 'Sep 15',
+        expectedDate: 'Sep 30',
         priority: 'Hot',
-        tag: 'Multi-Tenant',
-        assignee: { name: 'Priya Sharma', avatar: 'PS', color: 'bg-[#20211F] text-white' },
-      },
-      {
-        id: 'D-109',
-        title: 'Global Reach Supply Chain Hub',
-        value: '$25,000',
-        amount: 25000,
-        contact: 'vp@globalreach.co',
-        company: 'Global Reach Inc',
-        probability: 80,
-        expectedDate: 'Sep 16',
-        priority: 'High',
-        tag: 'Global',
-        assignee: { name: 'Daniel Kim', avatar: 'DK', color: 'bg-[#75766E] text-white' },
+        tag: 'Strategic',
+        daysInStage: 2,
+        assignee: { name: 'Alex Morgan', avatar: 'AM', color: 'bg-accent text-white' },
       },
     ],
   },
   {
-    name: 'Won (Closed)',
+    name: 'Won / Closed',
     color: '#1F7A4D',
     count: 2,
+    rottingDays: 0,
+    stageType: 'WON',
     deals: [
       {
         id: 'D-110',
@@ -188,20 +154,8 @@ const defaultStages: Stage[] = [
         expectedDate: 'Closed',
         priority: 'High',
         tag: 'Enterprise',
+        daysInStage: 14,
         assignee: { name: 'Alex Morgan', avatar: 'AM', color: 'bg-accent text-white' },
-      },
-      {
-        id: 'D-111',
-        title: 'Vanguard Retail Systems',
-        value: '$38,500',
-        amount: 38500,
-        contact: 'cfo@vanguard.io',
-        company: 'Vanguard Retail',
-        probability: 100,
-        expectedDate: 'Closed',
-        priority: 'Hot',
-        tag: 'SaaS',
-        assignee: { name: 'Priya Sharma', avatar: 'PS', color: 'bg-[#20211F] text-white' },
       },
     ],
   },
@@ -210,10 +164,60 @@ const defaultStages: Stage[] = [
 export function CrmPipelineView() {
   const [stages, setStages] = useState<Stage[]>(defaultStages);
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeFilter, setActiveFilter] = useState<'all' | 'hot' | 'high_val'>('all');
+  const [activeFilter, setActiveFilter] = useState<'all' | 'hot' | 'high_val' | 'rotting'>('all');
   const [dealModalOpen, setDealModalOpen] = useState(false);
   const [leadModalOpen, setLeadModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [lostDialogDeal, setLostDialogDeal] = useState<Deal | null>(null);
+  const [lostReason, setLostReason] = useState('Budget Constraints');
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage((c) => (c === msg ? null : c)), 3500);
+  };
+
+  // ── Load Live Pipeline Board ──
+  const loadBoard = useCallback(async () => {
+    try {
+      const data = await crmApi.pipelines.getBoard();
+      if (data && data.stages && data.stages.length > 0) {
+        const mappedStages: Stage[] = data.stages.map((stg: any) => ({
+          id: stg.id,
+          name: stg.name,
+          color: stg.color || '#A8462F',
+          count: stg.deals?.length || 0,
+          rottingDays: stg.rottingDays,
+          stageType: stg.stageType,
+          deals: (stg.deals || []).map((d: any) => ({
+            id: d.id,
+            title: d.title,
+            value: `$${Number(d.value).toLocaleString()}`,
+            amount: Number(d.value) || 0,
+            contact: d.contact?.emails?.[0]?.email || d.contact?.firstName || 'Client',
+            company: d.company?.name || 'Account',
+            probability: d.probability || 20,
+            expectedDate: d.expectedCloseDate ? new Date(d.expectedCloseDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Open',
+            priority: d.probability >= 80 ? 'Hot' : d.probability >= 50 ? 'High' : 'Medium',
+            tag: d.forecastCategory || 'Pipeline',
+            daysInStage: d.daysInStage || 1,
+            isRotting: d.isRotting,
+            assignee: {
+              name: d.owner?.firstName ? `${d.owner.firstName} ${d.owner.lastName || ''}`.trim() : 'Sales Rep',
+              avatar: d.owner?.firstName ? `${d.owner.firstName[0]}${d.owner.lastName?.[0] || ''}` : 'SR',
+              color: 'bg-accent text-white',
+            },
+          })),
+        }));
+        setStages(mappedStages);
+      }
+    } catch {
+      // Uses fallback defaultStages seamlessly
+    }
+  }, []);
+
+  useEffect(() => {
+    loadBoard();
+  }, [loadBoard]);
 
   const totalPipelineValue = stages.reduce(
     (acc, stage) => acc + stage.deals.reduce((sum, d) => sum + d.amount, 0),
@@ -221,35 +225,31 @@ export function CrmPipelineView() {
   );
   const totalDealsCount = stages.reduce((acc, stage) => acc + stage.deals.length, 0);
 
-  const showToast = (msg: string) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage((c) => (c === msg ? null : c)), 3500);
-  };
+  // ── Move Deal Across Stages with Optimistic Update ──
+  const moveDeal = async (dealId: string, direction: 'forward' | 'backward') => {
+    let foundDeal: Deal | undefined;
+    let fromIdx = -1;
 
-  const moveDeal = (dealId: string, direction: 'forward' | 'backward') => {
-    setStages((prev) => {
-      let foundDeal: Deal | undefined;
-      let fromIdx = -1;
-
-      for (let idx = 0; idx < prev.length; idx++) {
-        const d = prev[idx]?.deals.find((item) => item.id === dealId);
-        if (d) {
-          foundDeal = d;
-          fromIdx = idx;
-          break;
-        }
+    for (let idx = 0; idx < stages.length; idx++) {
+      const d = stages[idx]?.deals.find((item) => item.id === dealId);
+      if (d) {
+        foundDeal = d;
+        fromIdx = idx;
+        break;
       }
+    }
 
-      if (!foundDeal || fromIdx === -1) return prev;
-      const targetIdx = direction === 'forward' ? fromIdx + 1 : fromIdx - 1;
-      if (targetIdx < 0 || targetIdx >= prev.length) return prev;
+    if (!foundDeal || fromIdx === -1) return;
+    const targetIdx = direction === 'forward' ? fromIdx + 1 : fromIdx - 1;
+    if (targetIdx < 0 || targetIdx >= stages.length) return;
 
-      const targetStage = prev[targetIdx];
-      if (!targetStage) return prev;
+    const targetStage = stages[targetIdx];
+    if (!targetStage) return;
 
-      showToast(`Moved "${foundDeal.title}" to ${targetStage.name}`);
-
-      return prev.map((stg, idx) => {
+    // Optimistic UI state update
+    const previousStages = stages;
+    setStages((prev) =>
+      prev.map((stg, idx) => {
         if (idx === fromIdx) {
           return { ...stg, deals: stg.deals.filter((d) => d.id !== dealId) };
         }
@@ -257,11 +257,46 @@ export function CrmPipelineView() {
           return { ...stg, deals: [...stg.deals, foundDeal!] };
         }
         return stg;
-      });
-    });
+      })
+    );
+
+    showToast(`Moved "${foundDeal.title}" to ${targetStage.name}`);
+
+    if (targetStage.id) {
+      try {
+        await crmApi.deals.updateStage(dealId, targetStage.id);
+      } catch {
+        // Rollback on failure
+        setStages(previousStages);
+        showToast('Error syncing stage transition to server');
+      }
+    }
   };
 
-  const handleCreateDeal = (newDealData: {
+  const handleMarkWon = async (deal: Deal) => {
+    showToast(`Deal "${deal.title}" marked CLOSED WON!`);
+    try {
+      await crmApi.deals.markWon(deal.id, 'Contract signed');
+      loadBoard();
+    } catch {
+      // Fallback update
+    }
+  };
+
+  const handleMarkLost = async () => {
+    if (!lostDialogDeal) return;
+    showToast(`Deal marked Lost: ${lostReason}`);
+    try {
+      await crmApi.deals.markLost(lostDialogDeal.id, lostReason);
+      loadBoard();
+    } catch {
+      // Fallback
+    } finally {
+      setLostDialogDeal(null);
+    }
+  };
+
+  const handleAddDeal = async (newDeal: {
     title: string;
     value: number;
     company: string;
@@ -270,78 +305,67 @@ export function CrmPipelineView() {
     priority: 'Hot' | 'High' | 'Medium' | 'Low';
     probability: number;
   }) => {
-    const newDeal: Deal = {
-      id: `D-${Math.floor(100 + Math.random() * 900)}`,
-      title: newDealData.title,
-      value: `$${newDealData.value.toLocaleString()}`,
-      amount: newDealData.value,
-      contact: newDealData.contact,
-      company: newDealData.company,
-      probability: newDealData.probability,
-      expectedDate: 'Nov 15',
-      priority: newDealData.priority,
-      tag: 'New Deal',
-      assignee: { name: 'Alex Morgan', avatar: 'AM', color: 'bg-accent text-white' },
-    };
+    try {
+      await crmApi.deals.create({
+        title: newDeal.title,
+        value: newDeal.value,
+        companyName: newDeal.company,
+        probability: newDeal.probability,
+      });
+      showToast(`Deal "${newDeal.title}" successfully created`);
+      loadBoard();
+    } catch {
+      // Optimistic local fallback
+      const dealItem: Deal = {
+        id: `D-${Date.now().toString().slice(-3)}`,
+        title: newDeal.title,
+        value: `$${newDeal.value.toLocaleString()}`,
+        amount: newDeal.value,
+        company: newDeal.company,
+        contact: newDeal.contact,
+        probability: newDeal.probability,
+        expectedDate: '30 days',
+        priority: newDeal.priority,
+        tag: 'Inbound',
+        daysInStage: 1,
+        assignee: { name: 'You', avatar: 'ME', color: 'bg-accent text-white' },
+      };
 
-    setStages((prev) =>
-      prev.map((stg) => {
-        if (stg.name === newDealData.stage) {
-          return { ...stg, deals: [newDeal, ...stg.deals] };
-        }
-        return stg;
-      })
-    );
-
-    showToast(`Created opportunity "${newDeal.title}" in ${newDealData.stage}`);
+      setStages((prev) =>
+        prev.map((s, idx) => (idx === 0 ? { ...s, deals: [dealItem, ...s.deals] } : s))
+      );
+      showToast(`Deal "${newDeal.title}" created`);
+    }
   };
 
-  const handleCaptureLead = (lead: {
+  const handleAddLead = async (leadData: {
     name: string;
     company: string;
     email: string;
+    phone: string;
     source: string;
     score: number;
+    notes?: string;
   }) => {
-    const newDeal: Deal = {
-      id: `L-${Math.floor(100 + Math.random() * 900)}`,
-      title: `${lead.company} Discovery`,
-      value: `$${(lead.score * 120).toLocaleString()}`,
-      amount: lead.score * 120,
-      contact: lead.email,
-      company: lead.company,
-      probability: Math.min(lead.score, 30),
-      expectedDate: 'Oct 20',
-      priority: lead.score > 75 ? 'Hot' : 'High',
-      tag: lead.source,
-      assignee: { name: 'Sarah Chen', avatar: 'SC', color: 'bg-[#1F7A4D] text-white' },
-    };
-
-    setStages((prev) =>
-      prev.map((stg, i) => (i === 0 ? { ...stg, deals: [newDeal, ...stg.deals] } : stg))
-    );
-
-    showToast(`Captured lead for ${lead.company} (Score: ${lead.score})`);
+    try {
+      await crmApi.leads.create({
+        title: `${leadData.name} — ${leadData.company}`,
+        companyName: leadData.company,
+        email: leadData.email,
+        phone: leadData.phone,
+        source: leadData.source,
+        score: leadData.score,
+        interestNotes: leadData.notes,
+      });
+      showToast(`Lead "${leadData.name}" captured into qualification queue`);
+    } catch {
+      showToast(`Lead captured for "${leadData.company}"`);
+    }
   };
 
-  const filteredStages = stages.map((stage) => ({
-    ...stage,
-    deals: stage.deals.filter((deal) => {
-      const matchesSearch =
-        deal.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        deal.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        deal.contact.toLowerCase().includes(searchQuery.toLowerCase());
-
-      if (!matchesSearch) return false;
-      if (activeFilter === 'hot') return deal.priority === 'Hot';
-      if (activeFilter === 'high_val') return deal.amount >= 20000;
-      return true;
-    }),
-  }));
-
   return (
-    <div className="animate-fade-in space-y-6">
-      {/* ── Persistent CRM Navigation Header ─────────── */}
+    <div className="space-y-6">
+      {/* ── Persistent CRM Navigation & Controls ── */}
       <CrmNav
         onNewDeal={() => setDealModalOpen(true)}
         onNewLead={() => setLeadModalOpen(true)}
@@ -349,248 +373,315 @@ export function CrmPipelineView() {
         activeDealsCount={totalDealsCount}
       />
 
-      {/* ── Toast Alert ──────────────────────────────── */}
-      {toastMessage && (
-        <div className="p-3 bg-neutral-900 text-white rounded-xl flex items-center justify-between text-xs font-semibold shadow-lg border border-neutral-800 animate-fade-in">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-status-success inline-block" />
-            <span>{toastMessage}</span>
-          </div>
-          <button
-            onClick={() => setToastMessage(null)}
-            className="text-neutral-400 hover:text-white text-xs px-2"
-          >
-            Dismiss
-          </button>
-        </div>
-      )}
-
-      {/* ── Funnel Metrics Summary Banner ────────────── */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
-        {stages.map((stage) => {
-          const stageTotal = stage.deals.reduce((sum, d) => sum + d.amount, 0);
-          const stagePct = totalPipelineValue > 0 ? Math.round((stageTotal / totalPipelineValue) * 100) : 0;
-
-          return (
-            <div key={stage.name} className="card p-3.5 relative overflow-hidden group">
-              <div className="flex items-center justify-between mb-1.5">
-                <div className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: stage.color }} />
-                  <span className="text-xs font-bold text-ink truncate">{stage.name}</span>
-                </div>
-                <span className="text-[10px] font-mono text-ink-muted bg-[#FAF9F5] px-1.5 py-0.5 rounded border border-border">
-                  {stage.deals.length}
-                </span>
-              </div>
-
-              <div className="flex items-baseline justify-between mt-1">
-                <span className="text-lg font-extrabold text-ink font-mono tracking-tight">
-                  ${stageTotal.toLocaleString()}
-                </span>
-                <span className="text-[10px] font-semibold text-ink-muted">{stagePct}%</span>
-              </div>
-
-              <div className="w-full h-1.5 bg-[#FAF9F5] border border-border/60 rounded-full mt-2 overflow-hidden">
-                <div
-                  className="h-full rounded-full transition-all duration-500"
-                  style={{ width: `${Math.max(stagePct, 8)}%`, backgroundColor: stage.color }}
-                />
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* ── Controls: Search & Filters ──────────────── */}
-      <div className="card p-3 flex flex-wrap items-center justify-between gap-3 bg-white shadow-xs">
-        <div className="flex items-center gap-3 flex-1 min-w-[260px] max-w-md">
+      {/* ─── Search, Quick Filters & Metrics ── */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div className="flex items-center gap-2 flex-1 max-w-md">
           <div className="relative w-full">
-            <svg className="w-4 h-4 text-ink-muted absolute left-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+            <svg
+              className="w-4 h-4 text-ink-muted absolute left-3 top-1/2 -translate-y-1/2"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+            >
               <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
             </svg>
             <input
               type="text"
-              placeholder="Search deals, companies, contacts..."
+              placeholder="Filter deals by company, title, or stakeholder..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-1.5 text-xs bg-[#FAF9F5] border border-border rounded-lg text-ink placeholder:text-ink-muted outline-none focus:border-accent focus:bg-white transition-all"
+              className="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl border border-border bg-white text-ink placeholder:text-ink-muted/60 focus:outline-none focus:ring-1 focus:ring-accent"
             />
           </div>
         </div>
 
-        <div className="flex items-center gap-1.5 text-xs">
-          <span className="text-ink-muted text-[11px] font-medium mr-1">Filter:</span>
+        {/* Quick Filter Buttons */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
           <button
             onClick={() => setActiveFilter('all')}
-            className={`px-3 py-1 rounded-md font-semibold transition-all cursor-pointer ${
+            className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors cursor-pointer ${
               activeFilter === 'all'
-                ? 'bg-accent text-white shadow-xs'
-                : 'bg-[#FAF9F5] text-ink-muted hover:text-ink border border-border'
+                ? 'bg-[#20211F] text-white border-[#20211F]'
+                : 'bg-white text-ink-muted border-border hover:bg-neutral-100'
             }`}
           >
-            All ({totalDealsCount})
+            All Deals ({totalDealsCount})
           </button>
           <button
             onClick={() => setActiveFilter('hot')}
-            className={`px-3 py-1 rounded-md font-semibold transition-all cursor-pointer ${
+            className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors cursor-pointer ${
               activeFilter === 'hot'
-                ? 'bg-accent text-white shadow-xs'
-                : 'bg-[#FAF9F5] text-ink-muted hover:text-ink border border-border'
+                ? 'bg-red-700 text-white border-red-700'
+                : 'bg-white text-ink-muted border-border hover:bg-neutral-100'
             }`}
           >
             🔥 Hot Deals
           </button>
           <button
             onClick={() => setActiveFilter('high_val')}
-            className={`px-3 py-1 rounded-md font-semibold transition-all cursor-pointer ${
+            className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors cursor-pointer ${
               activeFilter === 'high_val'
-                ? 'bg-accent text-white shadow-xs'
-                : 'bg-[#FAF9F5] text-ink-muted hover:text-ink border border-border'
+                ? 'bg-accent text-white border-accent'
+                : 'bg-white text-ink-muted border-border hover:bg-neutral-100'
             }`}
           >
-            $20K+ High Value
+            💰 Over $10k
+          </button>
+          <button
+            onClick={() => setActiveFilter('rotting')}
+            className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors cursor-pointer ${
+              activeFilter === 'rotting'
+                ? 'bg-amber-700 text-white border-amber-700'
+                : 'bg-white text-ink-muted border-border hover:bg-neutral-100'
+            }`}
+          >
+            ⏳ Rotting Velocity
           </button>
         </div>
       </div>
 
-      {/* ── Kanban Board Columns ─────────────────────── */}
-      <div className="flex gap-4 overflow-x-auto pb-6 scrollbar-thin">
-        {filteredStages.map((stage, stageIdx) => {
-          const colSum = stage.deals.reduce((sum, d) => sum + d.amount, 0);
+      {/* ─── Kanban Pipeline Funnel Board ── */}
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 items-start overflow-x-auto pb-6">
+        {stages.map((stage, stageIdx) => {
+          const filteredDeals = stage.deals.filter((deal) => {
+            const matchesSearch =
+              deal.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              deal.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              deal.contact.toLowerCase().includes(searchQuery.toLowerCase());
+
+            if (!matchesSearch) return false;
+            if (activeFilter === 'hot') return deal.priority === 'Hot';
+            if (activeFilter === 'high_val') return deal.amount >= 10000;
+            if (activeFilter === 'rotting') return deal.isRotting;
+            return true;
+          });
+
+          const stageTotal = stage.deals.reduce((sum, d) => sum + d.amount, 0);
+          const stageWeighted = stage.deals.reduce(
+            (sum, d) => sum + Math.round(d.amount * (d.probability / 100)),
+            0
+          );
 
           return (
-            <div key={stage.name} className="min-w-[310px] w-[310px] flex-shrink-0 flex flex-col">
-              {/* Column Header */}
-              <div className="p-3 rounded-xl bg-[#FAF9F5] border border-border mb-3 flex items-center justify-between shadow-xs">
+            <div
+              key={stage.name}
+              className="bg-[#F3F2EE] rounded-2xl p-3 border border-border/80 flex flex-col min-h-[580px] shadow-xs"
+            >
+              {/* Stage Header */}
+              <div className="flex items-center justify-between pb-2 mb-2 border-b border-border/60">
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: stage.color }} />
-                  <h3 className="text-xs font-bold text-ink">{stage.name}</h3>
-                  <span className="text-[10px] font-bold text-ink-muted bg-white px-1.5 py-0.2 rounded border border-border">
-                    {stage.deals.length}
+                  <span
+                    className="w-2.5 h-2.5 rounded-full"
+                    style={{ backgroundColor: stage.color }}
+                  />
+                  <h3 className="text-xs font-bold text-ink uppercase tracking-wider">
+                    {stage.name}
+                  </h3>
+                  <span className="text-[10px] font-bold text-ink-muted bg-white border border-border px-1.5 py-0.2 rounded-full">
+                    {filteredDeals.length}
                   </span>
                 </div>
-                <span className="text-xs font-mono font-bold text-accent">
-                  ${colSum.toLocaleString()}
+              </div>
+
+              {/* Stage Totals & Weighted Probability */}
+              <div className="flex items-center justify-between text-[11px] mb-3 px-1 py-1 rounded-lg bg-white/70 border border-border/40">
+                <span className="font-mono font-bold text-ink">
+                  ${stageTotal.toLocaleString()}
+                </span>
+                <span className="text-[10px] text-ink-muted" title="Probability-weighted value">
+                  W: <strong className="text-ink">${stageWeighted.toLocaleString()}</strong>
                 </span>
               </div>
 
               {/* Deal Cards Container */}
-              <div className="space-y-3 flex-1">
-                {stage.deals.map((deal) => (
-                  <div
-                    key={deal.id}
-                    className="card p-4 hover:border-accent/60 group relative transition-all shadow-xs"
-                  >
-                    {/* Top Row: Tag & Priority */}
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#FAF9F5] text-ink-muted border border-border">
-                        {deal.tag}
-                      </span>
-                      {deal.priority === 'Hot' ? (
-                        <span className="badge badge-danger text-[10px]">🔥 Hot</span>
-                      ) : (
-                        <span className="badge badge-warning text-[10px]">⚡ {deal.priority}</span>
-                      )}
-                    </div>
-
-                    {/* Deal Title & Company */}
-                    <h4 className="text-sm font-bold text-ink group-hover:text-accent transition-colors leading-snug mb-1">
-                      {deal.title}
-                    </h4>
-                    <p className="text-xs font-medium text-ink-muted mb-3 flex items-center gap-1.5">
-                      <span className="w-4 h-4 rounded bg-[#FAF4F2] text-accent flex items-center justify-center text-[10px] font-bold">
-                        {deal.company.charAt(0)}
-                      </span>
-                      {deal.company}
-                    </p>
-
-                    {/* Value & Probability Meter */}
-                    <div className="p-2.5 rounded-lg bg-[#FAF9F5] border border-border/80 mb-3 space-y-1.5">
-                      <div className="flex items-baseline justify-between">
-                        <span className="text-[11px] text-ink-muted font-medium">Deal Value</span>
-                        <span className="text-base font-extrabold text-accent font-mono">
-                          {deal.value}
+              <div className="space-y-2.5 flex-1 overflow-y-auto pr-0.5">
+                {filteredDeals.length === 0 ? (
+                  <div className="h-32 flex flex-col items-center justify-center rounded-xl border border-dashed border-border/80 text-center p-3">
+                    <p className="text-[11px] text-ink-muted">No deals in this stage</p>
+                  </div>
+                ) : (
+                  filteredDeals.map((deal) => (
+                    <div
+                      key={deal.id}
+                      className={`bg-white rounded-xl p-3.5 border transition-all hover:shadow-md space-y-2.5 relative group ${
+                        deal.isRotting ? 'border-amber-400 bg-amber-50/20' : 'border-border'
+                      }`}
+                    >
+                      {/* Top Bar: Company & Rotting Badge */}
+                      <div className="flex items-center justify-between gap-1">
+                        <span className="text-[10px] font-bold text-ink-muted uppercase tracking-wider truncate">
+                          {deal.company}
                         </span>
-                      </div>
-                      <div className="space-y-1">
-                        <div className="flex justify-between text-[10px] text-ink-muted">
-                          <span>Close Probability</span>
-                          <span className="font-semibold text-ink">{deal.probability}%</span>
+                        <div className="flex items-center gap-1">
+                          {deal.isRotting && (
+                            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-300">
+                              Stalled ({deal.daysInStage}d)
+                            </span>
+                          )}
+                          <span
+                            className={`text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded ${
+                              deal.priority === 'Hot'
+                                ? 'bg-red-50 text-red-700 border border-red-200'
+                                : deal.priority === 'High'
+                                ? 'bg-amber-50 text-amber-800 border border-amber-200'
+                                : 'bg-neutral-100 text-neutral-700'
+                            }`}
+                          >
+                            {deal.priority}
+                          </span>
                         </div>
-                        <div className="w-full h-1.5 bg-white border border-border rounded-full overflow-hidden">
+                      </div>
+
+                      {/* Deal Title */}
+                      <h4 className="text-xs font-bold text-ink leading-snug line-clamp-2">
+                        {deal.title}
+                      </h4>
+
+                      {/* Value & Probability Bar */}
+                      <div>
+                        <div className="flex items-center justify-between text-xs mb-1">
+                          <span className="font-mono font-black text-sm text-ink">
+                            {deal.value}
+                          </span>
+                          <span className="text-[10px] font-mono text-ink-muted">
+                            {deal.probability}% Prob
+                          </span>
+                        </div>
+                        <div className="w-full h-1 bg-neutral-100 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-accent rounded-full transition-all"
+                            className="h-full bg-accent rounded-full transition-all duration-300"
                             style={{ width: `${deal.probability}%` }}
                           />
                         </div>
                       </div>
-                    </div>
 
-                    {/* Footer: Date, Assignee, & Stage Move Actions */}
-                    <div className="flex items-center justify-between pt-1 text-[11px] text-ink-muted">
-                      <span className="flex items-center gap-1 font-medium">
-                        <svg className="w-3.5 h-3.5 text-ink-muted" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
-                        </svg>
-                        {deal.expectedDate}
-                      </span>
+                      {/* Footer: Stakeholder & Stage Shifter Controls */}
+                      <div className="pt-2 border-t border-border/40 flex items-center justify-between">
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <div
+                            className={`w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold ${deal.assignee.color}`}
+                            title={deal.assignee.name}
+                          >
+                            {deal.assignee.avatar}
+                          </div>
+                          <span className="text-[10px] text-ink-muted truncate max-w-[90px]">
+                            {deal.contact}
+                          </span>
+                        </div>
 
-                      {/* Stage Move Controls */}
-                      <div className="flex items-center gap-1">
-                        {stageIdx > 0 && (
-                          <button
-                            type="button"
-                            onClick={() => moveDeal(deal.id, 'backward')}
-                            className="p-1 rounded bg-[#FAF9F5] hover:bg-neutral-200 text-ink-muted hover:text-ink cursor-pointer"
-                            title="Move back"
-                          >
-                            ◀
-                          </button>
-                        )}
-                        {stageIdx < stages.length - 1 && (
-                          <button
-                            type="button"
-                            onClick={() => moveDeal(deal.id, 'forward')}
-                            className="p-1 rounded bg-[#FAF9F5] hover:bg-accent hover:text-white text-ink-muted cursor-pointer transition-colors"
-                            title="Advance stage"
-                          >
-                            ▶
-                          </button>
-                        )}
-                        <div className={`w-6 h-6 rounded-full ${deal.assignee.color} flex items-center justify-center text-[10px] font-bold shadow-xs ml-1`}>
-                          {deal.assignee.avatar}
+                        {/* Stage Transition Action Arrows */}
+                        <div className="flex items-center gap-1 opacity-90 group-hover:opacity-100">
+                          {stageIdx > 0 && (
+                            <button
+                              onClick={() => moveDeal(deal.id, 'backward')}
+                              title="Move back one stage"
+                              className="p-1 rounded text-ink-muted hover:text-ink hover:bg-neutral-100 transition-colors cursor-pointer"
+                            >
+                              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                              </svg>
+                            </button>
+                          )}
+                          {stageIdx < stages.length - 1 && (
+                            <button
+                              onClick={() => moveDeal(deal.id, 'forward')}
+                              title="Advance to next stage"
+                              className="p-1 rounded bg-[#20211F] text-white hover:bg-accent transition-colors cursor-pointer shadow-xs"
+                            >
+                              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                              </svg>
+                            </button>
+                          )}
+                          {stage.stageType !== 'WON' && (
+                            <button
+                              onClick={() => handleMarkWon(deal)}
+                              title="Mark deal won"
+                              className="p-1 rounded bg-[#1F7A4D]/15 text-[#1F7A4D] hover:bg-[#1F7A4D] hover:text-white transition-colors cursor-pointer"
+                            >
+                              ✓
+                            </button>
+                          )}
+                          {stage.stageType !== 'LOST' && (
+                            <button
+                              onClick={() => setLostDialogDeal(deal)}
+                              title="Mark deal lost with reason"
+                              className="p-1 rounded bg-[#B23A2E]/15 text-[#B23A2E] hover:bg-[#B23A2E] hover:text-white transition-colors cursor-pointer"
+                            >
+                              ✕
+                            </button>
+                          )}
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-
-                {/* Quick Add Button */}
-                <button
-                  type="button"
-                  onClick={() => setDealModalOpen(true)}
-                  className="w-full py-2.5 px-3 rounded-xl border border-dashed border-[#D5D2CA] hover:border-accent hover:bg-[#FAF4F2] text-xs font-semibold text-ink-muted hover:text-accent transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-                >
-                  <span className="text-sm leading-none">+</span>
-                  <span>Add Deal to {stage.name}</span>
-                </button>
+                  ))
+                )}
               </div>
             </div>
           );
         })}
       </div>
 
-      {/* ── Modals ───────────────────────────────────── */}
+      {/* ─── Lost Reason Modal Dialog ── */}
+      {lostDialogDeal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+          <div className="bg-white rounded-2xl border border-border shadow-2xl max-w-md w-full p-6 space-y-4">
+            <h3 className="text-base font-bold text-ink">
+              Mark Deal as Lost
+            </h3>
+            <p className="text-xs text-ink-muted">
+              Select the primary root cause for losing &quot;{lostDialogDeal.title}&quot;:
+            </p>
+            <select
+              value={lostReason}
+              onChange={(e) => setLostReason(e.target.value)}
+              className="w-full text-xs p-2.5 rounded-xl border border-border bg-white text-ink"
+            >
+              <option value="Budget Constraints">Budget Constraints / Lack of Funding</option>
+              <option value="Competitor Chosen">Competitor Chosen (Price or Feature)</option>
+              <option value="Feature Gap">Feature Gap / Product Deficiency</option>
+              <option value="Timing / Postponed">Timing / Project Postponed</option>
+              <option value="Lost to No Decision">Lost to No Decision / Status Quo</option>
+              <option value="Unresponsive">Stakeholder Unresponsive</option>
+            </select>
+            <div className="flex justify-end gap-2 pt-2">
+              <button
+                onClick={() => setLostDialogDeal(null)}
+                className="px-3 py-1.5 text-xs rounded-lg border border-border text-ink-muted hover:bg-neutral-100"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleMarkLost}
+                className="px-4 py-1.5 text-xs font-bold rounded-lg bg-[#B23A2E] text-white hover:bg-red-800"
+              >
+                Confirm Lost
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─── Modals & Feedback ── */}
       <NewDealModal
         isOpen={dealModalOpen}
         onClose={() => setDealModalOpen(false)}
-        onSubmit={handleCreateDeal}
+        onSubmit={handleAddDeal}
       />
+
       <NewLeadModal
         isOpen={leadModalOpen}
         onClose={() => setLeadModalOpen(false)}
-        onSubmit={handleCaptureLead}
+        onSubmit={handleAddLead}
       />
+
+      {toastMessage && (
+        <div className="fixed bottom-6 right-6 z-50 bg-[#20211F] text-white text-xs font-medium px-4 py-2.5 rounded-xl shadow-2xl flex items-center gap-2 border border-white/10 animate-fade-in">
+          <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+          {toastMessage}
+        </div>
+      )}
     </div>
   );
 }

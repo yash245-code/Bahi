@@ -5,15 +5,19 @@ import { PrismaService } from '../../modules/core/prisma/prisma.service';
 export class ContactsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(tenantId: string, type?: string) {
+  async findAll(tenantId: string, lifecycleStage?: string) {
     return this.prisma.contact.findMany({
-      where: { tenantId, ...(type ? { type: type as any } : {}) },
-      orderBy: { name: 'asc' },
+      where: {
+        tenantId,
+        deletedAt: null,
+        ...(lifecycleStage ? { lifecycleStage: lifecycleStage as any } : {}),
+      },
+      orderBy: { lastName: 'asc' },
     });
   }
 
   async findOne(tenantId: string, id: string) {
-    return this.prisma.contact.findFirst({ where: { id, tenantId } });
+    return this.prisma.contact.findFirst({ where: { id, tenantId, deletedAt: null } });
   }
 
   async create(tenantId: string, dto: any) {

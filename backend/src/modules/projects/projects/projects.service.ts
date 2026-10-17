@@ -8,7 +8,6 @@ export class ProjectsService {
   async findAll(tenantId: string) {
     return this.prisma.project.findMany({
       where: { tenantId },
-      include: { _count: { select: { tasks: true } } },
       orderBy: { createdAt: 'desc' },
     });
   }
@@ -16,7 +15,6 @@ export class ProjectsService {
   async findOne(tenantId: string, id: string) {
     return this.prisma.project.findFirst({
       where: { id, tenantId },
-      include: { tasks: true },
     });
   }
 

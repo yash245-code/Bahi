@@ -25,6 +25,6 @@ export class LeaveController {
   @Patch(':id/approve')
   @ApiOperation({ summary: 'Approve a leave request' })
   approve(@Req() req: any, @Param('id') id: string) {
-    return this.leaveService.approve(req.user.tenantId, id, req.user.userId);
+    return this.leaveService.approve(req.user.tenantId, id);
   }
 }

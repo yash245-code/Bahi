@@ -1,97 +1,79 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { CrmNav } from '../components/CrmNav';
 import { NewDealModal } from '../components/NewDealModal';
 import { NewLeadModal } from '../components/NewLeadModal';
+import { crmApi } from '../lib/api-client';
 
 interface ActivityItem {
   id: string;
-  type: 'Call' | 'Meeting' | 'Email' | 'Task';
-  subject: string;
-  relatedTo: { name: string; type: 'Deal' | 'Company' | 'Lead' };
-  dueDate: string;
-  time: string;
+  type: 'call' | 'meeting' | 'email' | 'task' | 'note';
+  title: string;
+  relatedTo: { name: string; type: 'deal' | 'lead' | 'contact' | 'company' };
+  dueTime: string;
   priority: 'High' | 'Medium' | 'Low';
-  assignedTo: string;
-  completed: boolean;
+  status: 'Pending' | 'Completed';
+  assignee: { name: string; avatar: string };
+  description?: string;
+  outcome?: string;
 }
 
 const initialActivities: ActivityItem[] = [
   {
     id: 'ACT-101',
-    type: 'Call',
-    subject: 'Discovery Call on ERP Multi-Tenant Architecture',
-    relatedTo: { name: 'TechStart Enterprise OS', type: 'Deal' },
-    dueDate: 'Today',
-    time: '2:30 PM',
+    type: 'call',
+    title: 'Commercial Terms Review with David Chen',
+    relatedTo: { name: 'Apex Tech Enterprise ERP', type: 'deal' },
+    dueTime: 'Today, 2:30 PM',
     priority: 'High',
-    assignedTo: 'Alex Morgan',
-    completed: false,
+    status: 'Pending',
+    assignee: { name: 'Alex Morgan', avatar: 'AM' },
+    description: 'Review 10% volume discount and 3-year agreement terms.',
   },
   {
     id: 'ACT-102',
-    type: 'Meeting',
-    subject: 'Executive Demo with VP of Logistics',
-    relatedTo: { name: 'DataFlow Corp', type: 'Company' },
-    dueDate: 'Today',
-    time: '4:00 PM',
+    type: 'meeting',
+    title: 'Executive Stakeholder Demo with Elena Rostova',
+    relatedTo: { name: 'Nordic Logistics Dispatch', type: 'deal' },
+    dueTime: 'Today, 4:00 PM',
     priority: 'High',
-    assignedTo: 'Priya Sharma',
-    completed: false,
+    status: 'Pending',
+    assignee: { name: 'Priya Sharma', avatar: 'PS' },
+    description: 'Walkthrough of real-time inventory multi-warehouse allocation module.',
   },
   {
     id: 'ACT-103',
-    type: 'Email',
-    subject: 'Send Revised Commercial Quotation QT-00014',
-    relatedTo: { name: 'Summit Digital Operations OS', type: 'Deal' },
-    dueDate: 'Tomorrow',
-    time: '10:00 AM',
-    priority: 'Medium',
-    assignedTo: 'Sarah Chen',
-    completed: false,
+    type: 'task',
+    title: 'Send Security Questionnaire & SOC2 Report',
+    relatedTo: { name: 'Vertex Health Clinical Engine', type: 'deal' },
+    dueTime: 'Overdue (Yesterday)',
+    priority: 'High',
+    status: 'Pending',
+    assignee: { name: 'Alex Morgan', avatar: 'AM' },
+    description: 'Deliver compliance whitepaper for HIPAA security review.',
   },
   {
     id: 'ACT-104',
-    type: 'Task',
-    subject: 'Audit security compliance document for RFP',
-    relatedTo: { name: 'NexGen Systems', type: 'Company' },
-    dueDate: 'Oct 02, 2026',
-    time: '5:00 PM',
-    priority: 'High',
-    assignedTo: 'Alex Morgan',
-    completed: true,
-  },
-  {
-    id: 'ACT-105',
-    type: 'Call',
-    subject: 'Quarterly Renewal Check-In with Procurement',
-    relatedTo: { name: 'BrightWave Retailers', type: 'Company' },
-    dueDate: 'Oct 03, 2026',
-    time: '11:30 AM',
-    priority: 'Low',
-    assignedTo: 'Priya Sharma',
-    completed: false,
-  },
-  {
-    id: 'ACT-106',
-    type: 'Meeting',
-    subject: 'Contract Terms Review with General Counsel',
-    relatedTo: { name: 'Enterprise One Multi-Tenant Migration', type: 'Deal' },
-    dueDate: 'Oct 05, 2026',
-    time: '3:00 PM',
-    priority: 'High',
-    assignedTo: 'Daniel Kim',
-    completed: false,
+    type: 'email',
+    title: 'Follow-up regarding custom warehouse pricing quote',
+    relatedTo: { name: 'Marcus Vance', type: 'lead' },
+    dueTime: 'Tomorrow, 10:00 AM',
+    priority: 'Medium',
+    status: 'Pending',
+    assignee: { name: 'Daniel Kim', avatar: 'DK' },
   },
 ];
 
 export function CrmActivitiesView() {
   const [activities, setActivities] = useState<ActivityItem[]>(initialActivities);
-  const [typeFilter, setTypeFilter] = useState<string>('all');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'open' | 'completed'>('open');
+  const [activeTab, setActiveTab] = useState<'today' | 'overdue' | 'upcoming' | 'completed' | 'all'>('today');
   const [dealModalOpen, setDealModalOpen] = useState(false);
   const [leadModalOpen, setLeadModalOpen] = useState(false);
+  const [logModalOpen, setLogModalOpen] = useState(false);
+  const [activityType, setActivityType] = useState<'call' | 'meeting' | 'task' | 'note'>('call');
+  const [subject, setSubject] = useState('');
+  const [description, setDescription] = useState('');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
@@ -99,218 +81,265 @@ export function CrmActivitiesView() {
     setTimeout(() => setToastMessage((c) => (c === msg ? null : c)), 3500);
   };
 
-  const toggleComplete = (id: string) => {
+  const loadActivities = useCallback(async () => {
+    try {
+      const data = await crmApi.activities.list({ view: activeTab === 'all' ? undefined : activeTab });
+      if (data && data.length > 0) {
+        setActivities(
+          data.map((a: any) => ({
+            id: a.id,
+            type: a.type?.toLowerCase() || 'task',
+            title: a.subject,
+            relatedTo: { name: 'Related Record', type: a.relatedType || 'deal' },
+            dueTime: a.dueDateTime ? new Date(a.dueDateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Flexible',
+            priority: a.priority === 'URGENT' || a.priority === 'HIGH' ? 'High' : 'Medium',
+            status: a.status === 'COMPLETED' ? 'Completed' : 'Pending',
+            assignee: {
+              name: a.assignee ? `${a.assignee.firstName} ${a.assignee.lastName || ''}`.trim() : 'Sales Rep',
+              avatar: a.assignee ? `${a.assignee.firstName[0]}${a.assignee.lastName?.[0] || ''}` : 'SR',
+            },
+            description: a.description,
+            outcome: a.outcome,
+          }))
+        );
+      }
+    } catch {
+      // Keep initialActivities fallback
+    }
+  }, [activeTab]);
+
+  useEffect(() => {
+    loadActivities();
+  }, [loadActivities]);
+
+  const handleComplete = async (id: string) => {
     setActivities((prev) =>
-      prev.map((act) => {
-        if (act.id === id) {
-          const next = !act.completed;
-          showToast(`Marked "${act.subject}" as ${next ? 'Completed' : 'Open'}`);
-          return { ...act, completed: next };
-        }
-        return act;
-      })
+      prev.map((a) => (a.id === id ? { ...a, status: 'Completed', outcome: 'Marked completed by sales rep' } : a))
     );
+    showToast('Activity marked completed');
+
+    try {
+      await crmApi.activities.complete(id, 'Completed successfully');
+      loadActivities();
+    } catch {
+      // Keep optimistic
+    }
   };
 
-  const filtered = activities.filter((act) => {
-    const matchesType = typeFilter === 'all' || act.type.toLowerCase() === typeFilter.toLowerCase();
-    const matchesStatus =
-      statusFilter === 'all'
-        ? true
-        : statusFilter === 'completed'
-        ? act.completed
-        : !act.completed;
-    return matchesType && matchesStatus;
+  const handleCreateActivity = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!subject) return;
+
+    try {
+      await crmApi.activities.create({
+        type: activityType.toUpperCase() as any,
+        subject,
+        description,
+        relatedType: 'deal',
+        relatedId: '00000000-0000-0000-0000-000000000000',
+      });
+      showToast(`${activityType.toUpperCase()} logged`);
+      loadActivities();
+    } catch {
+      const created: ActivityItem = {
+        id: `ACT-${Date.now().toString().slice(-3)}`,
+        type: activityType,
+        title: subject,
+        relatedTo: { name: 'Opportunity Deal', type: 'deal' },
+        dueTime: 'Today',
+        priority: 'High',
+        status: 'Pending',
+        assignee: { name: 'You', avatar: 'ME' },
+        description,
+      };
+      setActivities((prev) => [created, ...prev]);
+      showToast(`Logged activity: ${subject}`);
+    } finally {
+      setLogModalOpen(false);
+      setSubject('');
+      setDescription('');
+    }
+  };
+
+  const filtered = activities.filter((a) => {
+    if (activeTab === 'today') return a.status === 'Pending' && !a.dueTime.includes('Overdue');
+    if (activeTab === 'overdue') return a.status === 'Pending' && a.dueTime.includes('Overdue');
+    if (activeTab === 'completed') return a.status === 'Completed';
+    return true;
   });
 
-  const openCount = activities.filter((a) => !a.completed).length;
-  const callsCount = activities.filter((a) => a.type === 'Call' && !a.completed).length;
-  const meetingsCount = activities.filter((a) => a.type === 'Meeting' && !a.completed).length;
-
   return (
-    <div className="animate-fade-in space-y-6">
-      {/* ── Persistent CRM Navigation Header ─────────── */}
+    <div className="space-y-6">
       <CrmNav
         onNewDeal={() => setDealModalOpen(true)}
         onNewLead={() => setLeadModalOpen(true)}
+        totalPipelineValue={`$272,000`}
+        activeDealsCount={11}
       />
 
-      {/* ── Toast Alert ──────────────────────────────── */}
-      {toastMessage && (
-        <div className="p-3 bg-neutral-900 text-white rounded-xl flex items-center justify-between text-xs font-semibold shadow-lg border border-neutral-800 animate-fade-in">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-status-success inline-block" />
-            <span>{toastMessage}</span>
-          </div>
-          <button
-            onClick={() => setToastMessage(null)}
-            className="text-neutral-400 hover:text-white text-xs px-2"
-          >
-            Dismiss
-          </button>
-        </div>
-      )}
-
-      {/* ── Summary Stats ────────────────────────────── */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="card p-4">
-          <span className="text-ink-muted text-xs font-semibold block">Pending Tasks</span>
-          <span className="text-2xl font-black text-ink mt-1 font-mono">{openCount}</span>
-          <span className="text-[11px] text-accent font-medium block mt-1">Requires follow-up</span>
-        </div>
-
-        <div className="card p-4">
-          <span className="text-ink-muted text-xs font-semibold block">Scheduled Calls</span>
-          <span className="text-2xl font-black text-[#1F7A4D] mt-1 font-mono">{callsCount}</span>
-          <span className="text-[11px] text-ink-muted block mt-1">Today &amp; Tomorrow</span>
-        </div>
-
-        <div className="card p-4">
-          <span className="text-ink-muted text-xs font-semibold block">Client Meetings</span>
-          <span className="text-2xl font-black text-purple-700 mt-1 font-mono">{meetingsCount}</span>
-          <span className="text-[11px] text-ink-muted block mt-1">Executive demos</span>
-        </div>
-
-        <div className="card p-4">
-          <span className="text-ink-muted text-xs font-semibold block">Completed Interactions</span>
-          <span className="text-2xl font-black text-[#1F7A4D] mt-1 font-mono">
-            {activities.filter((a) => a.completed).length}
-          </span>
-          <span className="text-[11px] text-ink-muted block mt-1">Logged in audit trail</span>
-        </div>
-      </div>
-
-      {/* ── Filter Controls ──────────────────────────── */}
-      <div className="card p-3 flex flex-wrap items-center justify-between gap-3 bg-white shadow-xs">
-        <div className="flex items-center gap-1.5 text-xs">
-          <span className="text-ink-muted text-[11px] font-medium mr-1">Activity Type:</span>
-          {['all', 'Call', 'Meeting', 'Email', 'Task'].map((type) => (
+      {/* ── View Filter Tabs & Quick Log Button ── */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+          {(['today', 'overdue', 'upcoming', 'completed', 'all'] as const).map((tab) => (
             <button
-              key={type}
-              onClick={() => setTypeFilter(type)}
-              className={`px-3 py-1 rounded-md font-semibold transition-all cursor-pointer ${
-                typeFilter.toLowerCase() === type.toLowerCase()
-                  ? 'bg-accent text-white shadow-xs'
-                  : 'bg-[#FAF9F5] text-ink-muted hover:text-ink border border-border'
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-lg border capitalize transition-colors cursor-pointer ${
+                activeTab === tab
+                  ? 'bg-[#20211F] text-white border-[#20211F]'
+                  : 'bg-white text-ink-muted border-border hover:bg-neutral-100'
               }`}
             >
-              {type === 'Call' ? '📞 Calls' : type === 'Meeting' ? '🤝 Meetings' : type === 'Email' ? '✉️ Emails' : type === 'Task' ? '✅ Tasks' : 'All'}
+              {tab}
             </button>
           ))}
         </div>
 
-        <div className="flex items-center gap-1 text-xs">
-          <button
-            onClick={() => setStatusFilter('open')}
-            className={`px-3 py-1 rounded-md font-semibold transition-all cursor-pointer ${
-              statusFilter === 'open' ? 'bg-neutral-800 text-white' : 'text-ink-muted hover:text-ink'
-            }`}
-          >
-            Open ({openCount})
-          </button>
-          <button
-            onClick={() => setStatusFilter('completed')}
-            className={`px-3 py-1 rounded-md font-semibold transition-all cursor-pointer ${
-              statusFilter === 'completed' ? 'bg-neutral-800 text-white' : 'text-ink-muted hover:text-ink'
-            }`}
-          >
-            Completed
-          </button>
-          <button
-            onClick={() => setStatusFilter('all')}
-            className={`px-3 py-1 rounded-md font-semibold transition-all cursor-pointer ${
-              statusFilter === 'all' ? 'bg-neutral-800 text-white' : 'text-ink-muted hover:text-ink'
-            }`}
-          >
-            All
-          </button>
-        </div>
+        <button
+          onClick={() => setLogModalOpen(true)}
+          className="px-3.5 py-1.5 text-xs font-bold rounded-lg bg-accent text-white hover:bg-[#853526] transition-colors cursor-pointer shadow-xs"
+        >
+          + Log Activity / Task
+        </button>
       </div>
 
-      {/* ── Activities Timeline List ─────────────────── */}
-      <div className="card p-5 space-y-4 shadow-xs">
-        <h3 className="text-sm font-bold text-ink">Upcoming Interaction Queue</h3>
-        <div className="divide-y divide-border/60">
-          {filtered.map((act) => (
+      {/* ── Activities List Queue ── */}
+      <div className="bg-white rounded-2xl border border-border overflow-hidden shadow-xs divide-y divide-border/60">
+        {filtered.length === 0 ? (
+          <div className="p-12 text-center text-ink-muted">
+            <p className="text-sm font-semibold">No tasks or activities in this queue.</p>
+            <p className="text-xs mt-1">You are all caught up for this view.</p>
+          </div>
+        ) : (
+          filtered.map((act) => (
             <div
               key={act.id}
-              className={`py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs transition-colors rounded-lg px-2 ${
-                act.completed ? 'opacity-60 bg-neutral-50/50' : 'hover:bg-[#FAF9F5]'
-              }`}
+              className="p-4 flex items-start justify-between gap-4 hover:bg-neutral-50/80 transition-colors"
             >
               <div className="flex items-start gap-3">
-                {/* Complete Checkbox */}
-                <button
-                  type="button"
-                  onClick={() => toggleComplete(act.id)}
-                  className={`w-5 h-5 rounded-md border flex items-center justify-center transition-colors cursor-pointer mt-0.5 ${
-                    act.completed
-                      ? 'bg-[#1F7A4D] border-[#1F7A4D] text-white'
-                      : 'border-border bg-white hover:border-accent'
-                  }`}
-                  title={act.completed ? 'Mark incomplete' : 'Mark completed'}
-                >
-                  {act.completed && '✓'}
-                </button>
-
+                <span className="text-xl mt-0.5">
+                  {act.type === 'call' ? '📞' : act.type === 'meeting' ? '🤝' : act.type === 'email' ? '✉️' : '✅'}
+                </span>
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-ink">{act.subject}</span>
-                    <span className={`text-[10px] font-bold px-2 py-0.2 rounded ${
-                      act.type === 'Call'
-                        ? 'bg-blue-100 text-blue-800'
-                        : act.type === 'Meeting'
-                        ? 'bg-purple-100 text-purple-800'
-                        : act.type === 'Email'
-                        ? 'bg-emerald-100 text-emerald-800'
-                        : 'bg-amber-100 text-amber-800'
-                    }`}>
+                    <h4 className={`text-xs font-bold ${act.status === 'Completed' ? 'line-through text-ink-muted' : 'text-ink'}`}>
+                      {act.title}
+                    </h4>
+                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-neutral-100 text-neutral-700 uppercase">
                       {act.type}
                     </span>
-                    {act.priority === 'High' && (
-                      <span className="badge badge-danger text-[9px]">High Priority</span>
-                    )}
                   </div>
-
-                  <div className="flex items-center gap-2 text-ink-muted text-xs mt-1">
+                  {act.description && (
+                    <p className="text-[11px] text-ink-muted mt-0.5 max-w-xl">
+                      {act.description}
+                    </p>
+                  )}
+                  <div className="flex items-center gap-3 mt-2 text-[10px] text-ink-muted">
                     <span>Target: <strong className="text-ink">{act.relatedTo.name}</strong></span>
-                    <span>•</span>
-                    <span className="font-mono text-[11px]">{act.dueDate} at {act.time}</span>
-                    <span>•</span>
-                    <span>Owner: {act.assignedTo}</span>
+                    <span>Due: <strong className={act.dueTime.includes('Overdue') ? 'text-red-700 font-bold' : 'text-ink'}>{act.dueTime}</strong></span>
+                    <span>Assigned: <strong className="text-ink">{act.assignee.name}</strong></span>
                   </div>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
+              {act.status !== 'Completed' && (
                 <button
-                  type="button"
-                  onClick={() => toggleComplete(act.id)}
-                  className={`text-xs font-semibold px-3 py-1 rounded-lg border transition-all cursor-pointer ${
-                    act.completed
-                      ? 'bg-neutral-100 text-ink-muted border-border hover:bg-neutral-200'
-                      : 'bg-[#FAF4F2] text-accent border-[#EBD2CB] hover:bg-accent hover:text-white'
-                  }`}
+                  onClick={() => handleComplete(act.id)}
+                  className="px-3 py-1 text-xs font-bold rounded-lg bg-[#1F7A4D]/15 text-[#1F7A4D] hover:bg-[#1F7A4D] hover:text-white transition-colors cursor-pointer whitespace-nowrap"
                 >
-                  {act.completed ? 'Re-open' : '✓ Complete'}
+                  ✓ Mark Complete
                 </button>
-              </div>
+              )}
             </div>
-          ))}
-        </div>
+          ))
+        )}
       </div>
 
-      {/* ── Modals ───────────────────────────────────── */}
+      {/* ── Log Activity Modal ── */}
+      {logModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+          <div className="bg-white rounded-2xl border border-border shadow-2xl max-w-md w-full p-6 space-y-4">
+            <h3 className="text-base font-bold text-ink">Log Sales Interaction / Task</h3>
+            <form onSubmit={handleCreateActivity} className="space-y-3">
+              <div>
+                <label className="text-xs font-semibold text-ink-muted block mb-1">Interaction Type</label>
+                <div className="grid grid-cols-4 gap-1.5">
+                  {(['call', 'meeting', 'task', 'note'] as const).map((t) => (
+                    <button
+                      key={t}
+                      type="button"
+                      onClick={() => setActivityType(t)}
+                      className={`p-2 rounded-xl text-xs font-bold capitalize border cursor-pointer ${
+                        activityType === t
+                          ? 'bg-[#20211F] text-white border-[#20211F]'
+                          : 'bg-white text-ink-muted border-border'
+                      }`}
+                    >
+                      {t}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-ink-muted block mb-1">Subject</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Follow-up phone call regarding revised quote"
+                  value={subject}
+                  onChange={(e) => setSubject(e.target.value)}
+                  className="w-full text-xs p-2 rounded-xl border border-border bg-white text-ink"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-ink-muted block mb-1">Notes & Details</label>
+                <textarea
+                  rows={3}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Key discussion points, objections, or follow-up commitments..."
+                  className="w-full text-xs p-2 rounded-xl border border-border bg-white text-ink"
+                />
+              </div>
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setLogModalOpen(false)}
+                  className="px-3 py-1.5 text-xs rounded-lg border border-border text-ink-muted hover:bg-neutral-100"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-1.5 text-xs font-bold rounded-lg bg-accent text-white hover:bg-[#853526]"
+                >
+                  Save Entry
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modals */}
       <NewDealModal
         isOpen={dealModalOpen}
         onClose={() => setDealModalOpen(false)}
         onSubmit={() => showToast('Deal created')}
       />
+
       <NewLeadModal
         isOpen={leadModalOpen}
         onClose={() => setLeadModalOpen(false)}
         onSubmit={() => showToast('Lead captured')}
       />
+
+      {toastMessage && (
+        <div className="fixed bottom-6 right-6 z-50 bg-[#20211F] text-white text-xs font-medium px-4 py-2.5 rounded-xl shadow-2xl flex items-center gap-2 border border-white/10 animate-fade-in">
+          <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+          {toastMessage}
+        </div>
+      )}
     </div>
   );
 }

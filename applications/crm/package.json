@@ -20,7 +20,7 @@
     "./web": "./web/index.ts"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -p tsconfig.build.json",
     "lint": "tsc --noEmit",
     "clean": "rimraf dist"
   },
@@ -35,6 +35,7 @@
   },
   "devDependencies": {
     "@bahi/tsconfig": "*",
+    "@types/jest": "^29.5.14",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",

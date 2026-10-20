@@ -2,6 +2,7 @@
 // LeadsService — Unit & Multi-Tenant Isolation Tests
 // ═══════════════════════════════════════════════════════════
 
+import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 import { LeadsService } from './leads.service';
 
 describe('LeadsService', () => {
@@ -14,13 +15,13 @@ describe('LeadsService', () => {
   beforeEach(() => {
     mockPrisma = {
       lead: {
-        findMany: jest.fn().mockImplementation(({ where }) => {
+        findMany: (jest.fn() as any).mockImplementation(({ where }: { where: any }) => {
           if (where.tenantId !== mockTenantId) return Promise.resolve([]);
           return Promise.resolve([
             { id: 'lead-1', tenantId: mockTenantId, title: 'Inbound Inquiry', status: 'NEW' },
           ]);
         }),
-        findFirst: jest.fn().mockImplementation(({ where }) => {
+        findFirst: (jest.fn() as any).mockImplementation(({ where }: { where: any }) => {
           if (where.tenantId !== mockTenantId) return Promise.resolve(null);
           return Promise.resolve({
             id: where.id,
@@ -30,31 +31,31 @@ describe('LeadsService', () => {
             status: 'NEW',
           });
         }),
-        create: jest.fn().mockImplementation(({ data }) =>
+        create: (jest.fn() as any).mockImplementation(({ data }: { data: any }) =>
           Promise.resolve({ id: 'lead-new', ...data }),
         ),
-        update: jest.fn().mockImplementation(({ data }) =>
+        update: (jest.fn() as any).mockImplementation(({ data }: { data: any }) =>
           Promise.resolve({ id: 'lead-1', ...data }),
         ),
       },
       contact: {
-        create: jest.fn().mockResolvedValue({ id: 'contact-1', tenantId: mockTenantId }),
-        update: jest.fn().mockResolvedValue({ id: 'contact-1' }),
+        create: (jest.fn() as any).mockResolvedValue({ id: 'contact-1', tenantId: mockTenantId }),
+        update: (jest.fn() as any).mockResolvedValue({ id: 'contact-1' }),
       },
       company: {
-        findFirst: jest.fn().mockResolvedValue(null),
-        create: jest.fn().mockResolvedValue({ id: 'company-1', name: 'TechCorp' }),
+        findFirst: (jest.fn() as any).mockResolvedValue(null),
+        create: (jest.fn() as any).mockResolvedValue({ id: 'company-1', name: 'TechCorp' }),
       },
       pipeline: {
-        findFirst: jest.fn().mockResolvedValue({ id: 'pipe-1' }),
+        findFirst: (jest.fn() as any).mockResolvedValue({ id: 'pipe-1' }),
       },
       pipelineStage: {
-        findFirst: jest.fn().mockResolvedValue({ id: 'stage-1', defaultProbability: 20 }),
+        findFirst: (jest.fn() as any).mockResolvedValue({ id: 'stage-1', defaultProbability: 20 }),
       },
       opportunity: {
-        create: jest.fn().mockResolvedValue({ id: 'deal-1', title: 'TechCorp — New Deal' }),
+        create: (jest.fn() as any).mockResolvedValue({ id: 'deal-1', title: 'TechCorp — New Deal' }),
       },
-      $transaction: jest.fn().mockImplementation(async (callback) => {
+      $transaction: (jest.fn() as any).mockImplementation(async (callback: any) => {
         return callback(mockPrisma);
       }),
     };
@@ -65,7 +66,7 @@ describe('LeadsService', () => {
   it('should only return leads strictly matching the authenticated tenant ID', async () => {
     const leads = await service.findAll(mockTenantId);
     expect(leads).toHaveLength(1);
-    expect(leads[0].tenantId).toBe(mockTenantId);
+    expect(leads[0]?.tenantId).toBe(mockTenantId);
 
     // Cross-tenant attempt should return empty
     const crossTenantLeads = await service.findAll(otherTenantId);

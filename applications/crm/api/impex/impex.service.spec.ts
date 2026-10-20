@@ -2,6 +2,7 @@
 // ImpexService — Data Import, Export & Merge Tests
 // ═══════════════════════════════════════════════════════════
 
+import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 import { ImpexService } from './impex.service';
 
 describe('ImpexService', () => {
@@ -13,35 +14,35 @@ describe('ImpexService', () => {
   beforeEach(() => {
     mockPrisma = {
       importJob: {
-        create: jest.fn().mockResolvedValue({ id: 'job-1', status: 'PROCESSING' }),
-        update: jest.fn().mockResolvedValue({ id: 'job-1', status: 'COMPLETED' }),
+        create: (jest.fn() as any).mockResolvedValue({ id: 'job-1', status: 'PROCESSING' }),
+        update: (jest.fn() as any).mockResolvedValue({ id: 'job-1', status: 'COMPLETED' }),
       },
       lead: {
-        findMany: jest.fn().mockResolvedValue([]),
-        create: jest.fn().mockResolvedValue({ id: 'lead-imp' }),
-        update: jest.fn().mockResolvedValue({ id: 'lead-imp' }),
+        findMany: (jest.fn() as any).mockResolvedValue([]),
+        create: (jest.fn() as any).mockResolvedValue({ id: 'lead-imp' }),
+        update: (jest.fn() as any).mockResolvedValue({ id: 'lead-imp' }),
       },
       contact: {
-        findMany: jest.fn().mockResolvedValue([]),
-        create: jest.fn().mockResolvedValue({ id: 'contact-imp' }),
-        update: jest.fn().mockResolvedValue({ id: 'contact-imp' }),
-        updateMany: jest.fn().mockResolvedValue({ count: 1 }),
+        findMany: (jest.fn() as any).mockResolvedValue([]),
+        create: (jest.fn() as any).mockResolvedValue({ id: 'contact-imp' }),
+        update: (jest.fn() as any).mockResolvedValue({ id: 'contact-imp' }),
+        updateMany: (jest.fn() as any).mockResolvedValue({ count: 1 }),
       },
       company: {
-        findFirst: jest.fn().mockImplementation(({ where }) => {
+        findFirst: (jest.fn() as any).mockImplementation(({ where }: { where: any }) => {
           if (where.id === 'comp-1') return Promise.resolve({ id: 'comp-1', name: 'Acme Corp', tenantId: mockTenantId });
           if (where.id === 'comp-2') return Promise.resolve({ id: 'comp-2', name: 'Acme Inc', tenantId: mockTenantId });
           return Promise.resolve(null);
         }),
-        findMany: jest.fn().mockResolvedValue([]),
-        create: jest.fn().mockResolvedValue({ id: 'comp-imp' }),
-        update: jest.fn().mockResolvedValue({ id: 'comp-1' }),
+        findMany: (jest.fn() as any).mockResolvedValue([]),
+        create: (jest.fn() as any).mockResolvedValue({ id: 'comp-imp' }),
+        update: (jest.fn() as any).mockResolvedValue({ id: 'comp-1' }),
       },
       opportunity: {
-        updateMany: jest.fn().mockResolvedValue({ count: 2 }),
+        updateMany: (jest.fn() as any).mockResolvedValue({ count: 2 }),
       },
       activity: {
-        updateMany: jest.fn().mockResolvedValue({ count: 3 }),
+        updateMany: (jest.fn() as any).mockResolvedValue({ count: 3 }),
       },
     };
 

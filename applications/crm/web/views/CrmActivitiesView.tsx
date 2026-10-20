@@ -90,7 +90,7 @@ export function CrmActivitiesView() {
             id: a.id,
             type: a.type?.toLowerCase() || 'task',
             title: a.subject,
-            relatedTo: { name: 'Related Record', type: a.relatedType || 'deal' },
+            relatedTo: { name: a.relatedName || 'Related Record', type: a.relatedType || 'deal' },
             dueTime: a.dueDateTime ? new Date(a.dueDateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Flexible',
             priority: a.priority === 'URGENT' || a.priority === 'HIGH' ? 'High' : 'Medium',
             status: a.status === 'COMPLETED' ? 'Completed' : 'Pending',
@@ -287,7 +287,7 @@ export function CrmActivitiesView() {
                   required
                   placeholder="e.g. Follow-up phone call regarding revised quote"
                   value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSubject(e.target.value)}
                   className="w-full text-xs p-2 rounded-xl border border-border bg-white text-ink"
                 />
               </div>
@@ -296,7 +296,7 @@ export function CrmActivitiesView() {
                 <textarea
                   rows={3}
                   value={description}
-                  onChange={(e) => setDescription(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
                   placeholder="Key discussion points, objections, or follow-up commitments..."
                   className="w-full text-xs p-2 rounded-xl border border-border bg-white text-ink"
                 />

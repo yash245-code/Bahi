@@ -2,6 +2,7 @@
 // ScoringService — Dynamic Scoring & Lead Distribution Tests
 // ═══════════════════════════════════════════════════════════
 
+import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 import { ScoringService } from './scoring.service';
 
 describe('ScoringService', () => {
@@ -13,7 +14,7 @@ describe('ScoringService', () => {
   beforeEach(() => {
     mockPrisma = {
       lead: {
-        findFirst: jest.fn().mockResolvedValue({
+        findFirst: (jest.fn() as any).mockResolvedValue({
           id: 'lead-1',
           tenantId: mockTenantId,
           title: 'VP of Technology Inquiry',
@@ -26,23 +27,23 @@ describe('ScoringService', () => {
             },
           },
         }),
-        update: jest.fn().mockImplementation(({ data }) => Promise.resolve({ id: 'lead-1', ...data })),
-        count: jest.fn().mockImplementation(({ where }) => {
+        update: (jest.fn() as any).mockImplementation(({ data }: { data: any }) => Promise.resolve({ id: 'lead-1', ...data })),
+        count: (jest.fn() as any).mockImplementation(({ where }: { where: any }) => {
           if (where.ownerId === 'user-1') return Promise.resolve(10);
           return Promise.resolve(2); // user-2 has lower load
         }),
       },
       activity: {
-        count: jest.fn().mockResolvedValue(4), // 4 activities -> +20 pts
+        count: (jest.fn() as any).mockResolvedValue(4), // 4 activities -> +20 pts
       },
       user: {
-        findMany: jest.fn().mockResolvedValue([
+        findMany: (jest.fn() as any).mockResolvedValue([
           { id: 'user-1', firstName: 'Alice', lastName: 'Rep', email: 'alice@bahi.app' },
           { id: 'user-2', firstName: 'Bob', lastName: 'Rep', email: 'bob@bahi.app' },
         ]),
       },
       notification: {
-        create: jest.fn().mockResolvedValue({ id: 'notif-1' }),
+        create: (jest.fn() as any).mockResolvedValue({ id: 'notif-1' }),
       },
     };
 

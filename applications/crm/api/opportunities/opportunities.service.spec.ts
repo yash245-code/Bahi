@@ -2,6 +2,7 @@
 // OpportunitiesService — Pipeline Kanban & Stage Gating Tests
 // ═══════════════════════════════════════════════════════════
 
+import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 import { OpportunitiesService } from './opportunities.service';
 
 describe('OpportunitiesService', () => {
@@ -13,12 +14,12 @@ describe('OpportunitiesService', () => {
 
   beforeEach(() => {
     mockEventBus = {
-      publish: jest.fn(),
+      publish: jest.fn() as any,
     };
 
     mockPrisma = {
       pipeline: {
-        findFirst: jest.fn().mockResolvedValue({
+        findFirst: (jest.fn() as any).mockResolvedValue({
           id: 'pipe-1',
           tenantId: mockTenantId,
           name: 'Direct Sales Pipeline',
@@ -29,20 +30,20 @@ describe('OpportunitiesService', () => {
             { id: 'stage-lost', name: 'Closed Lost', order: 4, defaultProbability: 0, stageType: 'LOST' },
           ],
         }),
-        findUnique: jest.fn().mockResolvedValue({
+        findUnique: (jest.fn() as any).mockResolvedValue({
           id: 'pipe-1',
           tenantId: mockTenantId,
           name: 'Direct Sales Pipeline',
         }),
       },
       pipelineStage: {
-        findMany: jest.fn().mockResolvedValue([
+        findMany: (jest.fn() as any).mockResolvedValue([
           { id: 'stage-1', name: 'Qualified', order: 1, defaultProbability: 20, stageType: 'OPEN', rottingDays: 14, opportunities: [{ id: 'deal-1', value: 50000, probability: 20, stageEnteredAt: new Date() }] },
           { id: 'stage-2', name: 'Demo Done', order: 2, defaultProbability: 40, stageType: 'OPEN', rottingDays: 7, opportunities: [] },
           { id: 'stage-won', name: 'Closed Won', order: 3, defaultProbability: 100, stageType: 'WON', opportunities: [] },
           { id: 'stage-lost', name: 'Closed Lost', order: 4, defaultProbability: 0, stageType: 'LOST', opportunities: [] },
         ]),
-        findFirst: jest.fn().mockImplementation(({ where }) => {
+        findFirst: (jest.fn() as any).mockImplementation(({ where }: { where: any }) => {
           if (where.id === 'stage-2') {
             return Promise.resolve({ id: 'stage-2', name: 'Demo Done', defaultProbability: 40, stageType: 'OPEN', pipelineId: 'pipe-1' });
           }
@@ -56,7 +57,7 @@ describe('OpportunitiesService', () => {
         }),
       },
       opportunity: {
-        findFirst: jest.fn().mockImplementation(({ where }) => {
+        findFirst: (jest.fn() as any).mockImplementation(({ where }: { where: any }) => {
           if (where.tenantId !== mockTenantId) return Promise.resolve(null);
           return Promise.resolve({
             id: where.id || 'deal-1',
@@ -72,7 +73,7 @@ describe('OpportunitiesService', () => {
             lineItems: [],
           });
         }),
-        findMany: jest.fn().mockResolvedValue([
+        findMany: (jest.fn() as any).mockResolvedValue([
           {
             id: 'deal-1',
             tenantId: mockTenantId,
@@ -85,19 +86,19 @@ describe('OpportunitiesService', () => {
             lineItems: [],
           },
         ]),
-        update: jest.fn().mockImplementation(({ where, data }) =>
+        update: (jest.fn() as any).mockImplementation(({ where, data }: { where: any; data: any }) =>
           Promise.resolve({ id: where.id, ...data }),
         ),
       },
       stageHistory: {
-        findFirst: jest.fn().mockResolvedValue(null),
-        create: jest.fn().mockResolvedValue({ id: 'history-1' }),
-        update: jest.fn().mockResolvedValue({ id: 'history-1' }),
+        findFirst: (jest.fn() as any).mockResolvedValue(null),
+        create: (jest.fn() as any).mockResolvedValue({ id: 'history-1' }),
+        update: (jest.fn() as any).mockResolvedValue({ id: 'history-1' }),
       },
       lostReason: {
-        findFirst: jest.fn().mockResolvedValue({ id: 'reason-1', reason: 'Budget Cut' }),
+        findFirst: (jest.fn() as any).mockResolvedValue({ id: 'reason-1', reason: 'Budget Cut' }),
       },
-      $transaction: jest.fn().mockImplementation(async (callback) => callback(mockPrisma)),
+      $transaction: (jest.fn() as any).mockImplementation(async (callback: any) => callback(mockPrisma)),
     };
 
     service = new OpportunitiesService(mockPrisma, mockEventBus);
@@ -107,8 +108,8 @@ describe('OpportunitiesService', () => {
     const board = await service.getPipelineBoard(mockTenantId);
     expect(board.pipeline).toBeDefined();
     expect(board.stages).toHaveLength(4);
-    expect(board.stages[0].totalValue).toBe(50000);
-    expect(board.stages[0].weightedValue).toBe(10000);
+    expect(board.stages[0]?.totalValue).toBe(50000);
+    expect(board.stages[0]?.weightedValue).toBe(10000);
   });
 
   it('should transition deal to new stage, log StageHistory, and emit domain event', async () => {

@@ -2,6 +2,7 @@
 // AutomationsService — Workflow Rule & Action Execution Tests
 // ═══════════════════════════════════════════════════════════
 
+import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 import { AutomationsService } from './automations.service';
 
 describe('AutomationsService', () => {
@@ -14,13 +15,13 @@ describe('AutomationsService', () => {
   beforeEach(() => {
     mockEventBus = {
       events$: {
-        subscribe: jest.fn(),
+        subscribe: jest.fn() as any,
       },
     };
 
     mockPrisma = {
       automationRule: {
-        findMany: jest.fn().mockResolvedValue([
+        findMany: (jest.fn() as any).mockResolvedValue([
           {
             id: 'rule-1',
             tenantId: mockTenantId,
@@ -42,13 +43,13 @@ describe('AutomationsService', () => {
             ],
           },
         ]),
-        update: jest.fn().mockResolvedValue({ id: 'rule-1' }),
+        update: (jest.fn() as any).mockResolvedValue({ id: 'rule-1' }),
       },
       activity: {
-        create: jest.fn().mockResolvedValue({ id: 'activity-auto' }),
+        create: (jest.fn() as any).mockResolvedValue({ id: 'activity-auto' }),
       },
       notification: {
-        create: jest.fn().mockResolvedValue({ id: 'notif-auto' }),
+        create: (jest.fn() as any).mockResolvedValue({ id: 'notif-auto' }),
       },
     };
 

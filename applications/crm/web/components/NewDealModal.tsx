@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 interface NewDealModalProps {
   isOpen: boolean;
@@ -25,6 +25,22 @@ export function NewDealModal({ isOpen, onClose, onSubmit }: NewDealModalProps) {
   const [priority, setPriority] = useState<'Hot' | 'High' | 'Medium' | 'Low'>('High');
   const [probability, setProbability] = useState('40');
 
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      closeButtonRef.current?.focus();
+    }
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (isOpen && e.key === 'Escape') {
+        e.preventDefault();
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -43,16 +59,28 @@ export function NewDealModal({ isOpen, onClose, onSubmit }: NewDealModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-fade-in">
-      <div className="bg-white rounded-2xl border border-border shadow-2xl max-w-lg w-full p-6 space-y-5">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="new-deal-modal-title"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fade-in"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div className="bg-white rounded-2xl border border-border shadow-2xl max-w-lg w-full p-6 space-y-5 text-ink">
         <div className="flex items-center justify-between pb-3 border-b border-border">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-accent" />
-            <h2 className="text-base font-bold text-ink">Create New Opportunity Deal</h2>
+            <h2 id="new-deal-modal-title" className="text-base font-bold text-ink">
+              Create New Opportunity Deal
+            </h2>
           </div>
           <button
+            ref={closeButtonRef}
             onClick={onClose}
-            className="text-ink-muted hover:text-ink text-sm p-1 rounded-lg hover:bg-neutral-100"
+            aria-label="Close deal modal"
+            className="text-ink-muted hover:text-ink text-sm p-1 rounded-lg hover:bg-neutral-100 focus-visible:ring-2 focus-visible:ring-accent focus:outline-hidden"
           >
             ✕
           </button>
@@ -60,73 +88,94 @@ export function NewDealModal({ isOpen, onClose, onSubmit }: NewDealModalProps) {
 
         <form onSubmit={handleSubmit} className="space-y-4 text-xs">
           <div>
-            <label className="block text-ink font-semibold mb-1">Deal Title *</label>
+            <label htmlFor="deal-title-input" className="block text-ink font-semibold mb-1">
+              Deal Title *
+            </label>
             <input
+              id="deal-title-input"
               type="text"
               required
+              aria-required="true"
               placeholder="e.g. Enterprise Cloud ERP Migration"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg border border-border bg-[#FAF9F5] focus:bg-white outline-none focus:border-accent text-ink"
+              className="w-full px-3 py-2 rounded-lg border border-border bg-[#FAF9F5] focus:bg-white outline-hidden focus-visible:ring-2 focus-visible:ring-accent text-ink"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-ink font-semibold mb-1">Deal Value ($) *</label>
+              <label htmlFor="deal-value-input" className="block text-ink font-semibold mb-1">
+                Deal Value ($) *
+              </label>
               <input
+                id="deal-value-input"
                 type="number"
                 required
+                aria-required="true"
                 placeholder="25000"
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-border bg-[#FAF9F5] focus:bg-white outline-none focus:border-accent text-ink"
+                className="w-full px-3 py-2 rounded-lg border border-border bg-[#FAF9F5] focus:bg-white outline-hidden focus-visible:ring-2 focus-visible:ring-accent text-ink"
               />
             </div>
             <div>
-              <label className="block text-ink font-semibold mb-1">Close Probability (%)</label>
+              <label htmlFor="deal-probability-input" className="block text-ink font-semibold mb-1">
+                Close Probability (%)
+              </label>
               <input
+                id="deal-probability-input"
                 type="number"
                 min="0"
                 max="100"
                 value={probability}
                 onChange={(e) => setProbability(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-border bg-[#FAF9F5] focus:bg-white outline-none focus:border-accent text-ink"
+                className="w-full px-3 py-2 rounded-lg border border-border bg-[#FAF9F5] focus:bg-white outline-hidden focus-visible:ring-2 focus-visible:ring-accent text-ink"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-ink font-semibold mb-1">Company / Account *</label>
+              <label htmlFor="deal-company-input" className="block text-ink font-semibold mb-1">
+                Company / Account *
+              </label>
               <input
+                id="deal-company-input"
                 type="text"
                 required
+                aria-required="true"
                 placeholder="e.g. NexGen Dynamics"
                 value={company}
                 onChange={(e) => setCompany(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-border bg-[#FAF9F5] focus:bg-white outline-none focus:border-accent text-ink"
+                className="w-full px-3 py-2 rounded-lg border border-border bg-[#FAF9F5] focus:bg-white outline-hidden focus-visible:ring-2 focus-visible:ring-accent text-ink"
               />
             </div>
             <div>
-              <label className="block text-ink font-semibold mb-1">Primary Contact Email</label>
+              <label htmlFor="deal-contact-input" className="block text-ink font-semibold mb-1">
+                Primary Contact Email
+              </label>
               <input
+                id="deal-contact-input"
                 type="email"
                 placeholder="cto@nexgen.io"
                 value={contact}
                 onChange={(e) => setContact(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-border bg-[#FAF9F5] focus:bg-white outline-none focus:border-accent text-ink"
+                className="w-full px-3 py-2 rounded-lg border border-border bg-[#FAF9F5] focus:bg-white outline-hidden focus-visible:ring-2 focus-visible:ring-accent text-ink"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-ink font-semibold mb-1">Pipeline Stage</label>
+              <label htmlFor="deal-stage-select" className="block text-ink font-semibold mb-1">
+                Pipeline Stage
+              </label>
               <select
+                id="deal-stage-select"
                 value={stage}
                 onChange={(e) => setStage(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-border bg-[#FAF9F5] focus:bg-white outline-none focus:border-accent text-ink"
+                className="w-full px-3 py-2 rounded-lg border border-border bg-[#FAF9F5] focus:bg-white outline-hidden focus-visible:ring-2 focus-visible:ring-accent text-ink"
               >
                 <option value="New Leads">New Leads</option>
                 <option value="Qualified">Qualified</option>
@@ -136,13 +185,16 @@ export function NewDealModal({ isOpen, onClose, onSubmit }: NewDealModalProps) {
               </select>
             </div>
             <div>
-              <label className="block text-ink font-semibold mb-1">Priority</label>
+              <label htmlFor="deal-priority-select" className="block text-ink font-semibold mb-1">
+                Priority Level
+              </label>
               <select
+                id="deal-priority-select"
                 value={priority}
                 onChange={(e) => setPriority(e.target.value as any)}
-                className="w-full px-3 py-2 rounded-lg border border-border bg-[#FAF9F5] focus:bg-white outline-none focus:border-accent text-ink"
+                className="w-full px-3 py-2 rounded-lg border border-border bg-[#FAF9F5] focus:bg-white outline-hidden focus-visible:ring-2 focus-visible:ring-accent text-ink"
               >
-                <option value="Hot">🔥 Hot</option>
+                <option value="Hot">🔥 Hot (Immediate close)</option>
                 <option value="High">⚡ High</option>
                 <option value="Medium">Medium</option>
                 <option value="Low">Low</option>
@@ -154,13 +206,13 @@ export function NewDealModal({ isOpen, onClose, onSubmit }: NewDealModalProps) {
             <button
               type="button"
               onClick={onClose}
-              className="btn-secondary text-xs py-2"
+              className="btn-secondary text-xs py-2 focus-visible:ring-2 focus-visible:ring-accent"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="btn-primary text-xs py-2"
+              className="btn-primary text-xs py-2 focus-visible:ring-2 focus-visible:ring-accent"
             >
               Create Deal
             </button>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { CrmNav } from '../components/CrmNav';
+import { CrmAnnouncer } from '../components/CrmAnnouncer';
 import { NewDealModal } from '../components/NewDealModal';
 import { NewLeadModal } from '../components/NewLeadModal';
 import { crmApi } from '../lib/api-client';
@@ -82,13 +83,16 @@ export function CrmCompaniesView() {
   const [dealModalOpen, setDealModalOpen] = useState(false);
   const [leadModalOpen, setLeadModalOpen] = useState(false);
   const [newCompanyModalOpen, setNewCompanyModalOpen] = useState(false);
+  const [selectedCompany, setSelectedCompany] = useState<CompanyItem | null>(null);
   const [newCompanyName, setNewCompanyName] = useState('');
   const [newCompanyDomain, setNewCompanyDomain] = useState('');
   const [newCompanyIndustry, setNewCompanyIndustry] = useState('Enterprise Software');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [announcement, setAnnouncement] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
+    setAnnouncement(msg);
     setTimeout(() => setToastMessage((c) => (c === msg ? null : c)), 3500);
   };
 
@@ -160,6 +164,24 @@ export function CrmCompaniesView() {
     }
   };
 
+  const handleExportCsv = () => {
+    const rows = ['ID,Company,Domain,Industry,Tier,ActiveDeals,DealVolume,PrimaryContact'];
+    filteredCompanies.forEach((c) => {
+      rows.push(
+        `"${c.id}","${c.name}","${c.domain}","${c.industry}","${c.tier}",${c.activeDealsCount},"${c.dealVolume}","${c.primaryContact.name} (${c.primaryContact.email})"`
+      );
+    });
+    const blob = new Blob([rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `companies_accounts_export_${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast(`Exported ${filteredCompanies.length} company accounts to CSV.`);
+  };
+
   const filteredCompanies = companies.filter((c) => {
     const matchesSearch =
       c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -178,6 +200,8 @@ export function CrmCompaniesView() {
 
   return (
     <div className="space-y-6">
+      <CrmAnnouncer message={announcement} />
+
       <CrmNav
         onNewDeal={() => setDealModalOpen(true)}
         onNewLead={() => setLeadModalOpen(true)}
@@ -226,26 +250,29 @@ export function CrmCompaniesView() {
               viewBox="0 0 24 24"
               strokeWidth={2}
               stroke="currentColor"
+              aria-hidden="true"
             >
               <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
             </svg>
             <input
               type="text"
+              aria-label="Filter companies by name, domain, or industry"
               placeholder="Search companies by name, domain, industry..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl border border-border bg-white text-ink placeholder:text-ink-muted/60 focus:outline-none focus:ring-1 focus:ring-accent"
+              className="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl border border-border bg-white text-ink placeholder:text-ink-muted/60 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent"
             />
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <div className="flex items-center gap-1.5">
             {['all', 'strategic', 'enterprise', 'mid-market', 'smb'].map((tier) => (
               <button
                 key={tier}
                 onClick={() => setTierFilter(tier)}
-                className={`px-2.5 py-1 text-xs font-semibold rounded-lg border capitalize transition-colors cursor-pointer ${
+                aria-pressed={tierFilter === tier}
+                className={`px-2.5 py-1 text-xs font-semibold rounded-lg border capitalize transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-accent ${
                   tierFilter === tier
                     ? 'bg-[#20211F] text-white border-[#20211F]'
                     : 'bg-white text-ink-muted border-border hover:bg-neutral-100'
@@ -255,9 +282,21 @@ export function CrmCompaniesView() {
               </button>
             ))}
           </div>
+
           <button
+            type="button"
+            onClick={handleExportCsv}
+            aria-label="Export companies to CSV"
+            className="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1 cursor-pointer focus-visible:ring-2 focus-visible:ring-accent"
+          >
+            <span>Export CSV</span>
+          </button>
+
+          <button
+            type="button"
             onClick={() => setNewCompanyModalOpen(true)}
-            className="px-3 py-1.5 text-xs font-bold rounded-lg bg-accent text-white hover:bg-[#853526] transition-colors cursor-pointer shadow-xs ml-2"
+            aria-label="Register new corporate account"
+            className="px-3 py-1.5 text-xs font-bold rounded-lg bg-accent text-white hover:bg-[#853526] transition-colors cursor-pointer shadow-xs focus-visible:ring-2 focus-visible:ring-accent"
           >
             + Add Account
           </button>
@@ -265,23 +304,28 @@ export function CrmCompaniesView() {
       </div>
 
       {/* ── Companies Data Table ── */}
-      <div className="bg-white rounded-2xl border border-border overflow-hidden shadow-xs">
+      <div
+        role="region"
+        aria-label="Companies directory table"
+        className="bg-white rounded-2xl border border-border overflow-hidden shadow-xs"
+      >
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
               <tr className="bg-[#FAF9F5] border-b border-border text-[11px] font-bold text-ink-muted uppercase tracking-wider">
-                <th className="p-3.5">Company / Domain</th>
-                <th className="p-3.5">Industry</th>
-                <th className="p-3.5">Tier</th>
-                <th className="p-3.5">Active Deals</th>
-                <th className="p-3.5">Total Pipeline</th>
-                <th className="p-3.5">Account Owner</th>
+                <th scope="col" className="p-3.5">Company / Domain</th>
+                <th scope="col" className="p-3.5">Industry</th>
+                <th scope="col" className="p-3.5">Tier</th>
+                <th scope="col" className="p-3.5">Active Deals</th>
+                <th scope="col" className="p-3.5">Total Pipeline</th>
+                <th scope="col" className="p-3.5">Account Owner</th>
+                <th scope="col" className="p-3.5 text-right">360 View</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border/60">
               {filteredCompanies.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="p-8 text-center text-ink-muted">
+                  <td colSpan={7} className="p-8 text-center text-ink-muted">
                     No accounts found matching your query.
                   </td>
                 </tr>
@@ -297,10 +341,10 @@ export function CrmCompaniesView() {
                       <span
                         className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${
                           c.tier === 'Strategic'
-                            ? 'bg-purple-100 text-purple-800 border border-purple-200'
+                            ? 'bg-purple-100 text-purple-900 border border-purple-300'
                             : c.tier === 'Enterprise'
-                            ? 'bg-blue-100 text-blue-800 border border-blue-200'
-                            : 'bg-neutral-100 text-neutral-800'
+                            ? 'bg-blue-100 text-blue-900 border border-blue-300'
+                            : 'bg-neutral-100 text-neutral-900 border border-neutral-300'
                         }`}
                       >
                         {c.tier}
@@ -315,6 +359,16 @@ export function CrmCompaniesView() {
                     <td className="p-3.5 text-ink-muted font-medium">
                       {c.primaryContact.name}
                     </td>
+                    <td className="p-3.5 text-right">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedCompany(c)}
+                        aria-label={`View 360 profile for ${c.name}`}
+                        className="px-2.5 py-1 text-xs font-semibold rounded-lg bg-neutral-100 hover:bg-neutral-200 text-ink transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-accent"
+                      >
+                        Profile 360 →
+                      </button>
+                    </td>
                   </tr>
                 ))
               )}
@@ -323,43 +377,128 @@ export function CrmCompaniesView() {
         </div>
       </div>
 
+      {/* ── 360 Account Profile Drawer ── */}
+      {selectedCompany && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="company-360-title"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fade-in"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setSelectedCompany(null);
+          }}
+        >
+          <div className="bg-white rounded-2xl border border-border shadow-2xl max-w-lg w-full p-6 space-y-4 text-ink">
+            <div className="flex items-center justify-between pb-3 border-b border-border">
+              <div>
+                <span className="text-[10px] font-mono text-ink-muted uppercase">Account 360</span>
+                <h3 id="company-360-title" className="text-xl font-bold text-ink">
+                  {selectedCompany.name}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedCompany(null)}
+                aria-label="Close account modal"
+                className="text-ink-muted hover:text-ink text-sm p-1 rounded-lg hover:bg-neutral-100"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 text-xs bg-[#FAF9F5] p-3 rounded-xl border border-border">
+              <div>
+                <span className="text-ink-muted text-[10px] font-bold uppercase">Industry &amp; Tier</span>
+                <div className="font-semibold text-ink mt-0.5">{selectedCompany.industry}</div>
+                <div className="text-[11px] font-bold text-accent">{selectedCompany.tier} Account</div>
+              </div>
+              <div>
+                <span className="text-ink-muted text-[10px] font-bold uppercase">Location &amp; Size</span>
+                <div className="font-semibold text-ink mt-0.5">{selectedCompany.headquarters}</div>
+                <div className="text-ink-muted">{selectedCompany.employees} Employees</div>
+              </div>
+            </div>
+
+            <div className="p-3 rounded-xl border border-border text-xs space-y-1">
+              <span className="text-ink-muted text-[10px] font-bold uppercase">Pipeline Impact</span>
+              <div className="flex justify-between items-center text-sm font-mono font-bold text-ink">
+                <span>Total Active Deals: {selectedCompany.activeDealsCount}</span>
+                <span className="text-accent text-base">{selectedCompany.dealVolume}</span>
+              </div>
+              <div className="text-ink-muted text-[11px] pt-1">
+                Primary Sponsor: <strong>{selectedCompany.primaryContact.name}</strong> ({selectedCompany.primaryContact.email})
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2 border-t border-border">
+              <button
+                type="button"
+                onClick={() => setSelectedCompany(null)}
+                className="btn-primary text-xs py-2 px-4"
+              >
+                Close Profile
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ── Add Company Modal ── */}
       {newCompanyModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
-          <div className="bg-white rounded-2xl border border-border shadow-2xl max-w-md w-full p-6 space-y-4">
-            <h3 className="text-base font-bold text-ink">Register Corporate Account</h3>
-            <form onSubmit={handleCreateCompany} className="space-y-3">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="add-account-dialog-title"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setNewCompanyModalOpen(false);
+          }}
+        >
+          <div className="bg-white rounded-2xl border border-border shadow-2xl max-w-md w-full p-6 space-y-4 text-ink">
+            <h3 id="add-account-dialog-title" className="text-base font-bold text-ink">
+              Register Corporate Account
+            </h3>
+            <form onSubmit={handleCreateCompany} className="space-y-3 text-xs">
               <div>
-                <label className="text-xs font-semibold text-ink-muted block mb-1">Company Name</label>
+                <label htmlFor="new-comp-name" className="text-xs font-semibold text-ink block mb-1">
+                  Company Name *
+                </label>
                 <input
+                  id="new-comp-name"
                   type="text"
                   required
                   placeholder="e.g. Acme Corporation"
                   value={newCompanyName}
                   onChange={(e) => setNewCompanyName(e.target.value)}
-                  className="w-full text-xs p-2 rounded-xl border border-border bg-white text-ink"
+                  className="w-full text-xs p-2.5 rounded-xl border border-border bg-[#FAF9F5] text-ink focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent"
                 />
               </div>
               <div>
-                <label className="text-xs font-semibold text-ink-muted block mb-1">Domain</label>
+                <label htmlFor="new-comp-domain" className="text-xs font-semibold text-ink block mb-1">
+                  Domain Website
+                </label>
                 <input
+                  id="new-comp-domain"
                   type="text"
                   placeholder="e.g. acmecorp.com"
                   value={newCompanyDomain}
                   onChange={(e) => setNewCompanyDomain(e.target.value)}
-                  className="w-full text-xs p-2 rounded-xl border border-border bg-white text-ink"
+                  className="w-full text-xs p-2.5 rounded-xl border border-border bg-[#FAF9F5] text-ink focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent"
                 />
               </div>
               <div>
-                <label className="text-xs font-semibold text-ink-muted block mb-1">Industry</label>
+                <label htmlFor="new-comp-ind" className="text-xs font-semibold text-ink block mb-1">
+                  Industry
+                </label>
                 <input
+                  id="new-comp-ind"
                   type="text"
                   value={newCompanyIndustry}
                   onChange={(e) => setNewCompanyIndustry(e.target.value)}
-                  className="w-full text-xs p-2 rounded-xl border border-border bg-white text-ink"
+                  className="w-full text-xs p-2.5 rounded-xl border border-border bg-[#FAF9F5] text-ink focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent"
                 />
               </div>
-              <div className="flex justify-end gap-2 pt-2">
+              <div className="flex justify-end gap-2 pt-2 border-t border-border">
                 <button
                   type="button"
                   onClick={() => setNewCompanyModalOpen(false)}
@@ -369,7 +508,7 @@ export function CrmCompaniesView() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 text-xs font-bold rounded-lg bg-accent text-white hover:bg-[#853526]"
+                  className="px-4 py-1.5 text-xs font-bold rounded-lg bg-accent text-white hover:bg-[#853526] focus-visible:ring-2 focus-visible:ring-accent"
                 >
                   Create Account
                 </button>
@@ -393,8 +532,12 @@ export function CrmCompaniesView() {
       />
 
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#20211F] text-white text-xs font-medium px-4 py-2.5 rounded-xl shadow-2xl flex items-center gap-2 border border-white/10 animate-fade-in">
-          <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+        <div
+          role="status"
+          aria-live="polite"
+          className="fixed bottom-6 right-6 z-50 bg-[#20211F] text-white text-xs font-medium px-4 py-2.5 rounded-xl shadow-2xl flex items-center gap-2 border border-white/10 animate-fade-in"
+        >
+          <span className="w-2 h-2 rounded-full bg-accent animate-pulse" aria-hidden="true" />
           {toastMessage}
         </div>
       )}

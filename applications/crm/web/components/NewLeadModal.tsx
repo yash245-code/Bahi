@@ -68,11 +68,11 @@ export function NewLeadModal({ isOpen, onClose, onSubmit }: NewLeadModalProps) {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="bg-white rounded-2xl border border-border shadow-2xl max-w-lg w-full p-6 space-y-5 text-ink">
-        <div className="flex items-center justify-between pb-3 border-b border-border">
+      <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl border border-border dark:border-[#2E302A] shadow-2xl max-w-lg w-full p-6 space-y-5 text-ink dark:text-neutral-100">
+        <div className="flex items-center justify-between pb-3 border-b border-border dark:border-[#2E302A]">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-accent" />
-            <h2 id="new-lead-modal-title" className="text-base font-bold text-ink">
+            <h2 id="new-lead-modal-title" className="text-base font-bold text-ink dark:text-white">
               Capture New Inbound Lead
             </h2>
           </div>

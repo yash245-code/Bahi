@@ -89,12 +89,32 @@ export function CrmCompaniesView() {
   const [newCompanyIndustry, setNewCompanyIndustry] = useState('Enterprise Software');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [announcement, setAnnouncement] = useState<string | null>(null);
+  const [density, setDensity] = useState<'normal' | 'compact'>('normal');
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setAnnouncement(msg);
     setTimeout(() => setToastMessage((c) => (c === msg ? null : c)), 3500);
   };
+
+  const copyToClipboard = (text: string, label: string) => {
+    if (navigator?.clipboard?.writeText) {
+      navigator.clipboard.writeText(text);
+      showToast(`Copied ${label} to clipboard: ${text}`);
+    }
+  };
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedDensity = (localStorage.getItem('bahi-crm-density') as 'normal' | 'compact') || 'normal';
+      setDensity(savedDensity);
+      const handleDensityChange = (e: any) => {
+        if (e.detail?.density) setDensity(e.detail.density);
+      };
+      window.addEventListener('bahi-crm-density-change', handleDensityChange);
+      return () => window.removeEventListener('bahi-crm-density-change', handleDensityChange);
+    }
+  }, []);
 
   const loadCompanies = useCallback(async () => {
     try {
@@ -211,32 +231,32 @@ export function CrmCompaniesView() {
 
       {/* ── KPI Telemetry Row ── */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white rounded-2xl p-4 border border-border">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted">
+        <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl p-4 border border-border dark:border-[#2E302A]">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-[#A0A29C]">
             Total Corporate Accounts
           </span>
-          <div className="text-2xl font-black font-mono text-ink mt-1">
+          <div className="text-2xl font-black font-mono text-ink dark:text-[#F7F6F3] mt-1">
             {totalAccounts}
           </div>
-          <span className="text-[11px] text-emerald-700 font-semibold">Active Directory</span>
+          <span className="text-[11px] text-emerald-700 dark:text-emerald-400 font-semibold">Active Directory</span>
         </div>
-        <div className="bg-white rounded-2xl p-4 border border-border">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted">
+        <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl p-4 border border-border dark:border-[#2E302A]">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-[#A0A29C]">
             Combined Deal Volume
           </span>
-          <div className="text-2xl font-black font-mono text-ink mt-1">
+          <div className="text-2xl font-black font-mono text-ink dark:text-[#F7F6F3] mt-1">
             ${combinedVolume.toLocaleString()}
           </div>
-          <span className="text-[11px] text-ink-muted">Across all accounts</span>
+          <span className="text-[11px] text-ink-muted dark:text-[#A0A29C]">Across all accounts</span>
         </div>
-        <div className="bg-white rounded-2xl p-4 border border-border">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted">
+        <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl p-4 border border-border dark:border-[#2E302A]">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-[#A0A29C]">
             Avg Account Volume
           </span>
-          <div className="text-2xl font-black font-mono text-ink mt-1">
+          <div className="text-2xl font-black font-mono text-ink dark:text-[#F7F6F3] mt-1">
             ${avgAccountSize.toLocaleString()}
           </div>
-          <span className="text-[11px] text-ink-muted">Annualized pipeline attribution</span>
+          <span className="text-[11px] text-ink-muted dark:text-[#A0A29C]">Annualized pipeline attribution</span>
         </div>
       </div>
 
@@ -245,7 +265,7 @@ export function CrmCompaniesView() {
         <div className="flex items-center gap-2 flex-1 max-w-md">
           <div className="relative w-full">
             <svg
-              className="w-4 h-4 text-ink-muted absolute left-3 top-1/2 -translate-y-1/2"
+              className="w-4 h-4 text-ink-muted dark:text-[#A0A29C] absolute left-3 top-1/2 -translate-y-1/2"
               fill="none"
               viewBox="0 0 24 24"
               strokeWidth={2}
@@ -260,9 +280,22 @@ export function CrmCompaniesView() {
               placeholder="Search companies by name, domain, industry..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl border border-border bg-white text-ink placeholder:text-ink-muted/60 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent"
+              className="w-full pl-9 pr-8 py-1.5 text-xs rounded-xl border border-border dark:border-[#2E302A] bg-white dark:bg-[#1E1F1C] text-ink dark:text-[#F7F6F3] placeholder:text-ink-muted/60 dark:placeholder:text-[#A0A29C]/50 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent"
             />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                aria-label="Clear search"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-ink-muted dark:text-[#A0A29C] hover:text-ink dark:hover:text-white text-xs cursor-pointer"
+              >
+                ✕
+              </button>
+            )}
           </div>
+          <span className="text-[11px] font-mono text-ink-muted dark:text-[#A0A29C] whitespace-nowrap hidden sm:inline">
+            {filteredCompanies.length} of {companies.length}
+          </span>
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
@@ -274,8 +307,8 @@ export function CrmCompaniesView() {
                 aria-pressed={tierFilter === tier}
                 className={`px-2.5 py-1 text-xs font-semibold rounded-lg border capitalize transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-accent ${
                   tierFilter === tier
-                    ? 'bg-[#20211F] text-white border-[#20211F]'
-                    : 'bg-white text-ink-muted border-border hover:bg-neutral-100'
+                    ? 'bg-[#20211F] text-white dark:bg-white dark:text-[#20211F] border-[#20211F] dark:border-white shadow-2xs'
+                    : 'bg-white dark:bg-[#1E1F1C] text-ink-muted dark:text-[#A0A29C] border-border dark:border-[#2E302A] hover:bg-neutral-100 dark:hover:bg-[#252722]'
                 }`}
               >
                 {tier}
@@ -307,64 +340,89 @@ export function CrmCompaniesView() {
       <div
         role="region"
         aria-label="Companies directory table"
-        className="bg-white rounded-2xl border border-border overflow-hidden shadow-xs"
+        className="bg-white dark:bg-[#1E1F1C] rounded-2xl border border-border dark:border-[#2E302A] overflow-hidden shadow-xs"
       >
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="bg-[#FAF9F5] border-b border-border text-[11px] font-bold text-ink-muted uppercase tracking-wider">
-                <th scope="col" className="p-3.5">Company / Domain</th>
-                <th scope="col" className="p-3.5">Industry</th>
-                <th scope="col" className="p-3.5">Tier</th>
-                <th scope="col" className="p-3.5">Active Deals</th>
-                <th scope="col" className="p-3.5">Total Pipeline</th>
-                <th scope="col" className="p-3.5">Account Owner</th>
-                <th scope="col" className="p-3.5 text-right">360 View</th>
+              <tr className="bg-[#FAF9F5] dark:bg-[#141513] border-b border-border dark:border-[#2E302A] text-[11px] font-bold text-ink-muted dark:text-[#A0A29C] uppercase tracking-wider">
+                <th scope="col" className={density === 'compact' ? 'py-2 px-3' : 'p-3.5'}>Company / Domain</th>
+                <th scope="col" className={density === 'compact' ? 'py-2 px-3' : 'p-3.5'}>Industry</th>
+                <th scope="col" className={density === 'compact' ? 'py-2 px-3' : 'p-3.5'}>Tier</th>
+                <th scope="col" className={density === 'compact' ? 'py-2 px-3' : 'p-3.5'}>Active Deals</th>
+                <th scope="col" className={density === 'compact' ? 'py-2 px-3' : 'p-3.5'}>Total Pipeline</th>
+                <th scope="col" className={density === 'compact' ? 'py-2 px-3' : 'p-3.5'}>Account Owner</th>
+                <th scope="col" className={`${density === 'compact' ? 'py-2 px-3' : 'p-3.5'} text-right`}>360 View</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border/60">
+            <tbody className="divide-y divide-border/60 dark:divide-[#2E302A]">
               {filteredCompanies.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="p-8 text-center text-ink-muted">
+                  <td colSpan={7} className="p-8 text-center text-ink-muted dark:text-[#A0A29C]">
                     No accounts found matching your query.
                   </td>
                 </tr>
               ) : (
                 filteredCompanies.map((c) => (
-                  <tr key={c.id} className="hover:bg-neutral-50/80 transition-colors">
-                    <td className="p-3.5">
-                      <div className="font-bold text-ink">{c.name}</div>
-                      <div className="text-[11px] text-ink-muted font-mono">{c.domain}</div>
+                  <tr key={c.id} className="hover:bg-neutral-50/80 dark:hover:bg-[#252722] transition-colors">
+                    <td className={density === 'compact' ? 'py-2 px-3' : 'p-3.5'}>
+                      <div className="font-bold text-ink dark:text-[#F7F6F3]">{c.name}</div>
+                      <div className="flex items-center gap-1.5 text-[11px] text-ink-muted dark:text-[#A0A29C] font-mono">
+                        <span>{c.domain}</span>
+                        {c.domain !== 'N/A' && (
+                          <button
+                            type="button"
+                            onClick={() => copyToClipboard(c.domain, 'domain')}
+                            title="Copy domain"
+                            className="text-ink-muted dark:text-[#A0A29C] hover:text-accent text-[10px] cursor-pointer"
+                          >
+                            📋
+                          </button>
+                        )}
+                      </div>
                     </td>
-                    <td className="p-3.5 text-ink-muted">{c.industry}</td>
-                    <td className="p-3.5">
+                    <td className={`${density === 'compact' ? 'py-2 px-3' : 'p-3.5'} text-ink-muted dark:text-[#A0A29C]`}>{c.industry}</td>
+                    <td className={density === 'compact' ? 'py-2 px-3' : 'p-3.5'}>
                       <span
                         className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${
                           c.tier === 'Strategic'
-                            ? 'bg-purple-100 text-purple-900 border border-purple-300'
+                            ? 'bg-purple-100 dark:bg-purple-950/40 text-purple-900 dark:text-purple-300 border border-purple-300 dark:border-purple-800/40'
                             : c.tier === 'Enterprise'
-                            ? 'bg-blue-100 text-blue-900 border border-blue-300'
-                            : 'bg-neutral-100 text-neutral-900 border border-neutral-300'
+                            ? 'bg-blue-100 dark:bg-blue-950/40 text-blue-900 dark:text-blue-300 border border-blue-300 dark:border-blue-800/40'
+                            : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-700'
                         }`}
                       >
                         {c.tier}
                       </span>
                     </td>
-                    <td className="p-3.5 font-mono font-bold text-ink">
+                    <td className={`${density === 'compact' ? 'py-2 px-3' : 'p-3.5'} font-mono font-bold text-ink dark:text-[#F7F6F3]`}>
                       {c.activeDealsCount}
                     </td>
-                    <td className="p-3.5 font-mono font-bold text-ink">
+                    <td className={`${density === 'compact' ? 'py-2 px-3' : 'p-3.5'} font-mono font-bold text-ink dark:text-[#F7F6F3]`}>
                       {c.dealVolume}
                     </td>
-                    <td className="p-3.5 text-ink-muted font-medium">
-                      {c.primaryContact.name}
+                    <td className={`${density === 'compact' ? 'py-2 px-3' : 'p-3.5'} text-ink-muted dark:text-[#A0A29C] font-medium`}>
+                      <div className="text-ink dark:text-[#F7F6F3]">{c.primaryContact.name}</div>
+                      {c.primaryContact.email !== 'N/A' && (
+                        <div className="flex items-center gap-1 text-[10px] font-mono">
+                          <span>{c.primaryContact.email}</span>
+                          <button
+                            type="button"
+                            onClick={() => copyToClipboard(c.primaryContact.email, 'email')}
+                            title="Copy email"
+                            className="hover:text-accent cursor-pointer"
+                          >
+                            📋
+                          </button>
+                        </div>
+                      )}
                     </td>
-                    <td className="p-3.5 text-right">
+                    <td className={`${density === 'compact' ? 'py-2 px-3' : 'p-3.5'} text-right`}>
                       <button
                         type="button"
                         onClick={() => setSelectedCompany(c)}
                         aria-label={`View 360 profile for ${c.name}`}
-                        className="px-2.5 py-1 text-xs font-semibold rounded-lg bg-neutral-100 hover:bg-neutral-200 text-ink transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-accent"
+                        className="px-2.5 py-1 text-xs font-semibold rounded-lg bg-neutral-100 dark:bg-[#2A2B27] hover:bg-neutral-200 dark:hover:bg-[#343630] text-ink dark:text-[#F7F6F3] transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-accent"
                       >
                         Profile 360 →
                       </button>
@@ -388,11 +446,11 @@ export function CrmCompaniesView() {
             if (e.target === e.currentTarget) setSelectedCompany(null);
           }}
         >
-          <div className="bg-white rounded-2xl border border-border shadow-2xl max-w-lg w-full p-6 space-y-4 text-ink">
-            <div className="flex items-center justify-between pb-3 border-b border-border">
+          <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl border border-border dark:border-[#2E302A] shadow-2xl max-w-lg w-full p-6 space-y-4 text-ink dark:text-[#F7F6F3]">
+            <div className="flex items-center justify-between pb-3 border-b border-border dark:border-[#2E302A]">
               <div>
-                <span className="text-[10px] font-mono text-ink-muted uppercase">Account 360</span>
-                <h3 id="company-360-title" className="text-xl font-bold text-ink">
+                <span className="text-[10px] font-mono text-ink-muted dark:text-[#A0A29C] uppercase">Account 360</span>
+                <h3 id="company-360-title" className="text-xl font-bold text-ink dark:text-[#F7F6F3]">
                   {selectedCompany.name}
                 </h3>
               </div>
@@ -400,37 +458,37 @@ export function CrmCompaniesView() {
                 type="button"
                 onClick={() => setSelectedCompany(null)}
                 aria-label="Close account modal"
-                className="text-ink-muted hover:text-ink text-sm p-1 rounded-lg hover:bg-neutral-100"
+                className="text-ink-muted dark:text-[#A0A29C] hover:text-ink dark:hover:text-white text-sm p-1 rounded-lg hover:bg-neutral-100 dark:hover:bg-[#252722]"
               >
                 ✕
               </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 text-xs bg-[#FAF9F5] p-3 rounded-xl border border-border">
+            <div className="grid grid-cols-2 gap-3 text-xs bg-[#FAF9F5] dark:bg-[#141513] p-3 rounded-xl border border-border dark:border-[#2E302A]">
               <div>
-                <span className="text-ink-muted text-[10px] font-bold uppercase">Industry &amp; Tier</span>
-                <div className="font-semibold text-ink mt-0.5">{selectedCompany.industry}</div>
+                <span className="text-ink-muted dark:text-[#A0A29C] text-[10px] font-bold uppercase">Industry &amp; Tier</span>
+                <div className="font-semibold text-ink dark:text-[#F7F6F3] mt-0.5">{selectedCompany.industry}</div>
                 <div className="text-[11px] font-bold text-accent">{selectedCompany.tier} Account</div>
               </div>
               <div>
-                <span className="text-ink-muted text-[10px] font-bold uppercase">Location &amp; Size</span>
-                <div className="font-semibold text-ink mt-0.5">{selectedCompany.headquarters}</div>
-                <div className="text-ink-muted">{selectedCompany.employees} Employees</div>
+                <span className="text-ink-muted dark:text-[#A0A29C] text-[10px] font-bold uppercase">Location &amp; Size</span>
+                <div className="font-semibold text-ink dark:text-[#F7F6F3] mt-0.5">{selectedCompany.headquarters}</div>
+                <div className="text-ink-muted dark:text-[#A0A29C]">{selectedCompany.employees} Employees</div>
               </div>
             </div>
 
-            <div className="p-3 rounded-xl border border-border text-xs space-y-1">
-              <span className="text-ink-muted text-[10px] font-bold uppercase">Pipeline Impact</span>
-              <div className="flex justify-between items-center text-sm font-mono font-bold text-ink">
+            <div className="p-3 rounded-xl border border-border dark:border-[#2E302A] text-xs space-y-1">
+              <span className="text-ink-muted dark:text-[#A0A29C] text-[10px] font-bold uppercase">Pipeline Impact</span>
+              <div className="flex justify-between items-center text-sm font-mono font-bold text-ink dark:text-[#F7F6F3]">
                 <span>Total Active Deals: {selectedCompany.activeDealsCount}</span>
                 <span className="text-accent text-base">{selectedCompany.dealVolume}</span>
               </div>
-              <div className="text-ink-muted text-[11px] pt-1">
-                Primary Sponsor: <strong>{selectedCompany.primaryContact.name}</strong> ({selectedCompany.primaryContact.email})
+              <div className="text-ink-muted dark:text-[#A0A29C] text-[11px] pt-1">
+                Primary Sponsor: <strong className="text-ink dark:text-[#F7F6F3]">{selectedCompany.primaryContact.name}</strong> ({selectedCompany.primaryContact.email})
               </div>
             </div>
 
-            <div className="flex justify-end gap-2 pt-2 border-t border-border">
+            <div className="flex justify-end gap-2 pt-2 border-t border-border dark:border-[#2E302A]">
               <button
                 type="button"
                 onClick={() => setSelectedCompany(null)}
@@ -454,13 +512,13 @@ export function CrmCompaniesView() {
             if (e.target === e.currentTarget) setNewCompanyModalOpen(false);
           }}
         >
-          <div className="bg-white rounded-2xl border border-border shadow-2xl max-w-md w-full p-6 space-y-4 text-ink">
-            <h3 id="add-account-dialog-title" className="text-base font-bold text-ink">
+          <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl border border-border dark:border-[#2E302A] shadow-2xl max-w-md w-full p-6 space-y-4 text-ink dark:text-[#F7F6F3]">
+            <h3 id="add-account-dialog-title" className="text-base font-bold text-ink dark:text-[#F7F6F3]">
               Register Corporate Account
             </h3>
             <form onSubmit={handleCreateCompany} className="space-y-3 text-xs">
               <div>
-                <label htmlFor="new-comp-name" className="text-xs font-semibold text-ink block mb-1">
+                <label htmlFor="new-comp-name" className="text-xs font-semibold text-ink dark:text-[#F7F6F3] block mb-1">
                   Company Name *
                 </label>
                 <input
@@ -470,11 +528,11 @@ export function CrmCompaniesView() {
                   placeholder="e.g. Acme Corporation"
                   value={newCompanyName}
                   onChange={(e) => setNewCompanyName(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-xl border border-border bg-[#FAF9F5] text-ink focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent"
+                  className="w-full text-xs p-2.5 rounded-xl border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] text-ink dark:text-[#F7F6F3] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent"
                 />
               </div>
               <div>
-                <label htmlFor="new-comp-domain" className="text-xs font-semibold text-ink block mb-1">
+                <label htmlFor="new-comp-domain" className="text-xs font-semibold text-ink dark:text-[#F7F6F3] block mb-1">
                   Domain Website
                 </label>
                 <input
@@ -483,11 +541,11 @@ export function CrmCompaniesView() {
                   placeholder="e.g. acmecorp.com"
                   value={newCompanyDomain}
                   onChange={(e) => setNewCompanyDomain(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-xl border border-border bg-[#FAF9F5] text-ink focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent"
+                  className="w-full text-xs p-2.5 rounded-xl border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] text-ink dark:text-[#F7F6F3] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent"
                 />
               </div>
               <div>
-                <label htmlFor="new-comp-ind" className="text-xs font-semibold text-ink block mb-1">
+                <label htmlFor="new-comp-ind" className="text-xs font-semibold text-ink dark:text-[#F7F6F3] block mb-1">
                   Industry
                 </label>
                 <input
@@ -495,14 +553,14 @@ export function CrmCompaniesView() {
                   type="text"
                   value={newCompanyIndustry}
                   onChange={(e) => setNewCompanyIndustry(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-xl border border-border bg-[#FAF9F5] text-ink focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent"
+                  className="w-full text-xs p-2.5 rounded-xl border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] text-ink dark:text-[#F7F6F3] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent"
                 />
               </div>
-              <div className="flex justify-end gap-2 pt-2 border-t border-border">
+              <div className="flex justify-end gap-2 pt-2 border-t border-border dark:border-[#2E302A]">
                 <button
                   type="button"
                   onClick={() => setNewCompanyModalOpen(false)}
-                  className="px-3 py-1.5 text-xs rounded-lg border border-border text-ink-muted hover:bg-neutral-100"
+                  className="px-3 py-1.5 text-xs rounded-lg border border-border dark:border-[#2E302A] text-ink-muted dark:text-[#A0A29C] hover:bg-neutral-100 dark:hover:bg-[#252722]"
                 >
                   Cancel
                 </button>

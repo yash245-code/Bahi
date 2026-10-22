@@ -5,6 +5,8 @@ export * from './components/CrmAnnouncer';
 export * from './components/CrmOmnibarModal';
 export * from './components/CrmShortcutsModal';
 export * from './components/CrmDataCenterModal';
+export * from './components/CrmThemeToggle';
+export * from './components/CrmQuickNoteModal';
 export * from './views/CrmDashboardView';
 export * from './views/CrmPipelineView';
 export * from './views/CrmLeadsView';

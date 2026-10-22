@@ -149,9 +149,9 @@ export function CrmDataCenterModal({
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="bg-white rounded-2xl border border-border shadow-2xl max-w-2xl w-full p-6 space-y-4 text-ink">
+      <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl border border-border dark:border-[#2E302A] shadow-2xl max-w-2xl w-full p-6 space-y-4 text-ink dark:text-neutral-100">
         {/* Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-border">
+        <div className="flex items-center justify-between pb-3 border-b border-border dark:border-[#2E302A]">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-accent" />
             <h2 id="datacenter-dialog-title" className="text-base font-bold text-ink">

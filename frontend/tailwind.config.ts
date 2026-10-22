@@ -95,6 +95,11 @@ const config: Config = {
             bg: '#332A11',
             border: '#544620',
           },
+          services: {
+            DEFAULT: '#2DD4BF',
+            bg: '#133531',
+            border: '#1F534D',
+          },
         },
         // Neutral Ramp (50 lightest -> 950 darkest)
         neutral: {

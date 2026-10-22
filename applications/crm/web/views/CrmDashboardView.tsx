@@ -134,76 +134,76 @@ export function CrmDashboardView() {
       {/* ── Key Financial KPI Cards ── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Closed Won Revenue */}
-        <div className="bg-white rounded-2xl p-5 border border-border shadow-2xs space-y-2">
+        <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl p-5 border border-border dark:border-[#2E302A] shadow-2xs space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-[#A0A29C]">
               Closed Won Revenue
             </span>
-            <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
+            <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/40">
               +{teamAttainment}% Quota
             </span>
           </div>
-          <div className="text-3xl font-black font-mono text-[#1F7A4D]">
+          <div className="text-3xl font-black font-mono text-[#1F7A4D] dark:text-emerald-400">
             ${totalWonRevenue.toLocaleString()}
           </div>
-          <div className="flex items-center justify-between text-[11px] text-ink-muted pt-1 border-t border-border/40">
+          <div className="flex items-center justify-between text-[11px] text-ink-muted dark:text-[#A0A29C] pt-1 border-t border-border/40 dark:border-[#2E302A]">
             <span>Target: ${teamQuota.toLocaleString()}</span>
-            <span className="font-semibold text-emerald-700">13 Deals Won</span>
+            <span className="font-semibold text-emerald-700 dark:text-emerald-400">13 Deals Won</span>
           </div>
         </div>
 
         {/* Total Active Pipeline */}
-        <div className="bg-white rounded-2xl p-5 border border-border shadow-2xs space-y-2">
+        <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl p-5 border border-border dark:border-[#2E302A] shadow-2xs space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-[#A0A29C]">
               Active Pipeline
             </span>
-            <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-800 border border-blue-200">
+            <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 border border-blue-200 dark:border-blue-800/40">
               11 Deals
             </span>
           </div>
-          <div className="text-3xl font-black font-mono text-ink">
+          <div className="text-3xl font-black font-mono text-ink dark:text-[#F7F6F3]">
             ${totalOpenPipeline.toLocaleString()}
           </div>
-          <div className="flex items-center justify-between text-[11px] text-ink-muted pt-1 border-t border-border/40">
-            <span>Weighted: <strong>${weightedPipeline.toLocaleString()}</strong></span>
+          <div className="flex items-center justify-between text-[11px] text-ink-muted dark:text-[#A0A29C] pt-1 border-t border-border/40 dark:border-[#2E302A]">
+            <span>Weighted: <strong className="text-ink dark:text-[#F7F6F3]">${weightedPipeline.toLocaleString()}</strong></span>
             <span>68% Win Rate</span>
           </div>
         </div>
 
         {/* Avg Sales Velocity */}
-        <div className="bg-white rounded-2xl p-5 border border-border shadow-2xs space-y-2">
+        <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl p-5 border border-border dark:border-[#2E302A] shadow-2xs space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-[#A0A29C]">
               Sales Cycle Velocity
             </span>
-            <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-neutral-100 text-neutral-800 border border-neutral-300">
+            <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-neutral-100 text-neutral-800 dark:bg-neutral-800 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-700">
               High Speed
             </span>
           </div>
           <div className="text-3xl font-black font-mono text-accent">
             19.4 Days
           </div>
-          <div className="flex items-center justify-between text-[11px] text-ink-muted pt-1 border-t border-border/40">
-            <span>Avg Deal: <strong>$24,700</strong></span>
+          <div className="flex items-center justify-between text-[11px] text-ink-muted dark:text-[#A0A29C] pt-1 border-t border-border/40 dark:border-[#2E302A]">
+            <span>Avg Deal: <strong className="text-ink dark:text-[#F7F6F3]">$24,700</strong></span>
             <span>-3.2d vs Last Qtr</span>
           </div>
         </div>
 
         {/* Stalled / Rotting Alert */}
-        <div className="bg-white rounded-2xl p-5 border border-border shadow-2xs space-y-2">
+        <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl p-5 border border-border dark:border-[#2E302A] shadow-2xs space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-[#A0A29C]">
               Pipeline Health
             </span>
-            <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300">
+            <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 dark:bg-amber-900/30 dark:text-amber-300 border border-amber-300 dark:border-amber-700/50">
               Action Needed
             </span>
           </div>
-          <div className="text-3xl font-black font-mono text-amber-800">
+          <div className="text-3xl font-black font-mono text-amber-800 dark:text-amber-400">
             1 Stalled Deal
           </div>
-          <div className="flex items-center justify-between text-[11px] text-ink-muted pt-1 border-t border-border/40">
+          <div className="flex items-center justify-between text-[11px] text-ink-muted dark:text-[#A0A29C] pt-1 border-t border-border/40 dark:border-[#2E302A]">
             <span>DataFlow Sync (8d)</span>
             <Link href="/crm" className="font-bold text-accent hover:underline">
               Review Pipeline →
@@ -217,13 +217,13 @@ export function CrmDashboardView() {
         {/* Left Column: High-Value Deal Spotlight (2 cols on large) */}
         <div className="lg:col-span-2 space-y-6">
           {/* Spotlight Deals */}
-          <div className="bg-white rounded-2xl p-5 border border-border shadow-xs space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-border/60">
+          <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl p-5 border border-border dark:border-[#2E302A] shadow-xs space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-border/60 dark:border-[#2E302A]">
               <div>
-                <h3 className="text-sm font-bold text-ink">
+                <h3 className="text-sm font-bold text-ink dark:text-[#F7F6F3]">
                   High-Value Opportunity Spotlight (&gt;$15,000)
                 </h3>
-                <p className="text-[11px] text-ink-muted">
+                <p className="text-[11px] text-ink-muted dark:text-[#A0A29C]">
                   Deals with projected close this quarter requiring executive sponsorship
                 </p>
               </div>
@@ -239,16 +239,16 @@ export function CrmDashboardView() {
               {highValueSpotlight.map((deal) => (
                 <div
                   key={deal.id}
-                  className="p-3.5 rounded-xl bg-[#FAF9F5] border border-border/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-neutral-50 transition-colors"
+                  className="p-3.5 rounded-xl bg-[#FAF9F5] dark:bg-[#141513] border border-border/80 dark:border-[#2E302A] flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-neutral-50 dark:hover:bg-[#252722] transition-colors"
                 >
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-ink text-xs">{deal.title}</span>
+                      <span className="font-bold text-ink dark:text-[#F7F6F3] text-xs">{deal.title}</span>
                       <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-accent/10 text-accent border border-accent/20">
                         {deal.company}
                       </span>
                     </div>
-                    <div className="flex items-center gap-3 text-[11px] text-ink-muted">
+                    <div className="flex items-center gap-3 text-[11px] text-ink-muted dark:text-[#A0A29C]">
                       <span>Owner: <strong>{deal.rep}</strong></span>
                       <span>Target Close: <strong>{deal.closeDate}</strong></span>
                       <span>Prob: <strong>{deal.probability}%</strong></span>
@@ -257,10 +257,10 @@ export function CrmDashboardView() {
 
                   <div className="flex items-center gap-3 justify-between sm:justify-end">
                     <div className="text-right">
-                      <div className="font-mono font-black text-sm text-ink">
+                      <div className="font-mono font-black text-sm text-ink dark:text-[#F7F6F3]">
                         ${deal.amount.toLocaleString()}
                       </div>
-                      <span className="text-[10px] text-emerald-700 font-semibold">
+                      <span className="text-[10px] text-emerald-700 dark:text-emerald-400 font-semibold">
                         Weighted: ${Math.round((deal.amount * deal.probability) / 100).toLocaleString()}
                       </span>
                     </div>
@@ -277,39 +277,39 @@ export function CrmDashboardView() {
           </div>
 
           {/* Conversion Funnel Breakdown */}
-          <div className="bg-white rounded-2xl p-5 border border-border shadow-xs space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-border/60">
-              <h3 className="text-sm font-bold text-ink">
+          <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl p-5 border border-border dark:border-[#2E302A] shadow-xs space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-border/60 dark:border-[#2E302A]">
+              <h3 className="text-sm font-bold text-ink dark:text-[#F7F6F3]">
                 Sales Pipeline Conversion Funnel
               </h3>
-              <span className="text-xs text-ink-muted">Cumulative Stage Progression</span>
+              <span className="text-xs text-ink-muted dark:text-[#A0A29C]">Cumulative Stage Progression</span>
             </div>
 
             <div className="grid grid-cols-5 gap-2 text-center text-xs">
-              <div className="p-3 rounded-xl bg-[#FAF9F5] border border-border space-y-1">
-                <span className="text-[10px] font-bold uppercase text-ink-muted">1. Inbound Leads</span>
-                <div className="text-lg font-black font-mono text-ink">48</div>
-                <span className="text-[10px] text-ink-muted">100% Volume</span>
+              <div className="p-3 rounded-xl bg-[#FAF9F5] dark:bg-[#141513] border border-border dark:border-[#2E302A] space-y-1">
+                <span className="text-[10px] font-bold uppercase text-ink-muted dark:text-[#A0A29C]">1. Inbound Leads</span>
+                <div className="text-lg font-black font-mono text-ink dark:text-[#F7F6F3]">48</div>
+                <span className="text-[10px] text-ink-muted dark:text-[#A0A29C]">100% Volume</span>
               </div>
-              <div className="p-3 rounded-xl bg-[#FAF9F5] border border-border space-y-1">
-                <span className="text-[10px] font-bold uppercase text-ink-muted">2. Qualified</span>
-                <div className="text-lg font-black font-mono text-blue-700">32</div>
-                <span className="text-[10px] text-emerald-700 font-bold">66.7% pass</span>
+              <div className="p-3 rounded-xl bg-[#FAF9F5] dark:bg-[#141513] border border-border dark:border-[#2E302A] space-y-1">
+                <span className="text-[10px] font-bold uppercase text-ink-muted dark:text-[#A0A29C]">2. Qualified</span>
+                <div className="text-lg font-black font-mono text-blue-700 dark:text-blue-400">32</div>
+                <span className="text-[10px] text-emerald-700 dark:text-emerald-400 font-bold">66.7% pass</span>
               </div>
-              <div className="p-3 rounded-xl bg-[#FAF9F5] border border-border space-y-1">
-                <span className="text-[10px] font-bold uppercase text-ink-muted">3. Proposal</span>
-                <div className="text-lg font-black font-mono text-amber-700">21</div>
-                <span className="text-[10px] text-ink-muted">65.6% pass</span>
+              <div className="p-3 rounded-xl bg-[#FAF9F5] dark:bg-[#141513] border border-border dark:border-[#2E302A] space-y-1">
+                <span className="text-[10px] font-bold uppercase text-ink-muted dark:text-[#A0A29C]">3. Proposal</span>
+                <div className="text-lg font-black font-mono text-amber-700 dark:text-amber-400">21</div>
+                <span className="text-[10px] text-ink-muted dark:text-[#A0A29C]">65.6% pass</span>
               </div>
-              <div className="p-3 rounded-xl bg-[#FAF9F5] border border-border space-y-1">
-                <span className="text-[10px] font-bold uppercase text-ink-muted">4. Negotiation</span>
+              <div className="p-3 rounded-xl bg-[#FAF9F5] dark:bg-[#141513] border border-border dark:border-[#2E302A] space-y-1">
+                <span className="text-[10px] font-bold uppercase text-ink-muted dark:text-[#A0A29C]">4. Negotiation</span>
                 <div className="text-lg font-black font-mono text-accent">16</div>
-                <span className="text-[10px] text-ink-muted">76.2% pass</span>
+                <span className="text-[10px] text-ink-muted dark:text-[#A0A29C]">76.2% pass</span>
               </div>
-              <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 space-y-1">
-                <span className="text-[10px] font-bold uppercase text-emerald-800">5. Closed Won</span>
-                <div className="text-lg font-black font-mono text-emerald-800">13</div>
-                <span className="text-[10px] text-emerald-700 font-bold">81.3% win</span>
+              <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/50 space-y-1">
+                <span className="text-[10px] font-bold uppercase text-emerald-800 dark:text-emerald-300">5. Closed Won</span>
+                <div className="text-lg font-black font-mono text-emerald-800 dark:text-emerald-300">13</div>
+                <span className="text-[10px] text-emerald-700 dark:text-emerald-400 font-bold">81.3% win</span>
               </div>
             </div>
           </div>
@@ -318,9 +318,9 @@ export function CrmDashboardView() {
         {/* Right Column: Sales Rep Leaderboard & Recent Activity Feed */}
         <div className="space-y-6">
           {/* Rep Leaderboard */}
-          <div className="bg-white rounded-2xl p-5 border border-border shadow-xs space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-border/60">
-              <h3 className="text-sm font-bold text-ink">Sales Rep Leaderboard</h3>
+          <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl p-5 border border-border dark:border-[#2E302A] shadow-xs space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-border/60 dark:border-[#2E302A]">
+              <h3 className="text-sm font-bold text-ink dark:text-[#F7F6F3]">Sales Rep Leaderboard</h3>
               <span className="text-[10px] font-bold uppercase text-accent bg-accent/10 px-2 py-0.5 rounded-full">
                 Top Earners
               </span>
@@ -330,29 +330,29 @@ export function CrmDashboardView() {
               {leaderboardData.map((rep, idx) => (
                 <div
                   key={rep.id}
-                  className="p-3 rounded-xl bg-[#FAF9F5] border border-border/80 space-y-2"
+                  className="p-3 rounded-xl bg-[#FAF9F5] dark:bg-[#141513] border border-border/80 dark:border-[#2E302A] space-y-2"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="w-5 h-5 rounded-full bg-[#20211F] text-white flex items-center justify-center font-bold text-[10px]">
+                      <span className="w-5 h-5 rounded-full bg-[#20211F] dark:bg-white text-white dark:text-[#20211F] flex items-center justify-center font-bold text-[10px]">
                         {idx + 1}
                       </span>
                       <div>
-                        <div className="font-bold text-xs text-ink">{rep.name}</div>
-                        <div className="text-[10px] text-ink-muted">{rep.role}</div>
+                        <div className="font-bold text-xs text-ink dark:text-[#F7F6F3]">{rep.name}</div>
+                        <div className="text-[10px] text-ink-muted dark:text-[#A0A29C]">{rep.role}</div>
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="font-mono font-bold text-xs text-[#1F7A4D]">
+                      <div className="font-mono font-bold text-xs text-[#1F7A4D] dark:text-emerald-400">
                         ${rep.wonRevenue.toLocaleString()}
                       </div>
-                      <span className="text-[10px] font-semibold text-ink-muted">
+                      <span className="text-[10px] font-semibold text-ink-muted dark:text-[#A0A29C]">
                         {rep.attainmentPercent}% Quota
                       </span>
                     </div>
                   </div>
 
-                  <div className="w-full h-1.5 bg-neutral-200 rounded-full overflow-hidden">
+                  <div className="w-full h-1.5 bg-neutral-200 dark:bg-neutral-800 rounded-full overflow-hidden">
                     <div
                       className="h-full bg-accent rounded-full transition-all duration-300"
                       style={{ width: `${Math.min(rep.attainmentPercent, 100)}%` }}
@@ -364,19 +364,19 @@ export function CrmDashboardView() {
           </div>
 
           {/* Real-time Activity & Telemetry Stream */}
-          <div className="bg-white rounded-2xl p-5 border border-border shadow-xs space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-border/60">
-              <h3 className="text-sm font-bold text-ink">Live Activity Feed</h3>
+          <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl p-5 border border-border dark:border-[#2E302A] shadow-xs space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-border/60 dark:border-[#2E302A]">
+              <h3 className="text-sm font-bold text-ink dark:text-[#F7F6F3]">Live Activity Feed</h3>
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             </div>
 
             <div className="space-y-3 text-xs">
               {recentFeed.map((item) => (
-                <div key={item.id} className="flex items-start gap-2.5 pb-2.5 border-b border-border/40 last:border-b-0">
-                  <span className="text-[10px] text-ink-muted font-mono shrink-0 mt-0.5">
+                <div key={item.id} className="flex items-start gap-2.5 pb-2.5 border-b border-border/40 dark:border-[#2E302A] last:border-b-0">
+                  <span className="text-[10px] text-ink-muted dark:text-[#A0A29C] font-mono shrink-0 mt-0.5">
                     {item.time}
                   </span>
-                  <p className="text-ink text-[11px] leading-snug">
+                  <p className="text-ink dark:text-[#F7F6F3] text-[11px] leading-snug">
                     {item.text}
                   </p>
                 </div>

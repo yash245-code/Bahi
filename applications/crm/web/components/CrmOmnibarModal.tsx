@@ -151,9 +151,9 @@ export function CrmOmnibarModal({ isOpen, onClose }: CrmOmnibarModalProps) {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="bg-white rounded-2xl border border-border shadow-2xl max-w-2xl w-full overflow-hidden text-ink">
+      <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl border border-border dark:border-[#2E302A] shadow-2xl max-w-2xl w-full overflow-hidden text-ink dark:text-neutral-100">
         {/* Search Input Bar */}
-        <div className="relative flex items-center border-b border-border px-4 py-3 bg-[#FAF9F5]">
+        <div className="relative flex items-center border-b border-border dark:border-[#2E302A] px-4 py-3 bg-[#FAF9F5] dark:bg-[#141513]">
           <svg
             className="w-5 h-5 text-ink-muted mr-3 shrink-0"
             fill="none"

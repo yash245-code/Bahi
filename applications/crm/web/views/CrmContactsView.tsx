@@ -81,12 +81,32 @@ export function CrmContactsView() {
   const [jobTitle, setJobTitle] = useState('');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [announcement, setAnnouncement] = useState<string | null>(null);
+  const [density, setDensity] = useState<'normal' | 'compact'>('normal');
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setAnnouncement(msg);
     setTimeout(() => setToastMessage((c) => (c === msg ? null : c)), 3500);
   };
+
+  const copyToClipboard = (text: string, label: string) => {
+    if (navigator?.clipboard?.writeText) {
+      navigator.clipboard.writeText(text);
+      showToast(`Copied ${label} to clipboard: ${text}`);
+    }
+  };
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedDensity = (localStorage.getItem('bahi-crm-density') as 'normal' | 'compact') || 'normal';
+      setDensity(savedDensity);
+      const handleDensityChange = (e: any) => {
+        if (e.detail?.density) setDensity(e.detail.density);
+      };
+      window.addEventListener('bahi-crm-density-change', handleDensityChange);
+      return () => window.removeEventListener('bahi-crm-density-change', handleDensityChange);
+    }
+  }, []);
 
   const loadContacts = useCallback(async () => {
     try {
@@ -200,7 +220,7 @@ export function CrmContactsView() {
         <div className="flex items-center gap-2 flex-1 max-w-md">
           <div className="relative w-full">
             <svg
-              className="w-4 h-4 text-ink-muted absolute left-3 top-1/2 -translate-y-1/2"
+              className="w-4 h-4 text-ink-muted dark:text-[#A0A29C] absolute left-3 top-1/2 -translate-y-1/2"
               fill="none"
               viewBox="0 0 24 24"
               strokeWidth={2}
@@ -215,9 +235,22 @@ export function CrmContactsView() {
               placeholder="Search contacts by name, company, email..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl border border-border bg-white text-ink placeholder:text-ink-muted/60 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent"
+              className="w-full pl-9 pr-8 py-1.5 text-xs rounded-xl border border-border dark:border-[#2E302A] bg-white dark:bg-[#1E1F1C] text-ink dark:text-[#F7F6F3] placeholder:text-ink-muted/60 dark:placeholder:text-[#A0A29C]/50 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent"
             />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                aria-label="Clear search"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-ink-muted dark:text-[#A0A29C] hover:text-ink dark:hover:text-white text-xs cursor-pointer"
+              >
+                ✕
+              </button>
+            )}
           </div>
+          <span className="text-[11px] font-mono text-ink-muted dark:text-[#A0A29C] whitespace-nowrap hidden sm:inline">
+            {filteredContacts.length} of {contacts.length}
+          </span>
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
@@ -229,8 +262,8 @@ export function CrmContactsView() {
                 aria-pressed={stageFilter === st}
                 className={`px-2.5 py-1 text-xs font-semibold rounded-lg border capitalize transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-accent ${
                   stageFilter === st
-                    ? 'bg-[#20211F] text-white border-[#20211F]'
-                    : 'bg-white text-ink-muted border-border hover:bg-neutral-100'
+                    ? 'bg-[#20211F] text-white dark:bg-white dark:text-[#20211F] border-[#20211F] dark:border-white shadow-2xs'
+                    : 'bg-white dark:bg-[#1E1F1C] text-ink-muted dark:text-[#A0A29C] border-border dark:border-[#2E302A] hover:bg-neutral-100 dark:hover:bg-[#252722]'
                 }`}
               >
                 {st}
@@ -262,77 +295,101 @@ export function CrmContactsView() {
       <div
         role="region"
         aria-label="Stakeholders directory"
-        className="bg-white rounded-2xl border border-border overflow-hidden shadow-xs"
+        className="bg-white dark:bg-[#1E1F1C] rounded-2xl border border-border dark:border-[#2E302A] overflow-hidden shadow-xs"
       >
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="bg-[#FAF9F5] border-b border-border text-[11px] font-bold text-ink-muted uppercase tracking-wider">
-                <th scope="col" className="p-3.5">Full Name &amp; Title</th>
-                <th scope="col" className="p-3.5">Company / Account</th>
-                <th scope="col" className="p-3.5">Email &amp; Phone</th>
-                <th scope="col" className="p-3.5">Lifecycle Stage</th>
-                <th scope="col" className="p-3.5">Last Contacted</th>
-                <th scope="col" className="p-3.5 text-right">Quick Channels</th>
+              <tr className="bg-[#FAF9F5] dark:bg-[#141513] border-b border-border dark:border-[#2E302A] text-[11px] font-bold text-ink-muted dark:text-[#A0A29C] uppercase tracking-wider">
+                <th scope="col" className={density === 'compact' ? 'py-2 px-3' : 'p-3.5'}>Full Name &amp; Title</th>
+                <th scope="col" className={density === 'compact' ? 'py-2 px-3' : 'p-3.5'}>Company / Account</th>
+                <th scope="col" className={density === 'compact' ? 'py-2 px-3' : 'p-3.5'}>Email &amp; Phone</th>
+                <th scope="col" className={density === 'compact' ? 'py-2 px-3' : 'p-3.5'}>Lifecycle Stage</th>
+                <th scope="col" className={density === 'compact' ? 'py-2 px-3' : 'p-3.5'}>Last Contacted</th>
+                <th scope="col" className={`${density === 'compact' ? 'py-2 px-3' : 'p-3.5'} text-right`}>Quick Channels</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border/60">
+            <tbody className="divide-y divide-border/60 dark:divide-[#2E302A]">
               {filteredContacts.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="p-8 text-center text-ink-muted">
+                  <td colSpan={6} className="p-8 text-center text-ink-muted dark:text-[#A0A29C]">
                     No contacts found matching your query.
                   </td>
                 </tr>
               ) : (
                 filteredContacts.map((c) => (
-                  <tr key={c.id} className="hover:bg-neutral-50/80 transition-colors">
-                    <td className="p-3.5">
+                  <tr key={c.id} className="hover:bg-neutral-50/80 dark:hover:bg-[#252722] transition-colors">
+                    <td className={density === 'compact' ? 'py-2 px-3' : 'p-3.5'}>
                       <button
                         type="button"
                         onClick={() => setSelectedContact(c)}
-                        className="text-left font-bold text-ink hover:text-accent transition-colors cursor-pointer"
+                        className="text-left font-bold text-ink dark:text-[#F7F6F3] hover:text-accent transition-colors cursor-pointer"
                         title="Click to view 360 Profile"
                       >
                         {c.name}
                       </button>
-                      <div className="text-[11px] text-ink-muted">{c.title}</div>
+                      <div className="text-[11px] text-ink-muted dark:text-[#A0A29C]">{c.title}</div>
                     </td>
-                    <td className="p-3.5 font-medium text-ink">
+                    <td className={`${density === 'compact' ? 'py-2 px-3' : 'p-3.5'} font-medium text-ink dark:text-[#F7F6F3]`}>
                       {c.company}
                     </td>
-                    <td className="p-3.5">
-                      <div className="text-ink font-mono">{c.email}</div>
-                      <div className="text-[11px] text-ink-muted font-mono">{c.phone}</div>
+                    <td className={density === 'compact' ? 'py-2 px-3' : 'p-3.5'}>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-ink dark:text-[#F7F6F3] font-mono">{c.email}</span>
+                        {c.email !== 'N/A' && (
+                          <button
+                            type="button"
+                            onClick={() => copyToClipboard(c.email, 'email')}
+                            title="Copy email"
+                            className="text-ink-muted dark:text-[#A0A29C] hover:text-accent text-[11px] cursor-pointer"
+                          >
+                            📋
+                          </button>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1.5 text-[11px] text-ink-muted dark:text-[#A0A29C] font-mono">
+                        <span>{c.phone}</span>
+                        {c.phone !== 'N/A' && (
+                          <button
+                            type="button"
+                            onClick={() => copyToClipboard(c.phone, 'phone number')}
+                            title="Copy phone"
+                            className="text-ink-muted dark:text-[#A0A29C] hover:text-accent text-[10px] cursor-pointer"
+                          >
+                            📋
+                          </button>
+                        )}
+                      </div>
                     </td>
-                    <td className="p-3.5">
+                    <td className={density === 'compact' ? 'py-2 px-3' : 'p-3.5'}>
                       <span
                         className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${
                           c.lifecycleStage === 'Customer'
-                            ? 'bg-[#1F7A4D]/15 text-[#1F7A4D] border border-[#1F7A4D]/30'
+                            ? 'bg-[#1F7A4D]/15 text-[#1F7A4D] dark:bg-emerald-950/40 dark:text-emerald-300 border border-[#1F7A4D]/30 dark:border-emerald-700/40'
                             : c.lifecycleStage === 'Opportunity'
-                            ? 'bg-accent/15 text-accent border border-accent/30'
-                            : 'bg-neutral-100 text-neutral-800'
+                            ? 'bg-accent/15 text-accent dark:bg-accent/20 dark:text-accent border border-accent/30'
+                            : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200'
                         }`}
                       >
                         {c.lifecycleStage}
                       </span>
                     </td>
-                    <td className="p-3.5 text-ink-muted font-medium">
+                    <td className={`${density === 'compact' ? 'py-2 px-3' : 'p-3.5'} text-ink-muted dark:text-[#A0A29C] font-medium`}>
                       {c.lastContacted}
                     </td>
-                    <td className="p-3.5 text-right">
+                    <td className={`${density === 'compact' ? 'py-2 px-3' : 'p-3.5'} text-right`}>
                       <div className="flex items-center justify-end gap-1.5 flex-wrap">
                         <a
                           href={`mailto:${c.email}`}
                           aria-label={`Send email to ${c.name}`}
-                          className="px-2 py-1 text-[11px] font-medium rounded-lg bg-neutral-100 hover:bg-neutral-200 text-ink transition-colors cursor-pointer"
+                          className="px-2 py-1 text-[11px] font-medium rounded-lg bg-neutral-100 dark:bg-[#2A2B27] hover:bg-neutral-200 dark:hover:bg-[#343630] text-ink dark:text-[#F7F6F3] transition-colors cursor-pointer"
                         >
                           ✉️ Email
                         </a>
                         <a
                           href={`tel:${c.phone.replace(/[^0-9+]/g, '')}`}
                           aria-label={`Call ${c.name} at ${c.phone}`}
-                          className="px-2 py-1 text-[11px] font-medium rounded-lg bg-neutral-100 hover:bg-neutral-200 text-ink transition-colors cursor-pointer"
+                          className="px-2 py-1 text-[11px] font-medium rounded-lg bg-neutral-100 dark:bg-[#2A2B27] hover:bg-neutral-200 dark:hover:bg-[#343630] text-ink dark:text-[#F7F6F3] transition-colors cursor-pointer"
                         >
                           📞 Call
                         </a>
@@ -341,7 +398,7 @@ export function CrmContactsView() {
                           target="_blank"
                           rel="noreferrer"
                           aria-label={`Chat with ${c.name} on WhatsApp`}
-                          className="px-2 py-1 text-[11px] font-medium rounded-lg bg-emerald-50 text-emerald-800 hover:bg-emerald-100 transition-colors cursor-pointer"
+                          className="px-2 py-1 text-[11px] font-medium rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 transition-colors cursor-pointer"
                         >
                           💬 WhatsApp
                         </a>
@@ -366,11 +423,11 @@ export function CrmContactsView() {
             if (e.target === e.currentTarget) setSelectedContact(null);
           }}
         >
-          <div className="bg-white rounded-2xl border border-border shadow-2xl max-w-md w-full p-6 space-y-4 text-ink">
-            <div className="flex items-center justify-between pb-3 border-b border-border">
+          <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl border border-border dark:border-[#2E302A] shadow-2xl max-w-md w-full p-6 space-y-4 text-ink dark:text-[#F7F6F3]">
+            <div className="flex items-center justify-between pb-3 border-b border-border dark:border-[#2E302A]">
               <div>
-                <span className="text-[10px] font-mono text-ink-muted uppercase">Contact 360</span>
-                <h3 id="contact-360-title" className="text-xl font-bold text-ink">
+                <span className="text-[10px] font-mono text-ink-muted dark:text-[#A0A29C] uppercase">Contact 360</span>
+                <h3 id="contact-360-title" className="text-xl font-bold text-ink dark:text-[#F7F6F3]">
                   {selectedContact.name}
                 </h3>
               </div>
@@ -378,20 +435,20 @@ export function CrmContactsView() {
                 type="button"
                 onClick={() => setSelectedContact(null)}
                 aria-label="Close contact profile"
-                className="text-ink-muted hover:text-ink text-sm p-1 rounded-lg hover:bg-neutral-100"
+                className="text-ink-muted dark:text-[#A0A29C] hover:text-ink dark:hover:text-white text-sm p-1 rounded-lg hover:bg-neutral-100 dark:hover:bg-[#252722]"
               >
                 ✕
               </button>
             </div>
 
-            <div className="bg-[#FAF9F5] p-3 rounded-xl border border-border text-xs space-y-2">
+            <div className="bg-[#FAF9F5] dark:bg-[#141513] p-3 rounded-xl border border-border dark:border-[#2E302A] text-xs space-y-2">
               <div>
-                <span className="text-ink-muted text-[10px] font-bold uppercase">Role &amp; Company</span>
-                <div className="font-bold text-ink text-sm">{selectedContact.title}</div>
-                <div className="text-ink-muted">{selectedContact.company}</div>
+                <span className="text-ink-muted dark:text-[#A0A29C] text-[10px] font-bold uppercase">Role &amp; Company</span>
+                <div className="font-bold text-ink dark:text-[#F7F6F3] text-sm">{selectedContact.title}</div>
+                <div className="text-ink-muted dark:text-[#A0A29C]">{selectedContact.company}</div>
               </div>
-              <div className="pt-1 border-t border-border/40">
-                <span className="text-ink-muted text-[10px] font-bold uppercase">Lifecycle Stage</span>
+              <div className="pt-1 border-t border-border/40 dark:border-[#2E302A]">
+                <span className="text-ink-muted dark:text-[#A0A29C] text-[10px] font-bold uppercase">Lifecycle Stage</span>
                 <div className="mt-0.5">
                   <span className="text-xs font-bold px-2 py-0.5 rounded bg-accent/15 text-accent">
                     {selectedContact.lifecycleStage}
@@ -401,18 +458,18 @@ export function CrmContactsView() {
             </div>
 
             <div className="space-y-1.5 text-xs">
-              <span className="text-ink-muted text-[10px] font-bold uppercase">Communications</span>
-              <div className="p-2.5 rounded-lg border border-border flex justify-between items-center">
-                <span>Email: <strong className="font-mono">{selectedContact.email}</strong></span>
+              <span className="text-ink-muted dark:text-[#A0A29C] text-[10px] font-bold uppercase">Communications</span>
+              <div className="p-2.5 rounded-lg border border-border dark:border-[#2E302A] flex justify-between items-center">
+                <span>Email: <strong className="font-mono text-ink dark:text-[#F7F6F3]">{selectedContact.email}</strong></span>
                 <a href={`mailto:${selectedContact.email}`} className="text-accent font-bold">Mail →</a>
               </div>
-              <div className="p-2.5 rounded-lg border border-border flex justify-between items-center">
-                <span>Phone: <strong className="font-mono">{selectedContact.phone}</strong></span>
-                <a href={`https://wa.me/${selectedContact.phone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noreferrer" className="text-emerald-700 font-bold">WhatsApp →</a>
+              <div className="p-2.5 rounded-lg border border-border dark:border-[#2E302A] flex justify-between items-center">
+                <span>Phone: <strong className="font-mono text-ink dark:text-[#F7F6F3]">{selectedContact.phone}</strong></span>
+                <a href={`https://wa.me/${selectedContact.phone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noreferrer" className="text-emerald-700 dark:text-emerald-400 font-bold">WhatsApp →</a>
               </div>
             </div>
 
-            <div className="flex justify-end gap-2 pt-2 border-t border-border">
+            <div className="flex justify-end gap-2 pt-2 border-t border-border dark:border-[#2E302A]">
               <button
                 type="button"
                 onClick={() => setSelectedContact(null)}
@@ -436,48 +493,48 @@ export function CrmContactsView() {
             if (e.target === e.currentTarget) setNewContactModalOpen(false);
           }}
         >
-          <div className="bg-white rounded-2xl border border-border shadow-2xl max-w-md w-full p-6 space-y-4 text-ink">
-            <h3 id="add-contact-title" className="text-base font-bold text-ink">
+          <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl border border-border dark:border-[#2E302A] shadow-2xl max-w-md w-full p-6 space-y-4 text-ink dark:text-[#F7F6F3]">
+            <h3 id="add-contact-title" className="text-base font-bold text-ink dark:text-[#F7F6F3]">
               Add Stakeholder Contact
             </h3>
             <form onSubmit={handleCreateContact} className="space-y-3 text-xs">
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label htmlFor="cont-first-name" className="text-xs font-semibold text-ink block mb-1">First Name *</label>
+                  <label htmlFor="cont-first-name" className="text-xs font-semibold text-ink dark:text-[#F7F6F3] block mb-1">First Name *</label>
                   <input
                     id="cont-first-name"
                     type="text"
                     required
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
-                    className="w-full text-xs p-2.5 rounded-xl border border-border bg-[#FAF9F5] text-ink focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent"
+                    className="w-full text-xs p-2.5 rounded-xl border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] text-ink dark:text-[#F7F6F3] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent"
                   />
                 </div>
                 <div>
-                  <label htmlFor="cont-last-name" className="text-xs font-semibold text-ink block mb-1">Last Name *</label>
+                  <label htmlFor="cont-last-name" className="text-xs font-semibold text-ink dark:text-[#F7F6F3] block mb-1">Last Name *</label>
                   <input
                     id="cont-last-name"
                     type="text"
                     required
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
-                    className="w-full text-xs p-2.5 rounded-xl border border-border bg-[#FAF9F5] text-ink focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent"
+                    className="w-full text-xs p-2.5 rounded-xl border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] text-ink dark:text-[#F7F6F3] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent"
                   />
                 </div>
               </div>
               <div>
-                <label htmlFor="cont-job-title" className="text-xs font-semibold text-ink block mb-1">Job Title</label>
+                <label htmlFor="cont-job-title" className="text-xs font-semibold text-ink dark:text-[#F7F6F3] block mb-1">Job Title</label>
                 <input
                   id="cont-job-title"
                   type="text"
                   placeholder="e.g. Director of Engineering"
                   value={jobTitle}
                   onChange={(e) => setJobTitle(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-xl border border-border bg-[#FAF9F5] text-ink focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent"
+                  className="w-full text-xs p-2.5 rounded-xl border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] text-ink dark:text-[#F7F6F3] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent"
                 />
               </div>
               <div>
-                <label htmlFor="cont-email" className="text-xs font-semibold text-ink block mb-1">Work Email *</label>
+                <label htmlFor="cont-email" className="text-xs font-semibold text-ink dark:text-[#F7F6F3] block mb-1">Work Email *</label>
                 <input
                   id="cont-email"
                   type="email"
@@ -485,25 +542,25 @@ export function CrmContactsView() {
                   placeholder="alex@techstart.io"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-xl border border-border bg-[#FAF9F5] text-ink focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent"
+                  className="w-full text-xs p-2.5 rounded-xl border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] text-ink dark:text-[#F7F6F3] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent"
                 />
               </div>
               <div>
-                <label htmlFor="cont-phone" className="text-xs font-semibold text-ink block mb-1">Phone / WhatsApp</label>
+                <label htmlFor="cont-phone" className="text-xs font-semibold text-ink dark:text-[#F7F6F3] block mb-1">Phone / WhatsApp</label>
                 <input
                   id="cont-phone"
                   type="tel"
                   placeholder="+1 (555) 234-8901"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-xl border border-border bg-[#FAF9F5] text-ink focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent"
+                  className="w-full text-xs p-2.5 rounded-xl border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] text-ink dark:text-[#F7F6F3] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent"
                 />
               </div>
-              <div className="flex justify-end gap-2 pt-2 border-t border-border">
+              <div className="flex justify-end gap-2 pt-2 border-t border-border dark:border-[#2E302A]">
                 <button
                   type="button"
                   onClick={() => setNewContactModalOpen(false)}
-                  className="px-3 py-1.5 text-xs rounded-lg border border-border text-ink-muted hover:bg-neutral-100"
+                  className="px-3 py-1.5 text-xs rounded-lg border border-border dark:border-[#2E302A] text-ink-muted dark:text-[#A0A29C] hover:bg-neutral-100 dark:hover:bg-[#252722]"
                 >
                   Cancel
                 </button>

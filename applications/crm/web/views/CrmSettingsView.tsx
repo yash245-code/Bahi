@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { CrmNav } from '../components/CrmNav';
 import { CrmAnnouncer } from '../components/CrmAnnouncer';
 import { NewDealModal } from '../components/NewDealModal';
@@ -39,7 +39,7 @@ const defaultCustomFields: CustomFieldConfig[] = [
 ];
 
 export function CrmSettingsView() {
-  const [activeTab, setActiveTab] = useState<'general' | 'stages' | 'scoring' | 'fields' | 'webhooks'>('general');
+  const [activeTab, setActiveTab] = useState<'general' | 'display' | 'stages' | 'scoring' | 'fields' | 'webhooks'>('general');
   const [currency, setCurrency] = useState('USD ($)');
   const [fiscalYearStart, setFiscalYearStart] = useState('January');
   const [rottingDefault, setRottingDefault] = useState('7');
@@ -55,6 +55,52 @@ export function CrmSettingsView() {
   const [webhookUrl, setWebhookUrl] = useState('https://api.yourcompany.com/crm-events');
   const [slackAlerts, setSlackAlerts] = useState(true);
   const [whatsAppSync, setWhatsAppSync] = useState(true);
+
+  // Display & Dark Mode
+  const [currentTheme, setCurrentTheme] = useState<'light' | 'dark'>('light');
+  const [currentDensity, setCurrentDensity] = useState<'normal' | 'compact'>('normal');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const isDark = document.documentElement.classList.contains('dark') || localStorage.getItem('bahi-theme') === 'dark';
+      setCurrentTheme(isDark ? 'dark' : 'light');
+      const savedDensity = (localStorage.getItem('bahi-crm-density') as 'normal' | 'compact') || 'normal';
+      setCurrentDensity(savedDensity);
+
+      const handleThemeSync = (e: any) => {
+        if (e.detail?.theme) setCurrentTheme(e.detail.theme);
+      };
+      const handleDensitySync = (e: any) => {
+        if (e.detail?.density) setCurrentDensity(e.detail.density);
+      };
+      window.addEventListener('bahi-theme-change', handleThemeSync);
+      window.addEventListener('bahi-crm-density-change', handleDensitySync);
+      return () => {
+        window.removeEventListener('bahi-theme-change', handleThemeSync);
+        window.removeEventListener('bahi-crm-density-change', handleDensitySync);
+      };
+    }
+  }, []);
+
+  const setThemeMode = (mode: 'light' | 'dark') => {
+    setCurrentTheme(mode);
+    if (mode === 'dark') {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('bahi-theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('bahi-theme', 'light');
+    }
+    window.dispatchEvent(new CustomEvent('bahi-theme-change', { detail: { theme: mode } }));
+    showToast(`Switched theme to ${mode === 'dark' ? '🌙 Dark Mode (Obsidian & Ember)' : '☀️ Light Mode (Paper & Rust)'}`);
+  };
+
+  const setDensityMode = (density: 'normal' | 'compact') => {
+    setCurrentDensity(density);
+    localStorage.setItem('bahi-crm-density', density);
+    window.dispatchEvent(new CustomEvent('bahi-crm-density-change', { detail: { density } }));
+    showToast(`Display density set to ${density === 'compact' ? 'High-Density Compact' : 'Comfortable'}`);
+  };
 
   // New field modal state
   const [newFieldModalOpen, setNewFieldModalOpen] = useState(false);
@@ -117,23 +163,24 @@ export function CrmSettingsView() {
       />
 
       {/* ── Settings Console Header ── */}
-      <div className="bg-white rounded-2xl p-6 border border-border space-y-4">
+      <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl p-6 border border-border dark:border-[#2E302A] space-y-4">
         <div>
           <span className="text-[10px] font-bold uppercase tracking-wider text-accent bg-accent/10 px-2 py-0.5 rounded-full">
             Admin Console
           </span>
-          <h2 className="text-xl font-black text-ink mt-1">
+          <h2 className="text-xl font-black text-ink dark:text-[#F7F6F3] mt-1">
             CRM System Configuration &amp; Rules
           </h2>
-          <p className="text-xs text-ink-muted mt-0.5">
-            Configure sales stages, routing algorithms, custom data fields, lead decay penalties, and webhook dispatches.
+          <p className="text-xs text-ink-muted dark:text-[#A0A29C] mt-0.5">
+            Configure appearance, sales stages, routing algorithms, custom data fields, lead decay penalties, and webhook dispatches.
           </p>
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex items-center gap-1 overflow-x-auto border-t border-border/80 pt-3 text-xs font-semibold">
+        <div className="flex items-center gap-1 overflow-x-auto border-t border-border/80 dark:border-[#2E302A] pt-3 text-xs font-semibold">
           {[
             { id: 'general', label: '⚙️ General & Fiscal' },
+            { id: 'display', label: '🎨 Display & Dark Mode' },
             { id: 'stages', label: '📊 Pipelines & Rotting' },
             { id: 'scoring', label: '🎯 Scoring & Rep Routing' },
             { id: 'fields', label: '📝 Custom Schema Fields' },
@@ -144,8 +191,8 @@ export function CrmSettingsView() {
               onClick={() => setActiveTab(tab.id as any)}
               className={`px-3.5 py-1.5 rounded-lg transition-colors cursor-pointer whitespace-nowrap ${
                 activeTab === tab.id
-                  ? 'bg-[#20211F] text-white shadow-xs'
-                  : 'text-ink-muted hover:text-ink hover:bg-neutral-100'
+                  ? 'bg-[#20211F] text-white dark:bg-white dark:text-[#20211F] shadow-xs'
+                  : 'text-ink-muted dark:text-[#A0A29C] hover:text-ink dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-[#252722]'
               }`}
             >
               {tab.label}
@@ -156,19 +203,19 @@ export function CrmSettingsView() {
 
       {/* ── Tab 1: General & Fiscal ── */}
       {activeTab === 'general' && (
-        <div className="bg-white rounded-2xl p-6 border border-border space-y-5 text-xs max-w-2xl">
-          <h3 className="text-sm font-bold text-ink">General Workspace Preferences</h3>
+        <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl p-6 border border-border dark:border-[#2E302A] space-y-5 text-xs max-w-2xl">
+          <h3 className="text-sm font-bold text-ink dark:text-[#F7F6F3]">General Workspace Preferences</h3>
           <form onSubmit={handleSaveGeneral} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="currency-select" className="font-semibold text-ink block mb-1">
+                <label htmlFor="currency-select" className="font-semibold text-ink dark:text-[#F7F6F3] block mb-1">
                   Default Currency Display
                 </label>
                 <select
                   id="currency-select"
                   value={currency}
                   onChange={(e) => setCurrency(e.target.value)}
-                  className="w-full p-2.5 rounded-xl border border-border bg-[#FAF9F5] text-ink"
+                  className="w-full p-2.5 rounded-xl border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] text-ink dark:text-[#F7F6F3]"
                 >
                   <option value="USD ($)">USD ($) - United States Dollar</option>
                   <option value="EUR (€)">EUR (€) - Eurozone</option>
@@ -177,14 +224,14 @@ export function CrmSettingsView() {
                 </select>
               </div>
               <div>
-                <label htmlFor="fiscal-select" className="font-semibold text-ink block mb-1">
+                <label htmlFor="fiscal-select" className="font-semibold text-ink dark:text-[#F7F6F3] block mb-1">
                   Fiscal Year Commencement
                 </label>
                 <select
                   id="fiscal-select"
                   value={fiscalYearStart}
                   onChange={(e) => setFiscalYearStart(e.target.value)}
-                  className="w-full p-2.5 rounded-xl border border-border bg-[#FAF9F5] text-ink"
+                  className="w-full p-2.5 rounded-xl border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] text-ink dark:text-[#F7F6F3]"
                 >
                   <option value="January">January (Calendar Year)</option>
                   <option value="April">April (UK / India standard)</option>
@@ -194,7 +241,7 @@ export function CrmSettingsView() {
             </div>
 
             <div>
-              <label htmlFor="rotting-default-input" className="font-semibold text-ink block mb-1">
+              <label htmlFor="rotting-default-input" className="font-semibold text-ink dark:text-[#F7F6F3] block mb-1">
                 Default Rotting Deal Threshold (Days Untouched)
               </label>
               <input
@@ -204,14 +251,14 @@ export function CrmSettingsView() {
                 max="60"
                 value={rottingDefault}
                 onChange={(e) => setRottingDefault(e.target.value)}
-                className="w-full p-2.5 rounded-xl border border-border bg-[#FAF9F5] text-ink font-mono"
+                className="w-full p-2.5 rounded-xl border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] text-ink dark:text-[#F7F6F3] font-mono"
               />
-              <span className="text-[11px] text-ink-muted mt-1 block">
+              <span className="text-[11px] text-ink-muted dark:text-[#A0A29C] mt-1 block">
                 Deals with no logged activity past this threshold will be flagged as Stalled.
               </span>
             </div>
 
-            <div className="flex justify-end pt-2 border-t border-border">
+            <div className="flex justify-end pt-2 border-t border-border dark:border-[#2E302A]">
               <button
                 type="submit"
                 className="btn-primary text-xs py-2 px-5"
@@ -223,20 +270,149 @@ export function CrmSettingsView() {
         </div>
       )}
 
+      {/* ── Tab: Display & Dark Mode ── */}
+      {activeTab === 'display' && (
+        <div className="space-y-6 max-w-4xl text-xs">
+          <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl p-6 border border-border dark:border-[#2E302A] space-y-6">
+            <div>
+              <h3 className="text-sm font-bold text-ink dark:text-[#F7F6F3]">Display Theme &amp; Color Scheme</h3>
+              <p className="text-[11px] text-ink-muted dark:text-[#A0A29C]">
+                Switch between high-contrast light mode and ergonomic deep obsidian dark mode. You can also toggle anytime using the <kbd className="px-1.5 py-0.5 rounded bg-neutral-100 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 font-mono text-[10px]">T</kbd> key.
+              </p>
+            </div>
+
+            {/* Theme cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Light Card */}
+              <div
+                onClick={() => setThemeMode('light')}
+                className={`p-5 rounded-2xl border-2 transition-all cursor-pointer space-y-3 ${
+                  currentTheme === 'light'
+                    ? 'border-accent bg-accent/5 ring-2 ring-accent/20'
+                    : 'border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] hover:border-neutral-400'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">☀️</span>
+                    <div>
+                      <h4 className="font-bold text-sm text-ink dark:text-[#F7F6F3]">Paper &amp; Rust (Light)</h4>
+                      <p className="text-[11px] text-ink-muted dark:text-[#A0A29C]">Warm artisan parchment aesthetic</p>
+                    </div>
+                  </div>
+                  {currentTheme === 'light' && (
+                    <span className="w-5 h-5 rounded-full bg-accent text-white flex items-center justify-center text-xs font-bold">
+                      ✓
+                    </span>
+                  )}
+                </div>
+                <div className="p-3 rounded-xl bg-white border border-border shadow-xs space-y-1.5 text-[11px]">
+                  <div className="flex items-center justify-between text-ink font-semibold">
+                    <span>Apex Dynamics ERP</span>
+                    <span className="text-accent font-mono font-bold">$52,000</span>
+                  </div>
+                  <div className="text-ink-muted text-[10px]">Contract Negotiation • 85% Win Prob</div>
+                </div>
+              </div>
+
+              {/* Dark Card */}
+              <div
+                onClick={() => setThemeMode('dark')}
+                className={`p-5 rounded-2xl border-2 transition-all cursor-pointer space-y-3 ${
+                  currentTheme === 'dark'
+                    ? 'border-accent bg-accent/5 ring-2 ring-accent/20'
+                    : 'border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] hover:border-neutral-400'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">🌙</span>
+                    <div>
+                      <h4 className="font-bold text-sm text-ink dark:text-[#F7F6F3]">Obsidian &amp; Ember (Dark)</h4>
+                      <p className="text-[11px] text-ink-muted dark:text-[#A0A29C]">Deep obsidian background with ember highlights</p>
+                    </div>
+                  </div>
+                  {currentTheme === 'dark' && (
+                    <span className="w-5 h-5 rounded-full bg-accent text-white flex items-center justify-center text-xs font-bold">
+                      ✓
+                    </span>
+                  )}
+                </div>
+                <div className="p-3 rounded-xl bg-[#1E1F1C] border border-[#2E302A] shadow-xs space-y-1.5 text-[11px]">
+                  <div className="flex items-center justify-between text-[#F7F6F3] font-semibold">
+                    <span>Apex Dynamics ERP</span>
+                    <span className="text-accent font-mono font-bold">$52,000</span>
+                  </div>
+                  <div className="text-[#A0A29C] text-[10px]">Contract Negotiation • 85% Win Prob</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Density Preferences */}
+            <div className="pt-4 border-t border-border dark:border-[#2E302A] space-y-3">
+              <div>
+                <h4 className="font-bold text-ink dark:text-[#F7F6F3]">Table &amp; Board Information Density</h4>
+                <p className="text-[11px] text-ink-muted dark:text-[#A0A29C]">
+                  Configure row spacing for high-volume sales reps. Toggle quickly anytime with <kbd className="px-1.5 py-0.5 rounded bg-neutral-100 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 font-mono text-[10px]">C</kbd>.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setDensityMode('normal')}
+                  className={`p-3.5 rounded-xl border text-left cursor-pointer transition-all ${
+                    currentDensity === 'normal'
+                      ? 'border-accent bg-accent/5 ring-1 ring-accent text-ink dark:text-[#F7F6F3]'
+                      : 'border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] text-ink-muted dark:text-[#A0A29C]'
+                  }`}
+                >
+                  <div className="font-bold text-xs flex items-center justify-between">
+                    <span>Comfortable Density</span>
+                    {currentDensity === 'normal' && <span className="text-accent">✓ Active</span>}
+                  </div>
+                  <div className="text-[11px] text-ink-muted dark:text-[#A0A29C] mt-1">
+                    Generous line heights and spacious card padding for relaxed executive scanning.
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setDensityMode('compact')}
+                  className={`p-3.5 rounded-xl border text-left cursor-pointer transition-all ${
+                    currentDensity === 'compact'
+                      ? 'border-accent bg-accent/5 ring-1 ring-accent text-ink dark:text-[#F7F6F3]'
+                      : 'border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] text-ink-muted dark:text-[#A0A29C]'
+                  }`}
+                >
+                  <div className="font-bold text-xs flex items-center justify-between">
+                    <span>High-Density Compact</span>
+                    {currentDensity === 'compact' && <span className="text-accent">✓ Active</span>}
+                  </div>
+                  <div className="text-[11px] text-ink-muted dark:text-[#A0A29C] mt-1">
+                    Condensed rows and tighter chips allowing 40% more leads and deals per viewport.
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ── Tab 2: Pipelines & Stages ── */}
       {activeTab === 'stages' && (
-        <div className="bg-white rounded-2xl p-6 border border-border space-y-4 text-xs">
-          <div className="flex items-center justify-between pb-2 border-b border-border">
+        <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl p-6 border border-border dark:border-[#2E302A] space-y-4 text-xs">
+          <div className="flex items-center justify-between pb-2 border-b border-border dark:border-[#2E302A]">
             <div>
-              <h3 className="text-sm font-bold text-ink">Enterprise Pipeline Stage Rules</h3>
-              <p className="text-[11px] text-ink-muted">Configure probability forecasting weights and rotting velocity days per stage</p>
+              <h3 className="text-sm font-bold text-ink dark:text-[#F7F6F3]">Enterprise Pipeline Stage Rules</h3>
+              <p className="text-[11px] text-ink-muted dark:text-[#A0A29C]">Configure probability forecasting weights and rotting velocity days per stage</p>
             </div>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="bg-[#FAF9F5] border-b border-border text-[11px] font-bold text-ink-muted uppercase">
+                <tr className="bg-[#FAF9F5] dark:bg-[#141513] border-b border-border dark:border-[#2E302A] text-[11px] font-bold text-ink-muted dark:text-[#A0A29C] uppercase">
                   <th className="p-3">Stage Name</th>
                   <th className="p-3">Win Probability (%)</th>
                   <th className="p-3">Rotting Stagnancy Alert</th>
@@ -244,35 +420,35 @@ export function CrmSettingsView() {
                   <th className="p-3 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border/60">
+              <tbody className="divide-y divide-border/60 dark:divide-[#2E302A]">
                 {stages.map((stg, idx) => (
-                  <tr key={stg.name} className="hover:bg-neutral-50/80">
-                    <td className="p-3 font-bold text-ink flex items-center gap-2">
+                  <tr key={stg.name} className="hover:bg-neutral-50/80 dark:hover:bg-[#252722]">
+                    <td className="p-3 font-bold text-ink dark:text-[#F7F6F3] flex items-center gap-2">
                       <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: stg.color }} />
                       <span>{stg.name}</span>
                     </td>
-                    <td className="p-3 font-mono">
+                    <td className="p-3 font-mono text-ink dark:text-[#F7F6F3]">
                       <input
                         type="number"
                         min="0"
                         max="100"
                         value={stg.probability}
                         onChange={(e) => handleUpdateStage(idx, stg.rottingDays, Number(e.target.value))}
-                        className="w-16 p-1 border border-border rounded font-mono text-xs"
+                        className="w-16 p-1 border border-border dark:border-[#2E302A] bg-white dark:bg-[#141513] text-ink dark:text-[#F7F6F3] rounded font-mono text-xs"
                       /> %
                     </td>
-                    <td className="p-3 font-mono">
+                    <td className="p-3 font-mono text-ink dark:text-[#F7F6F3]">
                       <input
                         type="number"
                         min="0"
                         max="30"
                         value={stg.rottingDays}
                         onChange={(e) => handleUpdateStage(idx, Number(e.target.value), stg.probability)}
-                        className="w-16 p-1 border border-border rounded font-mono text-xs"
+                        className="w-16 p-1 border border-border dark:border-[#2E302A] bg-white dark:bg-[#141513] text-ink dark:text-[#F7F6F3] rounded font-mono text-xs"
                       /> days
                     </td>
                     <td className="p-3 font-bold">
-                      <span className={`text-[10px] px-2 py-0.5 rounded ${stg.stageType === 'WON' ? 'bg-emerald-100 text-emerald-800' : 'bg-neutral-100 text-neutral-800'}`}>
+                      <span className={`text-[10px] px-2 py-0.5 rounded ${stg.stageType === 'WON' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300' : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200'}`}>
                         {stg.stageType}
                       </span>
                     </td>
@@ -280,7 +456,7 @@ export function CrmSettingsView() {
                       <button
                         type="button"
                         onClick={() => showToast(`Stage rules for "${stg.name}" saved`)}
-                        className="px-2.5 py-1 text-[11px] font-semibold rounded bg-neutral-100 hover:bg-neutral-200 text-ink cursor-pointer"
+                        className="px-2.5 py-1 text-[11px] font-semibold rounded bg-neutral-100 hover:bg-neutral-200 dark:bg-[#2A2B27] dark:hover:bg-[#343630] text-ink dark:text-[#F7F6F3] cursor-pointer"
                       >
                         Save
                       </button>
@@ -295,15 +471,15 @@ export function CrmSettingsView() {
 
       {/* ── Tab 3: Lead Scoring & Routing ── */}
       {activeTab === 'scoring' && (
-        <div className="bg-white rounded-2xl p-6 border border-border space-y-6 text-xs max-w-2xl">
+        <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl p-6 border border-border dark:border-[#2E302A] space-y-6 text-xs max-w-2xl">
           <div>
-            <h3 className="text-sm font-bold text-ink">Lead Scoring &amp; Intelligent Rep Routing</h3>
-            <p className="text-[11px] text-ink-muted">Automated assignment strategies and behavioral decay engines</p>
+            <h3 className="text-sm font-bold text-ink dark:text-[#F7F6F3]">Lead Scoring &amp; Intelligent Rep Routing</h3>
+            <p className="text-[11px] text-ink-muted dark:text-[#A0A29C]">Automated assignment strategies and behavioral decay engines</p>
           </div>
 
           <div className="space-y-4">
             <div>
-              <label htmlFor="routing-strategy" className="font-semibold text-ink block mb-1">
+              <label htmlFor="routing-strategy" className="font-semibold text-ink dark:text-[#F7F6F3] block mb-1">
                 Inbound Lead Routing Strategy
               </label>
               <select
@@ -313,7 +489,7 @@ export function CrmSettingsView() {
                   setRoutingStrategy(e.target.value as any);
                   showToast(`Assignment strategy updated to ${e.target.value}`);
                 }}
-                className="w-full p-2.5 rounded-xl border border-border bg-[#FAF9F5] text-ink"
+                className="w-full p-2.5 rounded-xl border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] text-ink dark:text-[#F7F6F3]"
               >
                 <option value="ROUND_ROBIN">Round Robin (Sequential rotation across active reps)</option>
                 <option value="LOAD_BASED">Load-Based Balancing (Directs to rep with fewest open leads)</option>
@@ -322,7 +498,7 @@ export function CrmSettingsView() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="decay-input" className="font-semibold text-ink block mb-1">
+                <label htmlFor="decay-input" className="font-semibold text-ink dark:text-[#F7F6F3] block mb-1">
                   Inactivity Decay Penalty (-Pts / 14 Days)
                 </label>
                 <input
@@ -330,11 +506,11 @@ export function CrmSettingsView() {
                   type="number"
                   value={decayPenalty}
                   onChange={(e) => setDecayPenalty(Number(e.target.value))}
-                  className="w-full p-2.5 rounded-xl border border-border bg-[#FAF9F5] text-ink font-mono"
+                  className="w-full p-2.5 rounded-xl border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] text-ink dark:text-[#F7F6F3] font-mono"
                 />
               </div>
               <div>
-                <label htmlFor="sweep-input" className="font-semibold text-ink block mb-1">
+                <label htmlFor="sweep-input" className="font-semibold text-ink dark:text-[#F7F6F3] block mb-1">
                   Untouched Leads Sweep (Days)
                 </label>
                 <input
@@ -342,14 +518,14 @@ export function CrmSettingsView() {
                   type="number"
                   value={autoSweepDays}
                   onChange={(e) => setAutoSweepDays(Number(e.target.value))}
-                  className="w-full p-2.5 rounded-xl border border-border bg-[#FAF9F5] text-ink font-mono"
+                  className="w-full p-2.5 rounded-xl border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] text-ink dark:text-[#F7F6F3] font-mono"
                 />
               </div>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-[#FAF9F5] border border-border space-y-1">
-              <span className="font-bold text-ink">Active Qualification Scoring Rules:</span>
-              <ul className="list-disc list-inside text-ink-muted space-y-0.5">
+            <div className="p-3.5 rounded-xl bg-[#FAF9F5] dark:bg-[#141513] border border-border dark:border-[#2E302A] space-y-1">
+              <span className="font-bold text-ink dark:text-[#F7F6F3]">Active Qualification Scoring Rules:</span>
+              <ul className="list-disc list-inside text-ink-muted dark:text-[#A0A29C] space-y-0.5">
                 <li>VP / Chief / Director in Job Title: <strong>+25 Points</strong></li>
                 <li>Enterprise Company (&gt;500 Employees): <strong>+20 Points</strong></li>
                 <li>Product Trial Signup / Interactive Demo: <strong>+30 Points</strong></li>
@@ -357,7 +533,7 @@ export function CrmSettingsView() {
               </ul>
             </div>
 
-            <div className="flex justify-end pt-2 border-t border-border">
+            <div className="flex justify-end pt-2 border-t border-border dark:border-[#2E302A]">
               <button
                 type="button"
                 onClick={() => showToast('Scoring algorithms & routing updated')}
@@ -372,11 +548,11 @@ export function CrmSettingsView() {
 
       {/* ── Tab 4: Custom Fields Manager ── */}
       {activeTab === 'fields' && (
-        <div className="bg-white rounded-2xl p-6 border border-border space-y-4 text-xs">
-          <div className="flex items-center justify-between pb-2 border-b border-border">
+        <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl p-6 border border-border dark:border-[#2E302A] space-y-4 text-xs">
+          <div className="flex items-center justify-between pb-2 border-b border-border dark:border-[#2E302A]">
             <div>
-              <h3 className="text-sm font-bold text-ink">Custom Schema Fields</h3>
-              <p className="text-[11px] text-ink-muted">Extend CRM data models with custom metadata inputs</p>
+              <h3 className="text-sm font-bold text-ink dark:text-[#F7F6F3]">Custom Schema Fields</h3>
+              <p className="text-[11px] text-ink-muted dark:text-[#A0A29C]">Extend CRM data models with custom metadata inputs</p>
             </div>
             <button
               type="button"
@@ -390,7 +566,7 @@ export function CrmSettingsView() {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="bg-[#FAF9F5] border-b border-border text-[11px] font-bold text-ink-muted uppercase">
+                <tr className="bg-[#FAF9F5] dark:bg-[#141513] border-b border-border dark:border-[#2E302A] text-[11px] font-bold text-ink-muted dark:text-[#A0A29C] uppercase">
                   <th className="p-3">Field Label</th>
                   <th className="p-3">API Key</th>
                   <th className="p-3">Attached Entity</th>
@@ -399,22 +575,22 @@ export function CrmSettingsView() {
                   <th className="p-3 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border/60">
+              <tbody className="divide-y divide-border/60 dark:divide-[#2E302A]">
                 {customFields.map((f) => (
-                  <tr key={f.id} className="hover:bg-neutral-50/80">
-                    <td className="p-3 font-bold text-ink">{f.label}</td>
-                    <td className="p-3 font-mono text-ink-muted">{f.key}</td>
+                  <tr key={f.id} className="hover:bg-neutral-50/80 dark:hover:bg-[#252722]">
+                    <td className="p-3 font-bold text-ink dark:text-[#F7F6F3]">{f.label}</td>
+                    <td className="p-3 font-mono text-ink-muted dark:text-[#A0A29C]">{f.key}</td>
                     <td className="p-3">
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-neutral-100 text-neutral-800">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200">
                         {f.entity}
                       </span>
                     </td>
-                    <td className="p-3 text-ink-muted">{f.type}</td>
+                    <td className="p-3 text-ink-muted dark:text-[#A0A29C]">{f.type}</td>
                     <td className="p-3">
                       {f.required ? (
-                        <span className="text-emerald-700 font-bold">Yes (Required)</span>
+                        <span className="text-emerald-700 dark:text-emerald-400 font-bold">Yes (Required)</span>
                       ) : (
-                        <span className="text-ink-muted">Optional</span>
+                        <span className="text-ink-muted dark:text-[#A0A29C]">Optional</span>
                       )}
                     </td>
                     <td className="p-3 text-right">
@@ -424,7 +600,7 @@ export function CrmSettingsView() {
                           setCustomFields((prev) => prev.filter((item) => item.id !== f.id));
                           showToast(`Removed field "${f.label}"`);
                         }}
-                        className="text-red-700 hover:text-red-900 font-medium cursor-pointer"
+                        className="text-red-700 dark:text-red-400 hover:text-red-900 font-medium cursor-pointer"
                       >
                         Delete
                       </button>
@@ -439,15 +615,15 @@ export function CrmSettingsView() {
 
       {/* ── Tab 5: Webhooks & Integrations ── */}
       {activeTab === 'webhooks' && (
-        <div className="bg-white rounded-2xl p-6 border border-border space-y-5 text-xs max-w-2xl">
+        <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl p-6 border border-border dark:border-[#2E302A] space-y-5 text-xs max-w-2xl">
           <div>
-            <h3 className="text-sm font-bold text-ink">Webhooks &amp; Real-time Event Dispatch</h3>
-            <p className="text-[11px] text-ink-muted">Send domain events to Zapier, Slack, or internal microservices</p>
+            <h3 className="text-sm font-bold text-ink dark:text-[#F7F6F3]">Webhooks &amp; Real-time Event Dispatch</h3>
+            <p className="text-[11px] text-ink-muted dark:text-[#A0A29C]">Send domain events to Zapier, Slack, or internal microservices</p>
           </div>
 
           <div className="space-y-4">
             <div>
-              <label htmlFor="webhook-url-input" className="font-semibold text-ink block mb-1">
+              <label htmlFor="webhook-url-input" className="font-semibold text-ink dark:text-[#F7F6F3] block mb-1">
                 Outbound Webhook HTTPS Endpoint
               </label>
               <input
@@ -455,37 +631,37 @@ export function CrmSettingsView() {
                 type="url"
                 value={webhookUrl}
                 onChange={(e) => setWebhookUrl(e.target.value)}
-                className="w-full p-2.5 rounded-xl border border-border bg-[#FAF9F5] text-ink font-mono"
+                className="w-full p-2.5 rounded-xl border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] text-ink dark:text-[#F7F6F3] font-mono"
               />
             </div>
 
-            <div className="p-3.5 rounded-xl bg-[#FAF9F5] border border-border space-y-2">
-              <span className="font-bold text-ink">Subscribed Domain Events:</span>
+            <div className="p-3.5 rounded-xl bg-[#FAF9F5] dark:bg-[#141513] border border-border dark:border-[#2E302A] space-y-2">
+              <span className="font-bold text-ink dark:text-[#F7F6F3]">Subscribed Domain Events:</span>
               <div className="grid grid-cols-2 gap-2 text-[11px]">
                 <label className="flex items-center gap-2">
                   <input type="checkbox" defaultChecked className="accent-accent" />
-                  <span>lead.created (Instant alert)</span>
+                  <span className="text-ink dark:text-[#F7F6F3]">lead.created (Instant alert)</span>
                 </label>
                 <label className="flex items-center gap-2">
                   <input type="checkbox" defaultChecked className="accent-accent" />
-                  <span>deal.stage_changed (Movement)</span>
+                  <span className="text-ink dark:text-[#F7F6F3]">deal.stage_changed (Movement)</span>
                 </label>
                 <label className="flex items-center gap-2">
                   <input type="checkbox" defaultChecked className="accent-accent" />
-                  <span>deal.won (Revenue celebration)</span>
+                  <span className="text-ink dark:text-[#F7F6F3]">deal.won (Revenue celebration)</span>
                 </label>
                 <label className="flex items-center gap-2">
                   <input type="checkbox" defaultChecked className="accent-accent" />
-                  <span>quote.accepted (E-signature)</span>
+                  <span className="text-ink dark:text-[#F7F6F3]">quote.accepted (E-signature)</span>
                 </label>
               </div>
             </div>
 
             <div className="space-y-3 pt-2">
-              <label className="flex items-center justify-between p-3 rounded-xl border border-border bg-[#FAF9F5] cursor-pointer">
+              <label className="flex items-center justify-between p-3 rounded-xl border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] cursor-pointer">
                 <div>
-                  <span className="font-bold text-ink block">Slack Channel Notifications</span>
-                  <span className="text-[11px] text-ink-muted">Post win announcements and high-value deal alerts to #sales-wins</span>
+                  <span className="font-bold text-ink dark:text-[#F7F6F3] block">Slack Channel Notifications</span>
+                  <span className="text-[11px] text-ink-muted dark:text-[#A0A29C]">Post win announcements and high-value deal alerts to #sales-wins</span>
                 </div>
                 <input
                   type="checkbox"
@@ -495,10 +671,10 @@ export function CrmSettingsView() {
                 />
               </label>
 
-              <label className="flex items-center justify-between p-3 rounded-xl border border-border bg-[#FAF9F5] cursor-pointer">
+              <label className="flex items-center justify-between p-3 rounded-xl border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] cursor-pointer">
                 <div>
-                  <span className="font-bold text-ink block">WhatsApp Business Cloud Sync</span>
-                  <span className="text-[11px] text-ink-muted">Sync client chat threads into the CRM activity timeline</span>
+                  <span className="font-bold text-ink dark:text-[#F7F6F3] block">WhatsApp Business Cloud Sync</span>
+                  <span className="text-[11px] text-ink-muted dark:text-[#A0A29C]">Sync client chat threads into the CRM activity timeline</span>
                 </div>
                 <input
                   type="checkbox"
@@ -509,7 +685,7 @@ export function CrmSettingsView() {
               </label>
             </div>
 
-            <div className="flex justify-end pt-2 border-t border-border">
+            <div className="flex justify-end pt-2 border-t border-border dark:border-[#2E302A]">
               <button
                 type="button"
                 onClick={() => showToast('Dispatched test webhook ping (HTTP 200 OK)')}
@@ -540,13 +716,13 @@ export function CrmSettingsView() {
             if (e.target === e.currentTarget) setNewFieldModalOpen(false);
           }}
         >
-          <div className="bg-white rounded-2xl border border-border shadow-2xl max-w-md w-full p-6 space-y-4 text-ink">
-            <h3 id="field-modal-title" className="text-base font-bold text-ink">
+          <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl border border-border dark:border-[#2E302A] shadow-2xl max-w-md w-full p-6 space-y-4 text-ink dark:text-[#F7F6F3]">
+            <h3 id="field-modal-title" className="text-base font-bold text-ink dark:text-[#F7F6F3]">
               Define Custom Schema Field
             </h3>
             <form onSubmit={handleAddCustomField} className="space-y-3 text-xs">
               <div>
-                <label htmlFor="field-lbl" className="font-semibold text-ink block mb-1">Field Label *</label>
+                <label htmlFor="field-lbl" className="font-semibold text-ink dark:text-[#F7F6F3] block mb-1">Field Label *</label>
                 <input
                   id="field-lbl"
                   type="text"
@@ -554,18 +730,18 @@ export function CrmSettingsView() {
                   placeholder="e.g. Current Cloud Provider"
                   value={fieldLabel}
                   onChange={(e) => setFieldLabel(e.target.value)}
-                  className="w-full p-2.5 rounded-xl border border-border bg-[#FAF9F5] text-ink"
+                  className="w-full p-2.5 rounded-xl border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] text-ink dark:text-[#F7F6F3]"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label htmlFor="field-ent" className="font-semibold text-ink block mb-1">Target Entity</label>
+                  <label htmlFor="field-ent" className="font-semibold text-ink dark:text-[#F7F6F3] block mb-1">Target Entity</label>
                   <select
                     id="field-ent"
                     value={fieldEntity}
                     onChange={(e) => setFieldEntity(e.target.value as any)}
-                    className="w-full p-2.5 rounded-xl border border-border bg-[#FAF9F5] text-ink"
+                    className="w-full p-2.5 rounded-xl border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] text-ink dark:text-[#F7F6F3]"
                   >
                     <option value="Lead">Lead Intake</option>
                     <option value="Deal">Opportunity Deal</option>
@@ -574,12 +750,12 @@ export function CrmSettingsView() {
                   </select>
                 </div>
                 <div>
-                  <label htmlFor="field-type" className="font-semibold text-ink block mb-1">Field Type</label>
+                  <label htmlFor="field-type" className="font-semibold text-ink dark:text-[#F7F6F3] block mb-1">Field Type</label>
                   <select
                     id="field-type"
                     value={fieldType}
                     onChange={(e) => setFieldType(e.target.value as any)}
-                    className="w-full p-2.5 rounded-xl border border-border bg-[#FAF9F5] text-ink"
+                    className="w-full p-2.5 rounded-xl border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] text-ink dark:text-[#F7F6F3]"
                   >
                     <option value="Text">Short Text</option>
                     <option value="Number">Number</option>
@@ -597,14 +773,14 @@ export function CrmSettingsView() {
                   onChange={(e) => setFieldRequired(e.target.checked)}
                   className="accent-accent"
                 />
-                <span className="font-semibold text-ink">Make field mandatory on record creation</span>
+                <span className="font-semibold text-ink dark:text-[#F7F6F3]">Make field mandatory on record creation</span>
               </label>
 
-              <div className="flex justify-end gap-2 pt-2 border-t border-border">
+              <div className="flex justify-end gap-2 pt-2 border-t border-border dark:border-[#2E302A]">
                 <button
                   type="button"
                   onClick={() => setNewFieldModalOpen(false)}
-                  className="px-3 py-1.5 text-xs rounded-lg border border-border text-ink-muted hover:bg-neutral-100"
+                  className="px-3 py-1.5 text-xs rounded-lg border border-border dark:border-[#2E302A] text-ink-muted dark:text-[#A0A29C] hover:bg-neutral-100 dark:hover:bg-[#252722]"
                 >
                   Cancel
                 </button>

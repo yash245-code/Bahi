@@ -88,12 +88,47 @@ export function CrmLeadsView() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [sortBy, setSortBy] = useState<'default' | 'score_desc' | 'score_asc'>('default');
   const [selectedLeads, setSelectedLeads] = useState<string[]>([]);
+  const [starredLeads, setStarredLeads] = useState<string[]>([]);
+  const [density, setDensity] = useState<'normal' | 'compact'>('normal');
   const [newLeadModalOpen, setNewLeadModalOpen] = useState(false);
   const [newDealModalOpen, setNewDealModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [announcement, setAnnouncement] = useState<string | null>(null);
   const [disqualifyId, setDisqualifyId] = useState<string | null>(null);
   const [disqualifyReason, setDisqualifyReason] = useState('No budget / authority');
+
+  useEffect(() => {
+    try {
+      const savedStars = JSON.parse(localStorage.getItem('bahi-crm-starred-leads') || '[]');
+      if (Array.isArray(savedStars)) setStarredLeads(savedStars);
+      const savedDensity = localStorage.getItem('bahi-crm-density');
+      if (savedDensity === 'compact') setDensity('compact');
+    } catch (_) {}
+
+    const handleDensityChange = (e: any) => {
+      if (e.detail) setDensity(e.detail);
+    };
+    window.addEventListener('bahi-crm-density-change', handleDensityChange);
+    return () => window.removeEventListener('bahi-crm-density-change', handleDensityChange);
+  }, []);
+
+  const toggleStarLead = (id: string) => {
+    setStarredLeads((prev) => {
+      const next = prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id];
+      try {
+        localStorage.setItem('bahi-crm-starred-leads', JSON.stringify(next));
+      } catch (_) {}
+      showToast(next.includes(id) ? 'Lead starred in favorites ⭐' : 'Lead unstarred');
+      return next;
+    });
+  };
+
+  const copyToClipboard = (text: string, label: string) => {
+    if (navigator?.clipboard) {
+      navigator.clipboard.writeText(text);
+      showToast(`Copied ${label} (${text}) to clipboard 📋`);
+    }
+  };
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -270,6 +305,8 @@ export function CrmLeadsView() {
         ? true
         : statusFilter === 'hot'
         ? lead.score >= 80
+        : statusFilter === 'starred'
+        ? starredLeads.includes(lead.id)
         : lead.status.toLowerCase() === statusFilter.toLowerCase();
 
     return matchesSearch && matchesStatus;
@@ -292,7 +329,7 @@ export function CrmLeadsView() {
         activeDealsCount={11}
       />
 
-      {/* ─── Search, Filters & Bulk Actions Bar ── */}
+      {/* ─── Search, Filters & Bulk Actions Bar (QoL 1, 6, 9) ── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-2 flex-1 max-w-md">
           <div className="relative w-full">
@@ -312,9 +349,22 @@ export function CrmLeadsView() {
               placeholder="Search leads by name, company, or email..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl border border-border bg-white text-ink placeholder:text-ink-muted/60 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent"
+              className="w-full pl-9 pr-8 py-1.5 text-xs rounded-xl border border-border dark:border-[#2E302A] bg-white dark:bg-[#141513] text-ink dark:text-white placeholder:text-ink-muted/60 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent"
             />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-ink-muted hover:text-ink dark:hover:text-white text-xs cursor-pointer p-0.5"
+                title="Clear search"
+              >
+                ✕
+              </button>
+            )}
           </div>
+          <span className="text-[11px] font-mono text-ink-muted whitespace-nowrap hidden lg:inline">
+            Showing {filteredLeads.length} of {leads.length}
+          </span>
         </div>
 
         <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 flex-wrap">
@@ -325,20 +375,32 @@ export function CrmLeadsView() {
               aria-pressed={statusFilter === st}
               className={`px-3 py-1.5 text-xs font-semibold rounded-lg border capitalize transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-accent ${
                 statusFilter === st
-                  ? 'bg-[#20211F] text-white border-[#20211F]'
-                  : 'bg-white text-ink-muted border-border hover:bg-neutral-100'
+                  ? 'bg-[#20211F] dark:bg-accent text-white border-[#20211F] dark:border-accent'
+                  : 'bg-white dark:bg-[#1E1F1C] text-ink-muted border-border dark:border-[#2E302A] hover:bg-neutral-100 dark:hover:bg-neutral-800'
               }`}
             >
               {st === 'hot' ? '🔥 Hot Leads (>80)' : st}
             </button>
           ))}
 
+          <button
+            onClick={() => setStatusFilter('starred')}
+            aria-pressed={statusFilter === 'starred'}
+            className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-accent ${
+              statusFilter === 'starred'
+                ? 'bg-amber-500 text-neutral-950 font-bold border-amber-500'
+                : 'bg-white dark:bg-[#1E1F1C] text-ink-muted border-border dark:border-[#2E302A] hover:bg-neutral-100 dark:hover:bg-neutral-800'
+            }`}
+          >
+            ⭐ Starred ({starredLeads.length})
+          </button>
+
           {/* Sort dropdown */}
           <select
             aria-label="Sort leads"
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as any)}
-            className="text-xs p-1.5 rounded-lg border border-border bg-white text-ink focus-visible:ring-2 focus-visible:ring-accent"
+            className="text-xs p-1.5 rounded-lg border border-border dark:border-[#2E302A] bg-white dark:bg-[#1E1F1C] text-ink dark:text-neutral-100 focus-visible:ring-2 focus-visible:ring-accent"
           >
             <option value="default">Sort: Default</option>
             <option value="score_desc">Score: High to Low</option>
@@ -352,12 +414,12 @@ export function CrmLeadsView() {
             aria-label="Export filtered leads to CSV"
             className="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1 cursor-pointer focus-visible:ring-2 focus-visible:ring-accent"
           >
-            <span>Export CSV</span>
+            <span>📥 Export CSV</span>
           </button>
         </div>
       </div>
 
-      {/* ── Bulk Actions Floating Ribbon ── */}
+      {/* ── Bulk Actions Floating Ribbon (QoL 9) ── */}
       {selectedLeads.length > 0 && (
         <div
           role="region"
@@ -369,6 +431,19 @@ export function CrmLeadsView() {
             <span>{selectedLeads.length} leads selected</span>
           </div>
           <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                setLeads((prev) =>
+                  prev.map((l) => (selectedLeads.includes(l.id) ? { ...l, status: 'Contacted' } : l))
+                );
+                showToast(`Marked ${selectedLeads.length} leads as Contacted`);
+                setSelectedLeads([]);
+              }}
+              className="px-2.5 py-1 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold transition-colors cursor-pointer"
+            >
+              ✓ Mark Contacted
+            </button>
             <button
               type="button"
               onClick={() => {
@@ -390,6 +465,13 @@ export function CrmLeadsView() {
             >
               Bulk Delete
             </button>
+            <button
+              type="button"
+              onClick={() => setSelectedLeads([])}
+              className="px-2 py-1 text-neutral-400 hover:text-white text-xs cursor-pointer"
+            >
+              Deselect All
+            </button>
           </div>
         </div>
       )}
@@ -398,7 +480,7 @@ export function CrmLeadsView() {
       <div
         role="region"
         aria-label="Leads Intake Table"
-        className="bg-white rounded-2xl border border-border overflow-hidden shadow-xs"
+        className="bg-white dark:bg-[#1E1F1C] rounded-2xl border border-border dark:border-[#2E302A] overflow-hidden shadow-xs"
       >
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
@@ -430,92 +512,131 @@ export function CrmLeadsView() {
                   </td>
                 </tr>
               ) : (
-                filteredLeads.map((lead) => (
-                  <tr key={lead.id} className="hover:bg-neutral-50/80 transition-colors">
-                    <td className="p-3.5 text-center">
-                      <input
-                        type="checkbox"
-                        aria-label={`Select lead ${lead.name}`}
-                        checked={selectedLeads.includes(lead.id)}
-                        onChange={() => toggleSelectLead(lead.id)}
-                        className="rounded border-border text-accent focus:ring-accent"
-                      />
-                    </td>
-                    <td className="p-3.5">
-                      <div className="font-bold text-ink">{lead.name}</div>
-                      <div className="text-[11px] text-ink-muted">{lead.email}</div>
-                    </td>
-                    <td className="p-3.5 font-medium text-ink">
-                      {lead.company}
-                    </td>
-                    <td className="p-3.5 text-ink-muted">
-                      {lead.source}
-                    </td>
-                    <td className="p-3.5">
-                      <div className="flex items-center gap-1.5">
-                        <span className={`font-mono font-bold ${lead.score >= 80 ? 'text-red-700' : 'text-amber-800'}`}>
-                          {lead.score}
-                        </span>
-                        <div
-                          className="w-12 h-1.5 bg-neutral-100 rounded-full overflow-hidden"
-                          role="progressbar"
-                          aria-valuenow={lead.score}
-                          aria-valuemin={0}
-                          aria-valuemax={100}
-                        >
-                          <div
-                            className={`h-full ${lead.score >= 80 ? 'bg-red-600' : 'bg-amber-600'}`}
-                            style={{ width: `${lead.score}%` }}
+                filteredLeads.map((lead) => {
+                  const isStarred = starredLeads.includes(lead.id);
+                  const pyClass = density === 'compact' ? 'py-2 px-3' : 'py-3.5 px-3.5';
+                  return (
+                    <tr key={lead.id} className="hover:bg-neutral-50/80 dark:hover:bg-neutral-800/50 transition-colors">
+                      <td className={`${pyClass} text-center`}>
+                        <div className="flex items-center justify-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => toggleStarLead(lead.id)}
+                            aria-label={isStarred ? 'Unstar lead' : 'Star lead'}
+                            className="text-xs hover:scale-125 transition-transform cursor-pointer"
+                            title={isStarred ? 'Starred in favorites' : 'Click to star'}
+                          >
+                            {isStarred ? '⭐' : '✩'}
+                          </button>
+                          <input
+                            type="checkbox"
+                            aria-label={`Select lead ${lead.name}`}
+                            checked={selectedLeads.includes(lead.id)}
+                            onChange={() => toggleSelectLead(lead.id)}
+                            className="rounded border-border text-accent focus:ring-accent"
                           />
                         </div>
-                      </div>
-                    </td>
-                    <td className="p-3.5">
-                      <div className="space-y-0.5">
-                        <span
-                          className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider inline-block ${
-                            lead.status === 'Converted'
-                              ? 'bg-[#1F7A4D]/15 text-[#1F7A4D] border border-[#1F7A4D]/30'
-                              : lead.status === 'Qualified'
-                              ? 'bg-blue-100 text-blue-900 border border-blue-300'
-                              : lead.status === 'Working'
-                              ? 'bg-amber-100 text-amber-900 border border-amber-300'
-                              : lead.status === 'Unqualified'
-                              ? 'bg-neutral-200 text-neutral-800 border border-neutral-300'
-                              : 'bg-neutral-100 text-neutral-900'
-                          }`}
-                        >
-                          {lead.status}
-                        </span>
-                        {lead.disqualifiedReason && (
-                          <div className="text-[10px] text-red-800 italic truncate max-w-[150px]">
-                            {lead.disqualifiedReason}
+                      </td>
+                      <td className={pyClass}>
+                        <div className="font-bold text-ink dark:text-neutral-100">{lead.name}</div>
+                        <div className="text-[11px] text-ink-muted flex items-center gap-1.5 mt-0.5">
+                          <span>{lead.email}</span>
+                          {lead.email && lead.email !== 'N/A' && (
+                            <button
+                              type="button"
+                              onClick={() => copyToClipboard(lead.email, 'email')}
+                              className="text-[10px] text-ink-muted hover:text-accent transition-colors cursor-pointer"
+                              title="Copy email address"
+                            >
+                              📋
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                      <td className={`${pyClass} font-medium text-ink dark:text-neutral-200`}>
+                        <div>{lead.company}</div>
+                        {lead.phone && lead.phone !== 'N/A' && (
+                          <div className="text-[10px] text-ink-muted flex items-center gap-1 mt-0.5 font-mono">
+                            <span>{lead.phone}</span>
+                            <button
+                              type="button"
+                              onClick={() => copyToClipboard(lead.phone, 'phone')}
+                              className="text-[9px] hover:text-accent cursor-pointer"
+                              title="Copy phone number"
+                            >
+                              📋
+                            </button>
                           </div>
                         )}
-                      </div>
-                    </td>
-                    <td className="p-3.5 text-ink-muted font-medium">
-                      {lead.assignedTo}
-                    </td>
-                    <td className="p-3.5 text-right">
-                      <div className="flex items-center justify-end gap-1.5">
-                        {lead.status !== 'Converted' && lead.status !== 'Unqualified' && (
-                          <button
-                            type="button"
-                            onClick={() => handleConvert(lead.id)}
-                            aria-label={`Convert lead ${lead.name} to deal`}
-                            className="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-accent text-white hover:bg-[#853526] transition-colors cursor-pointer shadow-xs focus-visible:ring-2 focus-visible:ring-accent"
+                      </td>
+                      <td className={`${pyClass} text-ink-muted`}>
+                        {lead.source}
+                      </td>
+                      <td className={pyClass}>
+                        <div className="flex items-center gap-1.5">
+                          <span className={`font-mono font-bold ${lead.score >= 80 ? 'text-red-700 dark:text-red-400' : 'text-amber-800 dark:text-amber-400'}`}>
+                            {lead.score}
+                          </span>
+                          <div
+                            className="w-12 h-1.5 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden"
+                            role="progressbar"
+                            aria-valuenow={lead.score}
+                            aria-valuemin={0}
+                            aria-valuemax={100}
                           >
-                            Convert to Deal
-                          </button>
-                        )}
-                        {lead.status !== 'Converted' && lead.status !== 'Unqualified' && (
-                          <button
-                            type="button"
-                            onClick={() => setDisqualifyId(lead.id)}
-                            aria-label={`Disqualify lead ${lead.name}`}
-                            className="px-2 py-1 text-[11px] font-medium rounded-lg text-neutral-600 hover:bg-neutral-100 transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-accent"
+                            <div
+                              className={`h-full ${lead.score >= 80 ? 'bg-red-600' : 'bg-amber-600'}`}
+                              style={{ width: `${lead.score}%` }}
+                            />
+                          </div>
+                        </div>
+                      </td>
+                      <td className={pyClass}>
+                        <div className="space-y-0.5">
+                          <span
+                            className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider inline-block ${
+                              lead.status === 'Converted'
+                                ? 'bg-[#1F7A4D]/15 text-[#1F7A4D] border border-[#1F7A4D]/30'
+                                : lead.status === 'Qualified'
+                                ? 'bg-blue-100 dark:bg-blue-950/40 text-blue-900 dark:text-blue-300 border border-blue-300 dark:border-blue-800'
+                                : lead.status === 'Working'
+                                ? 'bg-amber-100 dark:bg-amber-950/40 text-amber-900 dark:text-amber-300 border border-amber-300 dark:border-amber-800'
+                                : lead.status === 'Unqualified'
+                                ? 'bg-neutral-200 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-300 border border-neutral-300 dark:border-neutral-700'
+                                : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-200'
+                            }`}
                           >
+                            {lead.status}
+                          </span>
+                          {lead.disqualifiedReason && (
+                            <div className="text-[10px] text-red-800 dark:text-red-400 italic truncate max-w-[150px]">
+                              {lead.disqualifiedReason}
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td className={`${pyClass} text-ink-muted font-medium`}>
+                        {lead.assignedTo}
+                      </td>
+                      <td className={`${pyClass} text-right`}>
+                        <div className="flex items-center justify-end gap-1.5">
+                          {lead.status !== 'Converted' && lead.status !== 'Unqualified' && (
+                            <button
+                              type="button"
+                              onClick={() => handleConvert(lead.id)}
+                              aria-label={`Convert lead ${lead.name} to deal`}
+                              className="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-accent text-white hover:bg-[#853526] transition-colors cursor-pointer shadow-xs focus-visible:ring-2 focus-visible:ring-accent"
+                            >
+                              Convert to Deal
+                            </button>
+                          )}
+                          {lead.status !== 'Converted' && lead.status !== 'Unqualified' && (
+                            <button
+                              type="button"
+                              onClick={() => setDisqualifyId(lead.id)}
+                              aria-label={`Disqualify lead ${lead.name}`}
+                              className="px-2 py-1 text-[11px] font-medium rounded-lg text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-accent"
+                            >
                             Disqualify
                           </button>
                         )}
@@ -532,7 +653,8 @@ export function CrmLeadsView() {
                       </div>
                     </td>
                   </tr>
-                ))
+                  );
+                })
               )}
             </tbody>
           </table>

@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { getAllApplications } from '@bahi/applications';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 const appRouteTitles: Record<string, string> = {
   '/applications': 'User Overview',
@@ -12,6 +13,7 @@ const appRouteTitles: Record<string, string> = {
   '/accounting': 'Accounting & Double-Entry Ledger',
   '/hr': 'Human Resources & Workforce',
   '/projects': 'Projects & Sprint Delivery',
+  '/services': 'Field Services & Dispatch',
 };
 
 const routeNames: Record<string, string> = {
@@ -84,6 +86,9 @@ export function Topbar({
         >
           <span>All Apps</span>
         </Link>
+
+        {/* Theme Toggle Button */}
+        <ThemeToggle />
 
         {/* User Profile & Sign Out Link */}
         <div className="flex items-center gap-2 pl-2 border-l border-border">

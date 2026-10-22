@@ -12,6 +12,9 @@ const shortcuts = [
   { key: '?', description: 'Show this keyboard shortcuts guide' },
   { key: 'D', description: 'Quick-open New Deal Modal' },
   { key: 'L', description: 'Quick-open New Lead Modal' },
+  { key: 'N', description: 'Quick-log Call, Meeting, or Activity Note' },
+  { key: 'T', description: 'Toggle Dark / Light Mode' },
+  { key: 'C', description: 'Toggle Table Density (Compact / Normal)' },
   { key: '1 – 7', description: 'Jump to CRM Tab (1: Deals, 2: Leads, 3: Companies, 4: Contacts, 5: Activities, 6: Quotes, 7: Forecast)' },
   { key: '→ / ←', description: 'On focused deal card: Advance or move back one stage' },
   { key: 'W', description: 'On focused deal card: Mark Won' },
@@ -55,12 +58,12 @@ export function CrmShortcutsModal({ isOpen, onClose }: CrmShortcutsModalProps) {
     >
       <div
         ref={modalRef}
-        className="bg-white rounded-2xl border border-border shadow-2xl max-w-lg w-full p-6 space-y-4 text-ink focus:outline-hidden"
+        className="bg-white dark:bg-[#1E1F1C] rounded-2xl border border-border dark:border-[#2E302A] shadow-2xl max-w-lg w-full p-6 space-y-4 text-ink dark:text-neutral-100 focus:outline-hidden"
       >
-        <div className="flex items-center justify-between pb-3 border-b border-border">
+        <div className="flex items-center justify-between pb-3 border-b border-border dark:border-[#2E302A]">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-accent" />
-            <h2 id="shortcuts-dialog-title" className="text-base font-bold text-ink">
+            <h2 id="shortcuts-dialog-title" className="text-base font-bold text-ink dark:text-white">
               CRM Keyboard Shortcuts &amp; Accessibility
             </h2>
           </div>
@@ -68,7 +71,7 @@ export function CrmShortcutsModal({ isOpen, onClose }: CrmShortcutsModalProps) {
             ref={closeButtonRef}
             onClick={onClose}
             aria-label="Close shortcuts dialog"
-            className="text-ink-muted hover:text-ink text-sm p-1 rounded-lg hover:bg-neutral-100 focus-visible:ring-2 focus-visible:ring-accent focus:outline-hidden"
+            className="text-ink-muted hover:text-ink dark:hover:text-white text-sm p-1 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 focus-visible:ring-2 focus-visible:ring-accent focus:outline-hidden cursor-pointer"
           >
             ✕
           </button>
@@ -82,10 +85,10 @@ export function CrmShortcutsModal({ isOpen, onClose }: CrmShortcutsModalProps) {
           {shortcuts.map((sc, i) => (
             <div
               key={i}
-              className="flex items-center justify-between p-2 rounded-lg bg-[#FAF9F5] border border-border/60 text-xs"
+              className="flex items-center justify-between p-2 rounded-lg bg-[#FAF9F5] dark:bg-[#141513] border border-border/60 dark:border-[#2E302A] text-xs"
             >
-              <span className="text-ink font-medium">{sc.description}</span>
-              <kbd className="font-mono font-bold text-[11px] bg-white border border-border px-2 py-0.5 rounded shadow-2xs text-ink">
+              <span className="text-ink dark:text-neutral-200 font-medium">{sc.description}</span>
+              <kbd className="font-mono font-bold text-[11px] bg-white dark:bg-[#1E1F1C] border border-border dark:border-[#2E302A] px-2 py-0.5 rounded shadow-2xs text-ink dark:text-neutral-100">
                 {sc.key}
               </kbd>
             </div>

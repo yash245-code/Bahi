@@ -13,8 +13,24 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="bg-paper text-ink">
-      <body className="font-sans bg-paper text-ink antialiased">
+    <html lang="en" className="bg-paper text-ink transition-colors duration-150" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                const saved = localStorage.getItem('bahi-theme');
+                if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                  document.documentElement.classList.add('dark');
+                } else {
+                  document.documentElement.classList.remove('dark');
+                }
+              } catch (_) {}
+            `,
+          }}
+        />
+      </head>
+      <body className="font-sans bg-paper dark:bg-[#141513] text-ink dark:text-[#F7F6F3] antialiased transition-colors duration-150">
         {children}
       </body>
     </html>

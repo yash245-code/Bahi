@@ -154,7 +154,7 @@ export function CrmDataCenterModal({
         <div className="flex items-center justify-between pb-3 border-b border-border dark:border-[#2E302A]">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-accent" />
-            <h2 id="datacenter-dialog-title" className="text-base font-bold text-ink">
+            <h2 id="datacenter-dialog-title" className="text-base font-bold text-ink dark:text-white">
               Data Management, CSV Import/Export &amp; Deduplication
             </h2>
           </div>
@@ -162,18 +162,18 @@ export function CrmDataCenterModal({
             ref={closeButtonRef}
             onClick={onClose}
             aria-label="Close data management dialog"
-            className="text-ink-muted hover:text-ink text-sm p-1 rounded-lg hover:bg-neutral-100 focus-visible:ring-2 focus-visible:ring-accent focus:outline-hidden"
+            className="text-ink-muted hover:text-ink dark:hover:text-white text-sm p-1 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 focus-visible:ring-2 focus-visible:ring-accent focus:outline-hidden"
           >
             ✕
           </button>
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex items-center gap-1 border-b border-border pb-2 text-xs font-semibold">
+        <div className="flex items-center gap-1 border-b border-border dark:border-[#2E302A] pb-2 text-xs font-semibold">
           <button
             onClick={() => setActiveTab('export')}
             className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
-              activeTab === 'export' ? 'bg-[#20211F] text-white' : 'text-ink-muted hover:bg-neutral-100'
+              activeTab === 'export' ? 'bg-[#20211F] text-white dark:bg-white dark:text-[#141513]' : 'text-ink-muted hover:bg-neutral-100 dark:hover:bg-neutral-800'
             }`}
           >
             📥 CSV Export
@@ -181,7 +181,7 @@ export function CrmDataCenterModal({
           <button
             onClick={() => setActiveTab('import')}
             className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
-              activeTab === 'import' ? 'bg-[#20211F] text-white' : 'text-ink-muted hover:bg-neutral-100'
+              activeTab === 'import' ? 'bg-[#20211F] text-white dark:bg-white dark:text-[#141513]' : 'text-ink-muted hover:bg-neutral-100 dark:hover:bg-neutral-800'
             }`}
           >
             📤 CSV Import &amp; Mapping
@@ -189,7 +189,7 @@ export function CrmDataCenterModal({
           <button
             onClick={() => setActiveTab('dedup')}
             className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
-              activeTab === 'dedup' ? 'bg-[#20211F] text-white' : 'text-ink-muted hover:bg-neutral-100'
+              activeTab === 'dedup' ? 'bg-[#20211F] text-white dark:bg-white dark:text-[#141513]' : 'text-ink-muted hover:bg-neutral-100 dark:hover:bg-neutral-800'
             }`}
           >
             🔍 Deduplication Scanner ({duplicatePairs.length})
@@ -203,14 +203,14 @@ export function CrmDataCenterModal({
               Export filtered CRM data in standard RFC-4180 CSV format compatible with Excel, Google Sheets, and BI tools.
             </p>
             <div className="space-y-2">
-              <label htmlFor="export-entity-select" className="block font-semibold text-ink">
+              <label htmlFor="export-entity-select" className="block font-semibold text-ink dark:text-neutral-200">
                 Select Entity to Export:
               </label>
               <select
                 id="export-entity-select"
                 value={exportEntity}
                 onChange={(e) => setExportEntity(e.target.value as any)}
-                className="w-full p-2.5 rounded-xl border border-border bg-[#FAF9F5] text-ink focus:outline-hidden focus:ring-1 focus:ring-accent"
+                className="w-full p-2.5 rounded-xl border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] text-ink dark:text-neutral-100 focus:outline-hidden focus:ring-1 focus:ring-accent"
               >
                 <option value="leads">Inbound Leads &amp; Intake Queue (All fields &amp; Scores)</option>
                 <option value="deals">Pipeline Deals &amp; Opportunities (Stage, Probability, Value)</option>
@@ -219,8 +219,8 @@ export function CrmDataCenterModal({
               </select>
             </div>
 
-            <div className="p-3 rounded-xl bg-[#FAF9F5] border border-border space-y-1">
-              <div className="font-semibold text-ink">Export Guarantee:</div>
+            <div className="p-3 rounded-xl bg-[#FAF9F5] dark:bg-[#141513] border border-border dark:border-[#2E302A] space-y-1">
+              <div className="font-semibold text-ink dark:text-neutral-200">Export Guarantee:</div>
               <ul className="list-disc list-inside text-ink-muted space-y-0.5">
                 <li>Automatic UTF-8 BOM encoding for Excel special character support</li>
                 <li>Zero data truncation with real-time audit event logging</li>
@@ -249,14 +249,14 @@ export function CrmDataCenterModal({
             </p>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label htmlFor="import-target-select" className="block font-semibold text-ink mb-1">
+                <label htmlFor="import-target-select" className="block font-semibold text-ink dark:text-neutral-200 mb-1">
                   Target Destination:
                 </label>
                 <select
                   id="import-target-select"
                   value={importEntity}
                   onChange={(e) => setImportEntity(e.target.value as any)}
-                  className="w-full p-2 rounded-lg border border-border bg-[#FAF9F5] text-ink"
+                  className="w-full p-2 rounded-lg border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] text-ink dark:text-neutral-100"
                 >
                   <option value="leads">Leads &amp; Qualification Intake</option>
                   <option value="contacts">Contacts Directory</option>
@@ -264,14 +264,14 @@ export function CrmDataCenterModal({
                 </select>
               </div>
               <div>
-                <label htmlFor="duplicate-policy-select" className="block font-semibold text-ink mb-1">
+                <label htmlFor="duplicate-policy-select" className="block font-semibold text-ink dark:text-neutral-200 mb-1">
                   Duplicate Policy:
                 </label>
                 <select
                   id="duplicate-policy-select"
                   value={duplicatePolicy}
                   onChange={(e) => setDuplicatePolicy(e.target.value as any)}
-                  className="w-full p-2 rounded-lg border border-border bg-[#FAF9F5] text-ink"
+                  className="w-full p-2 rounded-lg border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] text-ink dark:text-neutral-100"
                 >
                   <option value="UPDATE">Update existing records on match</option>
                   <option value="SKIP">Skip existing matches</option>
@@ -281,7 +281,7 @@ export function CrmDataCenterModal({
             </div>
 
             <div>
-              <label htmlFor="csv-content-box" className="block font-semibold text-ink mb-1">
+              <label htmlFor="csv-content-box" className="block font-semibold text-ink dark:text-neutral-200 mb-1">
                 CSV Payload:
               </label>
               <textarea
@@ -289,12 +289,12 @@ export function CrmDataCenterModal({
                 rows={4}
                 value={csvRaw}
                 onChange={(e) => setCsvRaw(e.target.value)}
-                className="w-full p-2.5 font-mono text-[11px] rounded-xl border border-border bg-[#FAF9F5] text-ink focus:outline-hidden focus:ring-1 focus:ring-accent"
+                className="w-full p-2.5 font-mono text-[11px] rounded-xl border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] text-ink dark:text-neutral-100 focus:outline-hidden focus:ring-1 focus:ring-accent"
               />
             </div>
 
             {importStatus && (
-              <div className="p-2.5 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 font-medium">
+              <div className="p-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 font-medium">
                 {importStatus}
               </div>
             )}
@@ -316,12 +316,12 @@ export function CrmDataCenterModal({
           <div className="space-y-4 text-xs">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div className="flex items-center gap-2">
-                <label htmlFor="dedup-entity-select" className="font-semibold text-ink">Entity Target:</label>
+                <label htmlFor="dedup-entity-select" className="font-semibold text-ink dark:text-neutral-200">Entity Target:</label>
                 <select
                   id="dedup-entity-select"
                   value={dedupEntity}
                   onChange={(e) => setDedupEntity(e.target.value as any)}
-                  className="p-1.5 text-xs rounded-lg border border-border bg-[#FAF9F5] text-ink"
+                  className="p-1.5 text-xs rounded-lg border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] text-ink dark:text-neutral-100"
                 >
                   <option value="contact">Contacts (Email Matching)</option>
                   <option value="company">Companies (Domain Matching)</option>
@@ -339,14 +339,14 @@ export function CrmDataCenterModal({
 
             <div className="space-y-3 max-h-72 overflow-y-auto pr-1">
               {duplicatePairs.length === 0 ? (
-                <div className="p-8 text-center bg-[#FAF9F5] rounded-xl border border-border text-ink-muted">
+                <div className="p-8 text-center bg-[#FAF9F5] dark:bg-[#141513] rounded-xl border border-border dark:border-[#2E302A] text-ink-muted">
                   ✓ Database is clean! No duplicate records found.
                 </div>
               ) : (
                 duplicatePairs.map((pair) => (
                   <div
                     key={pair.id}
-                    className="p-3 rounded-xl border border-border/80 bg-[#FAF9F5] space-y-2"
+                    className="p-3 rounded-xl border border-border/80 dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] space-y-2"
                   >
                     <div className="flex items-center justify-between">
                       <span className="text-[11px] font-bold text-accent">
@@ -356,13 +356,13 @@ export function CrmDataCenterModal({
                     </div>
 
                     <div className="grid grid-cols-2 gap-2 text-[11px]">
-                      <div className="p-2 rounded bg-white border border-border">
-                        <div className="font-bold text-ink">{pair.recordA.name}</div>
+                      <div className="p-2 rounded bg-white dark:bg-[#1E1F1C] border border-border dark:border-[#2E302A]">
+                        <div className="font-bold text-ink dark:text-white">{pair.recordA.name}</div>
                         <div className="text-ink-muted">{pair.recordA.email || pair.recordA.domain}</div>
                         <div className="text-[10px] text-ink-muted">{pair.recordA.company || pair.recordA.revenue}</div>
                       </div>
-                      <div className="p-2 rounded bg-white border border-border">
-                        <div className="font-bold text-ink">{pair.recordB.name}</div>
+                      <div className="p-2 rounded bg-white dark:bg-[#1E1F1C] border border-border dark:border-[#2E302A]">
+                        <div className="font-bold text-ink dark:text-white">{pair.recordB.name}</div>
                         <div className="text-ink-muted">{pair.recordB.email || pair.recordB.domain}</div>
                         <div className="text-[10px] text-ink-muted">{pair.recordB.company || pair.recordB.revenue}</div>
                       </div>

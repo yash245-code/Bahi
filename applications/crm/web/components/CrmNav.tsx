@@ -130,6 +130,56 @@ const navTabs = [
   },
 ];
 
+interface CrmNavNotification {
+  id: string;
+  type: 'approval' | 'decay' | 'lead';
+  title: string;
+  subtitle: string;
+  timestamp: string;
+  actionPayload?: {
+    discount?: number;
+    rep?: string;
+  };
+  status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'READ';
+}
+
+const initialNotifications: CrmNavNotification[] = [
+  {
+    id: 'NOTIF-1',
+    type: 'approval',
+    title: 'NexGen Cloud ERP Suite',
+    subtitle: '18% discount requested by Alex Morgan (Deal: $15,000)',
+    timestamp: '10m ago',
+    actionPayload: { discount: 18, rep: 'Alex Morgan' },
+    status: 'PENDING',
+  },
+  {
+    id: 'NOTIF-2',
+    type: 'approval',
+    title: 'DataFlow Multi-Warehouse Sync',
+    subtitle: '12% discount requested by Priya Sharma (Deal: $5,400)',
+    timestamp: '42m ago',
+    actionPayload: { discount: 12, rep: 'Priya Sharma' },
+    status: 'PENDING',
+  },
+  {
+    id: 'NOTIF-3',
+    type: 'decay',
+    title: 'Stalled Deal Alert: Pacific Rim Logistics',
+    subtitle: 'Proposal Sent stage untouched for 14 days ($18,500)',
+    timestamp: '2h ago',
+    status: 'PENDING',
+  },
+  {
+    id: 'NOTIF-4',
+    type: 'lead',
+    title: 'High-Intent Inbound: Sarah Chen',
+    subtitle: 'Score 92 • Enterprise trial request from HyperGrowth AI',
+    timestamp: '3h ago',
+    status: 'READ',
+  },
+];
+
 export function CrmNav({
   onNewDeal,
   onNewLead,
@@ -144,8 +194,44 @@ export function CrmNav({
   const [dataModalOpen, setDataModalOpen] = useState(false);
   const [quickNoteOpen, setQuickNoteOpen] = useState(false);
   const [recentOpen, setRecentOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [notifications, setNotifications] = useState<CrmNavNotification[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('bahi-crm-notifications');
+        if (saved) return JSON.parse(saved);
+      } catch {}
+    }
+    return initialNotifications;
+  });
   const [density, setDensity] = useState<'normal' | 'compact'>('normal');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const unreadCount = notifications.filter((n) => n.status === 'PENDING').length;
+
+  const handleApproval = (id: string, decision: 'APPROVED' | 'REJECTED') => {
+    setNotifications((prev) => {
+      const updated = prev.map((n) => (n.id === id ? { ...n, status: decision } : n));
+      try {
+        localStorage.setItem('bahi-crm-notifications', JSON.stringify(updated));
+      } catch {}
+      return updated;
+    });
+    setToastMessage(`Discount request ${decision === 'APPROVED' ? 'approved' : 'rejected'} successfully.`);
+    setTimeout(() => setToastMessage(null), 3500);
+  };
+
+  const handleMarkAllRead = () => {
+    setNotifications((prev) => {
+      const updated = prev.map((n) => (n.status === 'PENDING' ? { ...n, status: 'READ' as const } : n));
+      try {
+        localStorage.setItem('bahi-crm-notifications', JSON.stringify(updated));
+      } catch {}
+      return updated;
+    });
+    setToastMessage('All notifications marked as read.');
+    setTimeout(() => setToastMessage(null), 3000);
+  };
 
   // Initialize and load density from localStorage
   useEffect(() => {
@@ -334,6 +420,127 @@ export function CrmNav({
                     <div className="text-[10px] text-ink-muted">{item.tag}</div>
                   </Link>
                 ))}
+              </div>
+            )}
+          </div>
+
+          {/* Notifications & Approvals Flyout */}
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setNotificationsOpen(!notificationsOpen)}
+              aria-label={`Notifications and Approvals (${unreadCount} unread)`}
+              className="relative p-2 rounded-lg border border-border dark:border-[#2E302A] text-ink-muted hover:text-ink hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-accent"
+              title="Notifications & Approvals"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+              </svg>
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[9px] font-black text-white shadow-2xs">
+                  {unreadCount}
+                </span>
+              )}
+            </button>
+
+            {notificationsOpen && (
+              <div className="absolute right-0 top-full mt-2 w-84 sm:w-96 bg-white dark:bg-[#1E1F1C] border border-border dark:border-[#2E302A] rounded-2xl shadow-2xl z-50 p-4 space-y-3 animate-fade-in text-ink dark:text-neutral-100">
+                <div className="flex items-center justify-between pb-2 border-b border-border dark:border-[#2E302A]">
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-xs uppercase tracking-wider text-ink dark:text-white">
+                      Notifications &amp; Approvals
+                    </span>
+                    {unreadCount > 0 && (
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-accent/15 text-accent font-mono">
+                        {unreadCount} pending
+                      </span>
+                    )}
+                  </div>
+                  {unreadCount > 0 && (
+                    <button
+                      type="button"
+                      onClick={handleMarkAllRead}
+                      className="text-[11px] text-ink-muted hover:text-ink dark:hover:text-white underline cursor-pointer"
+                    >
+                      Mark all read
+                    </button>
+                  )}
+                </div>
+
+                <div className="max-h-80 overflow-y-auto space-y-2 pr-1">
+                  {notifications.length === 0 ? (
+                    <div className="text-center py-6 text-xs text-ink-muted">
+                      No notifications or pending approvals
+                    </div>
+                  ) : (
+                    notifications.map((item) => (
+                      <div
+                        key={item.id}
+                        className={`p-3 rounded-xl border text-xs space-y-2 transition-colors ${
+                          item.status === 'PENDING'
+                            ? 'bg-[#FAF9F5] dark:bg-neutral-800/60 border-accent/30'
+                            : 'bg-white dark:bg-neutral-900 border-border dark:border-[#2E302A] opacity-75'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="space-y-0.5">
+                            <div className="flex items-center gap-1.5 font-bold text-xs text-ink dark:text-white">
+                              <span>
+                                {item.type === 'approval'
+                                  ? '⚖️ Discount Approval'
+                                  : item.type === 'decay'
+                                  ? '⏳ Deal Stalled Alert'
+                                  : '🔥 Inbound Lead'}
+                              </span>
+                              <span className="font-normal text-[10px] text-ink-muted">
+                                • {item.timestamp}
+                              </span>
+                            </div>
+                            <div className="font-semibold text-ink dark:text-neutral-200">
+                              {item.title}
+                            </div>
+                            <p className="text-[11px] text-ink-muted leading-tight">
+                              {item.subtitle}
+                            </p>
+                          </div>
+                        </div>
+
+                        {item.type === 'approval' && item.status === 'PENDING' && (
+                          <div className="flex items-center justify-end gap-2 pt-1 border-t border-border/50 dark:border-neutral-700">
+                            <button
+                              type="button"
+                              onClick={() => handleApproval(item.id, 'REJECTED')}
+                              className="px-2.5 py-1 text-[11px] font-semibold rounded-lg bg-neutral-200 dark:bg-neutral-700 text-neutral-800 dark:text-neutral-200 hover:bg-neutral-300 transition-colors cursor-pointer"
+                            >
+                              Reject
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleApproval(item.id, 'APPROVED')}
+                              className="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-[#1F7A4D] text-white hover:bg-emerald-800 transition-colors shadow-2xs cursor-pointer"
+                            >
+                              Approve Discount
+                            </button>
+                          </div>
+                        )}
+
+                        {item.type === 'approval' && item.status !== 'PENDING' && (
+                          <div className="pt-1 text-[10px] font-bold">
+                            <span
+                              className={`px-2 py-0.5 rounded ${
+                                item.status === 'APPROVED'
+                                  ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300'
+                                  : 'bg-red-100 dark:bg-red-950 text-red-800 dark:text-red-300'
+                              }`}
+                            >
+                              {item.status}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    ))
+                  )}
+                </div>
               </div>
             )}
           </div>

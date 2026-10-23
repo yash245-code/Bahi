@@ -13,7 +13,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="bg-paper text-ink transition-colors duration-150" suppressHydrationWarning>
+    <html lang="en" className="bg-paper dark:bg-[#141513] text-ink dark:text-[#F7F6F3] transition-colors duration-150" suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{

@@ -80,7 +80,7 @@ export function NewLeadModal({ isOpen, onClose, onSubmit }: NewLeadModalProps) {
             ref={closeButtonRef}
             onClick={onClose}
             aria-label="Close lead capture dialog"
-            className="text-ink-muted hover:text-ink text-sm p-1 rounded-lg hover:bg-neutral-100 focus-visible:ring-2 focus-visible:ring-accent focus:outline-hidden"
+            className="text-ink-muted hover:text-ink dark:hover:text-white text-sm p-1 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 focus-visible:ring-2 focus-visible:ring-accent focus:outline-hidden"
           >
             ✕
           </button>
@@ -89,7 +89,7 @@ export function NewLeadModal({ isOpen, onClose, onSubmit }: NewLeadModalProps) {
         <form onSubmit={handleSubmit} className="space-y-4 text-xs">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label htmlFor="lead-name-input" className="block text-ink font-semibold mb-1">
+              <label htmlFor="lead-name-input" className="block text-ink dark:text-neutral-200 font-semibold mb-1">
                 Contact Name *
               </label>
               <input
@@ -100,11 +100,11 @@ export function NewLeadModal({ isOpen, onClose, onSubmit }: NewLeadModalProps) {
                 placeholder="Sarah Chen"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-border bg-[#FAF9F5] focus:bg-white outline-hidden focus-visible:ring-2 focus-visible:ring-accent text-ink"
+                className="w-full px-3 py-2 rounded-lg border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] focus:bg-white dark:focus:bg-[#181917] outline-hidden focus-visible:ring-2 focus-visible:ring-accent text-ink dark:text-neutral-100"
               />
             </div>
             <div>
-              <label htmlFor="lead-company-input" className="block text-ink font-semibold mb-1">
+              <label htmlFor="lead-company-input" className="block text-ink dark:text-neutral-200 font-semibold mb-1">
                 Company / Org *
               </label>
               <input
@@ -115,14 +115,14 @@ export function NewLeadModal({ isOpen, onClose, onSubmit }: NewLeadModalProps) {
                 placeholder="TechStart Inc."
                 value={company}
                 onChange={(e) => setCompany(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-border bg-[#FAF9F5] focus:bg-white outline-hidden focus-visible:ring-2 focus-visible:ring-accent text-ink"
+                className="w-full px-3 py-2 rounded-lg border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] focus:bg-white dark:focus:bg-[#181917] outline-hidden focus-visible:ring-2 focus-visible:ring-accent text-ink dark:text-neutral-100"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label htmlFor="lead-email-input" className="block text-ink font-semibold mb-1">
+              <label htmlFor="lead-email-input" className="block text-ink dark:text-neutral-200 font-semibold mb-1">
                 Email Address *
               </label>
               <input
@@ -133,11 +133,11 @@ export function NewLeadModal({ isOpen, onClose, onSubmit }: NewLeadModalProps) {
                 placeholder="sarah@techstart.io"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-border bg-[#FAF9F5] focus:bg-white outline-hidden focus-visible:ring-2 focus-visible:ring-accent text-ink"
+                className="w-full px-3 py-2 rounded-lg border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] focus:bg-white dark:focus:bg-[#181917] outline-hidden focus-visible:ring-2 focus-visible:ring-accent text-ink dark:text-neutral-100"
               />
             </div>
             <div>
-              <label htmlFor="lead-phone-input" className="block text-ink font-semibold mb-1">
+              <label htmlFor="lead-phone-input" className="block text-ink dark:text-neutral-200 font-semibold mb-1">
                 Phone Number
               </label>
               <input
@@ -146,21 +146,21 @@ export function NewLeadModal({ isOpen, onClose, onSubmit }: NewLeadModalProps) {
                 placeholder="+1 (555) 349-2180"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-border bg-[#FAF9F5] focus:bg-white outline-hidden focus-visible:ring-2 focus-visible:ring-accent text-ink"
+                className="w-full px-3 py-2 rounded-lg border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] focus:bg-white dark:focus:bg-[#181917] outline-hidden focus-visible:ring-2 focus-visible:ring-accent text-ink dark:text-neutral-100"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label htmlFor="lead-source-select" className="block text-ink font-semibold mb-1">
+              <label htmlFor="lead-source-select" className="block text-ink dark:text-neutral-200 font-semibold mb-1">
                 Lead Source
               </label>
               <select
                 id="lead-source-select"
                 value={source}
                 onChange={(e) => setSource(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-border bg-[#FAF9F5] focus:bg-white outline-hidden focus-visible:ring-2 focus-visible:ring-accent text-ink"
+                className="w-full px-3 py-2 rounded-lg border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] focus:bg-white dark:focus:bg-[#181917] outline-hidden focus-visible:ring-2 focus-visible:ring-accent text-ink dark:text-neutral-100"
               >
                 <option value="Inbound Website">Inbound Website</option>
                 <option value="Product Trial">Product Trial</option>
@@ -170,7 +170,7 @@ export function NewLeadModal({ isOpen, onClose, onSubmit }: NewLeadModalProps) {
               </select>
             </div>
             <div>
-              <label htmlFor="lead-score-range" className="block text-ink font-semibold mb-1">
+              <label htmlFor="lead-score-range" className="block text-ink dark:text-neutral-200 font-semibold mb-1">
                 Qualification Score ({score}/100)
               </label>
               <input
@@ -187,7 +187,7 @@ export function NewLeadModal({ isOpen, onClose, onSubmit }: NewLeadModalProps) {
           </div>
 
           <div>
-            <label htmlFor="lead-notes-input" className="block text-ink font-semibold mb-1">
+            <label htmlFor="lead-notes-input" className="block text-ink dark:text-neutral-200 font-semibold mb-1">
               Initial Discovery Notes
             </label>
             <textarea
@@ -196,11 +196,11 @@ export function NewLeadModal({ isOpen, onClose, onSubmit }: NewLeadModalProps) {
               placeholder="Expressed interest in multi-warehouse synchronization and ERP integration..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg border border-border bg-[#FAF9F5] focus:bg-white outline-hidden focus-visible:ring-2 focus-visible:ring-accent text-ink"
+              className="w-full px-3 py-2 rounded-lg border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] focus:bg-white dark:focus:bg-[#181917] outline-hidden focus-visible:ring-2 focus-visible:ring-accent text-ink dark:text-neutral-100"
             />
           </div>
 
-          <div className="flex items-center justify-end gap-2 pt-4 border-t border-border">
+          <div className="flex items-center justify-end gap-2 pt-4 border-t border-border dark:border-[#2E302A]">
             <button
               type="button"
               onClick={onClose}

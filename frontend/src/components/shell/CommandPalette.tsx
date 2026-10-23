@@ -79,7 +79,7 @@ export function CommandPalette({ onClose }: { onClose: () => void }) {
     <div className="command-overlay" onClick={onClose}>
       <div className="command-dialog" onClick={(e) => e.stopPropagation()}>
         {/* Search Input */}
-        <div className="flex items-center gap-3 px-5 border-b border-border">
+        <div className="flex items-center gap-3 px-5 border-b border-border dark:border-[#2E302A]">
           <svg className="w-5 h-5 text-ink-muted" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
           </svg>
@@ -118,9 +118,9 @@ export function CommandPalette({ onClose }: { onClose: () => void }) {
                       onClose();
                     }}
                   >
-                    <span className="flex-1 text-ink">{item.label}</span>
+                    <span className="flex-1 text-ink dark:text-neutral-200">{item.label}</span>
                     {item.shortcut && (
-                      <kbd className="text-[10px] font-mono bg-[#F7F6F3] text-ink-muted px-1.5 py-0.5 rounded border border-border">
+                      <kbd className="text-[10px] font-mono bg-[#F7F6F3] dark:bg-[#141513] text-ink-muted px-1.5 py-0.5 rounded border border-border dark:border-[#2E302A]">
                         {item.shortcut}
                       </kbd>
                     )}
@@ -137,10 +137,10 @@ export function CommandPalette({ onClose }: { onClose: () => void }) {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center gap-4 px-5 py-3 border-t border-border text-[11px] text-ink-muted bg-[#FAF9F6]">
-          <span className="flex items-center gap-1"><kbd className="font-mono bg-white text-ink-muted border border-border px-1.5 py-0.5 rounded shadow-xs">↑↓</kbd> Navigate</span>
-          <span className="flex items-center gap-1"><kbd className="font-mono bg-white text-ink-muted border border-border px-1.5 py-0.5 rounded shadow-xs">↵</kbd> Open</span>
-          <span className="flex items-center gap-1"><kbd className="font-mono bg-white text-ink-muted border border-border px-1.5 py-0.5 rounded shadow-xs">Esc</kbd> Close</span>
+        <div className="flex items-center gap-4 px-5 py-3 border-t border-border dark:border-[#2E302A] text-[11px] text-ink-muted bg-[#FAF9F6] dark:bg-[#181917]">
+          <span className="flex items-center gap-1"><kbd className="font-mono bg-white dark:bg-[#1E1F1C] text-ink-muted border border-border dark:border-[#2E302A] px-1.5 py-0.5 rounded shadow-xs">↑↓</kbd> Navigate</span>
+          <span className="flex items-center gap-1"><kbd className="font-mono bg-white dark:bg-[#1E1F1C] text-ink-muted border border-border dark:border-[#2E302A] px-1.5 py-0.5 rounded shadow-xs">↵</kbd> Open</span>
+          <span className="flex items-center gap-1"><kbd className="font-mono bg-white dark:bg-[#1E1F1C] text-ink-muted border border-border dark:border-[#2E302A] px-1.5 py-0.5 rounded shadow-xs">Esc</kbd> Close</span>
         </div>
       </div>
     </div>

@@ -81,12 +81,12 @@
 
 html {
   scroll-behavior: smooth;
-  background-color: #222222;
+  background-color: #FAF9F5;
   color: #20211F;
 }
 
 body {
-  background-color: #222222;
+  background-color: #FAF9F5;
   color: #20211F;
   font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   min-height: 100vh;
@@ -614,9 +614,11 @@ body {
     border-color: #2E302A;
   }
 
+  .dark .command-dialog,
   .dark .command-modal {
     background-color: #1E1F1C;
     border-color: #2E302A;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(46, 48, 42, 0.6);
   }
   .dark .command-input {
     color: #F7F6F3;
@@ -641,6 +643,11 @@ body {
     border-color: #2E302A;
   }
 
+  .dark select option {
+    background-color: #181917;
+    color: #F7F6F3;
+  }
+
   .dark ::-webkit-scrollbar-track {
     background: #181917;
   }
@@ -650,5 +657,9 @@ body {
   .dark ::-webkit-scrollbar-thumb:hover {
     background: #505249;
   }
+}
+
+.dark {
+  color-scheme: dark;
 }
 

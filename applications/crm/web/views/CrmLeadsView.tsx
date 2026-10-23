@@ -97,12 +97,24 @@ export function CrmLeadsView() {
   const [disqualifyId, setDisqualifyId] = useState<string | null>(null);
   const [disqualifyReason, setDisqualifyReason] = useState('No budget / authority');
 
+  // Convert Lead Modal state
+  const [convertTargetLead, setConvertTargetLead] = useState<LeadItem | null>(null);
+  const [convertDealTitle, setConvertDealTitle] = useState('');
+  const [convertDealAmount, setConvertDealAmount] = useState('28000');
+  const [convertStage, setConvertStage] = useState('Qualified');
+  const [convertCloseDate, setConvertCloseDate] = useState('Oct 30, 2026');
+  const [convertAssignee, setConvertAssignee] = useState('Alex Morgan');
+
   useEffect(() => {
     try {
       const savedStars = JSON.parse(localStorage.getItem('bahi-crm-starred-leads') || '[]');
       if (Array.isArray(savedStars)) setStarredLeads(savedStars);
       const savedDensity = localStorage.getItem('bahi-crm-density');
       if (savedDensity === 'compact') setDensity('compact');
+      const savedPreset = localStorage.getItem('bahi-crm-leads-preset');
+      if (savedPreset) {
+        setStatusFilter(savedPreset);
+      }
     } catch (_) {}
 
     const handleDensityChange = (e: any) => {
@@ -111,6 +123,14 @@ export function CrmLeadsView() {
     window.addEventListener('bahi-crm-density-change', handleDensityChange);
     return () => window.removeEventListener('bahi-crm-density-change', handleDensityChange);
   }, []);
+
+  const handlePresetSelect = (preset: string) => {
+    setStatusFilter(preset);
+    try {
+      localStorage.setItem('bahi-crm-leads-preset', preset);
+    } catch (_) {}
+    showToast(`Switched view to preset: ${preset.toUpperCase()}`);
+  };
 
   const toggleStarLead = (id: string) => {
     setStarredLeads((prev) => {
@@ -167,21 +187,79 @@ export function CrmLeadsView() {
     loadLeads();
   }, [loadLeads]);
 
-  const handleConvert = async (leadId: string) => {
-    const lead = leads.find((l) => l.id === leadId);
-    if (!lead) return;
+  const openConvertModal = (lead: LeadItem) => {
+    setConvertTargetLead(lead);
+    setConvertDealTitle(`${lead.company} — Enterprise ERP`);
+    setConvertDealAmount(lead.score >= 80 ? '38000' : '24000');
+    setConvertStage('Qualified');
+    setConvertCloseDate('Nov 15, 2026');
+    setConvertAssignee(lead.assignedTo !== 'Unassigned' ? lead.assignedTo : 'Alex Morgan');
+  };
+
+  const handleConfirmConversion = async () => {
+    if (!convertTargetLead) return;
+    const leadId = convertTargetLead.id;
+    const amountNum = Number(convertDealAmount) || 28000;
+
+    const newDeal = {
+      id: `D-${Date.now().toString().slice(-4)}`,
+      title: convertDealTitle,
+      value: `$${amountNum.toLocaleString()}`,
+      amount: amountNum,
+      contact: convertTargetLead.email,
+      company: convertTargetLead.company,
+      probability: convertStage === 'Qualified' ? 50 : 70,
+      expectedDate: convertCloseDate,
+      priority: convertTargetLead.score >= 80 ? 'Hot' : 'High',
+      tag: convertTargetLead.source,
+      daysInStage: 0,
+      assignee: {
+        name: convertAssignee,
+        avatar: convertAssignee.split(' ').map((n) => n[0]).join('').slice(0, 2),
+        color: 'bg-accent text-white',
+      },
+    };
+
+    // Save custom deal so Pipeline automatically displays it
+    try {
+      const existingDeals = JSON.parse(localStorage.getItem('bahi-crm-custom-deals') || '[]');
+      localStorage.setItem('bahi-crm-custom-deals', JSON.stringify([newDeal, ...existingDeals]));
+    } catch (_) {}
 
     setLeads((prev) =>
       prev.map((l) => (l.id === leadId ? { ...l, status: 'Converted' } : l))
     );
-    showToast(`Lead "${lead.name}" converted to Deal and Account!`);
+
+    showToast(`Converted "${convertTargetLead.name}" to Deal: "${convertDealTitle}" ($${amountNum.toLocaleString()})! ⭐`);
+    setConvertTargetLead(null);
 
     try {
-      await crmApi.leads.convert(leadId, { dealTitle: `${lead.company} — New Opportunity` });
+      await crmApi.leads.convert(leadId, { dealTitle: convertDealTitle });
       loadLeads();
     } catch {
-      // Local state was already updated
+      // Optimistic state applied
     }
+  };
+
+  const handleBulkAssignRep = (rep: string) => {
+    setLeads((prev) =>
+      prev.map((l) => (selectedLeads.includes(l.id) ? { ...l, assignedTo: rep } : l))
+    );
+    showToast(`Assigned ${selectedLeads.length} leads to ${rep}`);
+    setSelectedLeads([]);
+  };
+
+  const handleBulkStatusChange = (newStatus: any) => {
+    setLeads((prev) =>
+      prev.map((l) => (selectedLeads.includes(l.id) ? { ...l, status: newStatus } : l))
+    );
+    showToast(`Updated status to ${newStatus} for ${selectedLeads.length} leads`);
+    setSelectedLeads([]);
+  };
+
+  const handleBulkEnrollCadence = (cadenceName: string) => {
+    showToast(`Enrolled ${selectedLeads.length} leads into cadence: "${cadenceName}" 🚀`);
+    setSelectedLeads([]);
   };
 
   const handleDisqualify = async () => {
@@ -368,27 +446,35 @@ export function CrmLeadsView() {
         </div>
 
         <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 flex-wrap">
-          {['all', 'hot', 'new', 'working', 'qualified', 'converted', 'unqualified'].map((st) => (
+          {/* Smart Views / Presets (Improvement 10) */}
+          {[
+            { key: 'all', label: 'All Leads' },
+            { key: 'hot', label: '🔥 Hot (>80)' },
+            { key: 'new', label: '⚡ New Intake' },
+            { key: 'working', label: 'Working' },
+            { key: 'qualified', label: '🎯 Qualified' },
+            { key: 'converted', label: 'Converted' },
+          ].map((preset) => (
             <button
-              key={st}
-              onClick={() => setStatusFilter(st)}
-              aria-pressed={statusFilter === st}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-lg border capitalize transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-accent ${
-                statusFilter === st
-                  ? 'bg-[#20211F] dark:bg-accent text-white border-[#20211F] dark:border-accent'
+              key={preset.key}
+              onClick={() => handlePresetSelect(preset.key)}
+              aria-pressed={statusFilter === preset.key}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-accent ${
+                statusFilter === preset.key
+                  ? 'bg-[#20211F] dark:bg-accent text-white border-[#20211F] dark:border-accent shadow-xs'
                   : 'bg-white dark:bg-[#1E1F1C] text-ink-muted border-border dark:border-[#2E302A] hover:bg-neutral-100 dark:hover:bg-neutral-800'
               }`}
             >
-              {st === 'hot' ? '🔥 Hot Leads (>80)' : st}
+              {preset.label}
             </button>
           ))}
 
           <button
-            onClick={() => setStatusFilter('starred')}
+            onClick={() => handlePresetSelect('starred')}
             aria-pressed={statusFilter === 'starred'}
             className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-accent ${
               statusFilter === 'starred'
-                ? 'bg-amber-500 text-neutral-950 font-bold border-amber-500'
+                ? 'bg-amber-500 text-neutral-950 font-bold border-amber-500 shadow-xs'
                 : 'bg-white dark:bg-[#1E1F1C] text-ink-muted border-border dark:border-[#2E302A] hover:bg-neutral-100 dark:hover:bg-neutral-800'
             }`}
           >
@@ -419,41 +505,58 @@ export function CrmLeadsView() {
         </div>
       </div>
 
-      {/* ── Bulk Actions Floating Ribbon (QoL 9) ── */}
+      {/* ── Bulk Actions Floating Ribbon (Improvement 4) ── */}
       {selectedLeads.length > 0 && (
         <div
           role="region"
           aria-label="Bulk actions toolbar"
-          className="p-3 bg-[#20211F] text-white rounded-xl flex items-center justify-between gap-4 text-xs animate-fade-in shadow-xl"
+          className="p-3 bg-[#20211F] text-white rounded-xl flex flex-wrap items-center justify-between gap-3 text-xs animate-fade-in shadow-xl sticky bottom-4 z-40 border border-white/10"
         >
           <div className="flex items-center gap-2 font-bold">
-            <span className="w-2 h-2 rounded-full bg-accent" aria-hidden="true" />
+            <span className="w-2.5 h-2.5 rounded-full bg-accent animate-pulse" aria-hidden="true" />
             <span>{selectedLeads.length} leads selected</span>
           </div>
-          <div className="flex items-center gap-2">
+
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* Quick Assign Rep Dropdown */}
+            <select
+              aria-label="Bulk assign representative"
+              onChange={(e) => {
+                if (e.target.value) handleBulkAssignRep(e.target.value);
+              }}
+              defaultValue=""
+              className="bg-neutral-800 text-white border border-neutral-700 rounded-lg text-xs py-1 px-2 cursor-pointer focus:ring-1 focus:ring-accent"
+            >
+              <option value="" disabled>Assign Rep...</option>
+              <option value="Alex Morgan">Alex Morgan</option>
+              <option value="Priya Sharma">Priya Sharma</option>
+              <option value="Daniel Kim">Daniel Kim</option>
+            </select>
+
+            {/* Quick Status Dropdown */}
+            <select
+              aria-label="Bulk update status"
+              onChange={(e) => {
+                if (e.target.value) handleBulkStatusChange(e.target.value);
+              }}
+              defaultValue=""
+              className="bg-neutral-800 text-white border border-neutral-700 rounded-lg text-xs py-1 px-2 cursor-pointer focus:ring-1 focus:ring-accent"
+            >
+              <option value="" disabled>Change Status...</option>
+              <option value="Contacted">Mark Contacted</option>
+              <option value="Qualified">Mark Qualified</option>
+              <option value="Working">Mark Working</option>
+              <option value="Unqualified">Mark Unqualified</option>
+            </select>
+
             <button
               type="button"
-              onClick={() => {
-                setLeads((prev) =>
-                  prev.map((l) => (selectedLeads.includes(l.id) ? { ...l, status: 'Contacted' } : l))
-                );
-                showToast(`Marked ${selectedLeads.length} leads as Contacted`);
-                setSelectedLeads([]);
-              }}
-              className="px-2.5 py-1 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold transition-colors cursor-pointer"
+              onClick={() => handleBulkEnrollCadence('Enterprise ERP Inbound Nurture')}
+              className="px-2.5 py-1 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold text-accent transition-colors cursor-pointer"
             >
-              ✓ Mark Contacted
+              🚀 Enroll in Cadence
             </button>
-            <button
-              type="button"
-              onClick={() => {
-                showToast(`Reassigned ${selectedLeads.length} leads to Alex Morgan`);
-                setSelectedLeads([]);
-              }}
-              className="px-2.5 py-1 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-accent"
-            >
-              Assign Rep
-            </button>
+
             <button
               type="button"
               onClick={() => {
@@ -465,6 +568,7 @@ export function CrmLeadsView() {
             >
               Bulk Delete
             </button>
+
             <button
               type="button"
               onClick={() => setSelectedLeads([])}
@@ -485,7 +589,7 @@ export function CrmLeadsView() {
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="bg-[#FAF9F5] border-b border-border text-[11px] font-bold text-ink-muted uppercase tracking-wider">
+              <tr className="bg-[#FAF9F5] dark:bg-[#141513] border-b border-border dark:border-[#2E302A] text-[11px] font-bold text-ink-muted dark:text-[#A0A29C] uppercase tracking-wider">
                 <th scope="col" className="p-3.5 w-10 text-center">
                   <input
                     type="checkbox"
@@ -504,10 +608,10 @@ export function CrmLeadsView() {
                 <th scope="col" className="p-3.5 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border/60">
+            <tbody className="divide-y divide-border/60 dark:divide-[#2E302A]">
               {filteredLeads.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="p-8 text-center text-ink-muted">
+                  <td colSpan={8} className="p-8 text-center text-ink-muted dark:text-[#A0A29C]">
                     No leads found matching your filter criteria.
                   </td>
                 </tr>
@@ -540,7 +644,17 @@ export function CrmLeadsView() {
                       <td className={pyClass}>
                         <div className="font-bold text-ink dark:text-neutral-100">{lead.name}</div>
                         <div className="text-[11px] text-ink-muted flex items-center gap-1.5 mt-0.5">
-                          <span>{lead.email}</span>
+                          {lead.email && lead.email !== 'N/A' ? (
+                            <a
+                              href={`mailto:${lead.email}?subject=Bahi%20Follow-up%20with%20${encodeURIComponent(lead.company)}`}
+                              className="hover:text-accent hover:underline text-ink-muted"
+                              title="Send email to lead"
+                            >
+                              ✉ {lead.email}
+                            </a>
+                          ) : (
+                            <span>{lead.email}</span>
+                          )}
                           {lead.email && lead.email !== 'N/A' && (
                             <button
                               type="button"
@@ -555,19 +669,39 @@ export function CrmLeadsView() {
                       </td>
                       <td className={`${pyClass} font-medium text-ink dark:text-neutral-200`}>
                         <div>{lead.company}</div>
-                        {lead.phone && lead.phone !== 'N/A' && (
-                          <div className="text-[10px] text-ink-muted flex items-center gap-1 mt-0.5 font-mono">
-                            <span>{lead.phone}</span>
-                            <button
-                              type="button"
-                              onClick={() => copyToClipboard(lead.phone, 'phone')}
-                              className="text-[9px] hover:text-accent cursor-pointer"
-                              title="Copy phone number"
-                            >
-                              📋
-                            </button>
-                          </div>
-                        )}
+                        {lead.phone && lead.phone !== 'N/A' && (() => {
+                          const cleanPhoneDigits = lead.phone.replace(/\D/g, '');
+                          return (
+                            <div className="flex items-center gap-1.5 mt-1">
+                              <a
+                                href={`tel:${lead.phone}`}
+                                className="text-[11px] font-mono text-ink-muted hover:text-accent hover:underline flex items-center gap-0.5"
+                                title="Call lead via phone"
+                              >
+                                📞 {lead.phone}
+                              </a>
+                              {cleanPhoneDigits.length >= 7 && (
+                                <a
+                                  href={`https://wa.me/${cleanPhoneDigits}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-0.5 text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:text-emerald-300 font-bold border border-emerald-200 dark:border-emerald-800 transition-colors"
+                                  title="Chat with lead on WhatsApp"
+                                >
+                                  💬 WhatsApp
+                                </a>
+                              )}
+                              <button
+                                type="button"
+                                onClick={() => copyToClipboard(lead.phone, 'phone')}
+                                className="text-[9px] text-ink-muted hover:text-accent cursor-pointer"
+                                title="Copy phone number"
+                              >
+                                📋
+                              </button>
+                            </div>
+                          );
+                        })()}
                       </td>
                       <td className={`${pyClass} text-ink-muted`}>
                         {lead.source}
@@ -623,7 +757,7 @@ export function CrmLeadsView() {
                           {lead.status !== 'Converted' && lead.status !== 'Unqualified' && (
                             <button
                               type="button"
-                              onClick={() => handleConvert(lead.id)}
+                              onClick={() => openConvertModal(lead)}
                               aria-label={`Convert lead ${lead.name} to deal`}
                               className="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-accent text-white hover:bg-[#853526] transition-colors cursor-pointer shadow-xs focus-visible:ring-2 focus-visible:ring-accent"
                             >
@@ -661,6 +795,139 @@ export function CrmLeadsView() {
         </div>
       </div>
 
+      {/* ── Convert Lead to Deal Modal (Improvement 3) ── */}
+      {convertTargetLead && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="convert-lead-modal-title"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fade-in"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setConvertTargetLead(null);
+          }}
+        >
+          <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl border border-border dark:border-[#2E302A] shadow-2xl max-w-lg w-full p-6 space-y-4 text-ink dark:text-neutral-100">
+            <div className="flex items-center justify-between pb-3 border-b border-border dark:border-[#2E302A]">
+              <div>
+                <h3 id="convert-lead-modal-title" className="text-base font-bold text-ink dark:text-white">
+                  Convert Lead to Deal &amp; Account
+                </h3>
+                <p className="text-[11px] text-ink-muted dark:text-[#A0A29C]">
+                  Creating an active pipeline opportunity for {convertTargetLead.name} ({convertTargetLead.company})
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setConvertTargetLead(null)}
+                className="text-ink-muted hover:text-ink dark:hover:text-white text-sm p-1 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleConfirmConversion();
+              }}
+              className="space-y-3 text-xs"
+            >
+              <div>
+                <label className="block font-semibold text-ink dark:text-neutral-200 mb-1">
+                  Opportunity Deal Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={convertDealTitle}
+                  onChange={(e) => setConvertDealTitle(e.target.value)}
+                  className="w-full p-2.5 rounded-xl border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] text-ink dark:text-white focus:outline-hidden focus:ring-1 focus:ring-accent"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-semibold text-ink dark:text-neutral-200 mb-1">
+                    Contract Value ($) *
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    value={convertDealAmount}
+                    onChange={(e) => setConvertDealAmount(e.target.value)}
+                    className="w-full p-2.5 rounded-xl border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] text-ink dark:text-white font-mono focus:outline-hidden focus:ring-1 focus:ring-accent"
+                  />
+                </div>
+                <div>
+                  <label className="block font-semibold text-ink dark:text-neutral-200 mb-1">
+                    Pipeline Stage
+                  </label>
+                  <select
+                    value={convertStage}
+                    onChange={(e) => setConvertStage(e.target.value)}
+                    className="w-full p-2.5 rounded-xl border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] text-ink dark:text-white focus:outline-hidden focus:ring-1 focus:ring-accent"
+                  >
+                    <option value="Qualified">Qualified (50%)</option>
+                    <option value="Proposal Sent">Proposal Sent (70%)</option>
+                    <option value="Negotiation">Negotiation (85%)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-semibold text-ink dark:text-neutral-200 mb-1">
+                    Target Close Date
+                  </label>
+                  <input
+                    type="text"
+                    value={convertCloseDate}
+                    onChange={(e) => setConvertCloseDate(e.target.value)}
+                    className="w-full p-2.5 rounded-xl border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] text-ink dark:text-white focus:outline-hidden focus:ring-1 focus:ring-accent"
+                  />
+                </div>
+                <div>
+                  <label className="block font-semibold text-ink dark:text-neutral-200 mb-1">
+                    Assign Opportunity To
+                  </label>
+                  <select
+                    value={convertAssignee}
+                    onChange={(e) => setConvertAssignee(e.target.value)}
+                    className="w-full p-2.5 rounded-xl border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] text-ink dark:text-white focus:outline-hidden focus:ring-1 focus:ring-accent"
+                  >
+                    <option value="Alex Morgan">Alex Morgan</option>
+                    <option value="Priya Sharma">Priya Sharma</option>
+                    <option value="Daniel Kim">Daniel Kim</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="p-3 bg-[#FAF9F5] dark:bg-[#141513] border border-border dark:border-[#2E302A] rounded-xl text-[11px] text-ink-muted dark:text-[#A0A29C] space-y-1">
+                <div>✓ Auto-links Company: <strong>{convertTargetLead.company}</strong></div>
+                <div>✓ Auto-links Stakeholder: <strong>{convertTargetLead.name}</strong> ({convertTargetLead.email})</div>
+                <div>✓ Automatically registers in Deals Pipeline Kanban</div>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-3 border-t border-border dark:border-[#2E302A]">
+                <button
+                  type="button"
+                  onClick={() => setConvertTargetLead(null)}
+                  className="btn-secondary text-xs py-2 px-3"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="btn-primary text-xs py-2 px-4 shadow-sm"
+                >
+                  Confirm &amp; Launch Opportunity (${Number(convertDealAmount).toLocaleString()})
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* ── Disqualify Modal ── */}
       {disqualifyId && (
         <div
@@ -672,11 +939,11 @@ export function CrmLeadsView() {
             if (e.target === e.currentTarget) setDisqualifyId(null);
           }}
         >
-          <div className="bg-white rounded-2xl border border-border shadow-2xl max-w-md w-full p-6 space-y-4 text-ink">
-            <h3 id="disqualify-dialog-title" className="text-base font-bold text-ink">
+          <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl border border-border dark:border-[#2E302A] shadow-2xl max-w-md w-full p-6 space-y-4 text-ink dark:text-neutral-100">
+            <h3 id="disqualify-dialog-title" className="text-base font-bold text-ink dark:text-white">
               Disqualify Inbound Lead
             </h3>
-            <p className="text-xs text-ink-muted">
+            <p className="text-xs text-ink-muted dark:text-[#A0A29C]">
               Select the reason why this lead is not qualified for sales engagement:
             </p>
             <div>
@@ -687,7 +954,7 @@ export function CrmLeadsView() {
                 id="disqualify-reason-select"
                 value={disqualifyReason}
                 onChange={(e) => setDisqualifyReason(e.target.value)}
-                className="w-full text-xs p-2.5 rounded-xl border border-border bg-white text-ink focus-visible:ring-2 focus-visible:ring-accent"
+                className="w-full text-xs p-2.5 rounded-xl border border-border dark:border-[#2E302A] bg-white dark:bg-[#141513] text-ink dark:text-white focus-visible:ring-2 focus-visible:ring-accent"
               >
                 <option value="No budget / authority">No Budget / Authority</option>
                 <option value="Unresponsive after outreach">Unresponsive After 5 Outreach Attempts</option>
@@ -696,11 +963,11 @@ export function CrmLeadsView() {
                 <option value="Outside target geography">Outside Target Territory</option>
               </select>
             </div>
-            <div className="flex justify-end gap-2 pt-2">
+            <div className="flex justify-end gap-2 pt-2 border-t border-border dark:border-[#2E302A]">
               <button
                 type="button"
                 onClick={() => setDisqualifyId(null)}
-                className="px-3 py-1.5 text-xs rounded-lg border border-border text-ink-muted hover:bg-neutral-100"
+                className="px-3 py-1.5 text-xs rounded-lg border border-border dark:border-[#2E302A] text-ink-muted dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800"
               >
                 Cancel
               </button>

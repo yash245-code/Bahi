@@ -80,7 +80,7 @@ export function NewDealModal({ isOpen, onClose, onSubmit }: NewDealModalProps) {
             ref={closeButtonRef}
             onClick={onClose}
             aria-label="Close deal modal"
-            className="text-ink-muted hover:text-ink text-sm p-1 rounded-lg hover:bg-neutral-100 focus-visible:ring-2 focus-visible:ring-accent focus:outline-hidden"
+            className="text-ink-muted hover:text-ink dark:hover:text-white text-sm p-1 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 focus-visible:ring-2 focus-visible:ring-accent focus:outline-hidden"
           >
             ✕
           </button>
@@ -88,7 +88,7 @@ export function NewDealModal({ isOpen, onClose, onSubmit }: NewDealModalProps) {
 
         <form onSubmit={handleSubmit} className="space-y-4 text-xs">
           <div>
-            <label htmlFor="deal-title-input" className="block text-ink font-semibold mb-1">
+            <label htmlFor="deal-title-input" className="block text-ink dark:text-neutral-200 font-semibold mb-1">
               Deal Title *
             </label>
             <input
@@ -99,13 +99,13 @@ export function NewDealModal({ isOpen, onClose, onSubmit }: NewDealModalProps) {
               placeholder="e.g. Enterprise Cloud ERP Migration"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg border border-border bg-[#FAF9F5] focus:bg-white outline-hidden focus-visible:ring-2 focus-visible:ring-accent text-ink"
+              className="w-full px-3 py-2 rounded-lg border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] focus:bg-white dark:focus:bg-[#181917] outline-hidden focus-visible:ring-2 focus-visible:ring-accent text-ink dark:text-neutral-100"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label htmlFor="deal-value-input" className="block text-ink font-semibold mb-1">
+              <label htmlFor="deal-value-input" className="block text-ink dark:text-neutral-200 font-semibold mb-1">
                 Deal Value ($) *
               </label>
               <input
@@ -116,11 +116,11 @@ export function NewDealModal({ isOpen, onClose, onSubmit }: NewDealModalProps) {
                 placeholder="25000"
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-border bg-[#FAF9F5] focus:bg-white outline-hidden focus-visible:ring-2 focus-visible:ring-accent text-ink"
+                className="w-full px-3 py-2 rounded-lg border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] focus:bg-white dark:focus:bg-[#181917] outline-hidden focus-visible:ring-2 focus-visible:ring-accent text-ink dark:text-neutral-100"
               />
             </div>
             <div>
-              <label htmlFor="deal-probability-input" className="block text-ink font-semibold mb-1">
+              <label htmlFor="deal-probability-input" className="block text-ink dark:text-neutral-200 font-semibold mb-1">
                 Close Probability (%)
               </label>
               <input
@@ -130,14 +130,14 @@ export function NewDealModal({ isOpen, onClose, onSubmit }: NewDealModalProps) {
                 max="100"
                 value={probability}
                 onChange={(e) => setProbability(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-border bg-[#FAF9F5] focus:bg-white outline-hidden focus-visible:ring-2 focus-visible:ring-accent text-ink"
+                className="w-full px-3 py-2 rounded-lg border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] focus:bg-white dark:focus:bg-[#181917] outline-hidden focus-visible:ring-2 focus-visible:ring-accent text-ink dark:text-neutral-100"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label htmlFor="deal-company-input" className="block text-ink font-semibold mb-1">
+              <label htmlFor="deal-company-input" className="block text-ink dark:text-neutral-200 font-semibold mb-1">
                 Company / Account *
               </label>
               <input
@@ -148,11 +148,11 @@ export function NewDealModal({ isOpen, onClose, onSubmit }: NewDealModalProps) {
                 placeholder="e.g. NexGen Dynamics"
                 value={company}
                 onChange={(e) => setCompany(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-border bg-[#FAF9F5] focus:bg-white outline-hidden focus-visible:ring-2 focus-visible:ring-accent text-ink"
+                className="w-full px-3 py-2 rounded-lg border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] focus:bg-white dark:focus:bg-[#181917] outline-hidden focus-visible:ring-2 focus-visible:ring-accent text-ink dark:text-neutral-100"
               />
             </div>
             <div>
-              <label htmlFor="deal-contact-input" className="block text-ink font-semibold mb-1">
+              <label htmlFor="deal-contact-input" className="block text-ink dark:text-neutral-200 font-semibold mb-1">
                 Primary Contact Email
               </label>
               <input
@@ -161,21 +161,21 @@ export function NewDealModal({ isOpen, onClose, onSubmit }: NewDealModalProps) {
                 placeholder="cto@nexgen.io"
                 value={contact}
                 onChange={(e) => setContact(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-border bg-[#FAF9F5] focus:bg-white outline-hidden focus-visible:ring-2 focus-visible:ring-accent text-ink"
+                className="w-full px-3 py-2 rounded-lg border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] focus:bg-white dark:focus:bg-[#181917] outline-hidden focus-visible:ring-2 focus-visible:ring-accent text-ink dark:text-neutral-100"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label htmlFor="deal-stage-select" className="block text-ink font-semibold mb-1">
+              <label htmlFor="deal-stage-select" className="block text-ink dark:text-neutral-200 font-semibold mb-1">
                 Pipeline Stage
               </label>
               <select
                 id="deal-stage-select"
                 value={stage}
                 onChange={(e) => setStage(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-border bg-[#FAF9F5] focus:bg-white outline-hidden focus-visible:ring-2 focus-visible:ring-accent text-ink"
+                className="w-full px-3 py-2 rounded-lg border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] focus:bg-white dark:focus:bg-[#181917] outline-hidden focus-visible:ring-2 focus-visible:ring-accent text-ink dark:text-neutral-100"
               >
                 <option value="New Leads">New Leads</option>
                 <option value="Qualified">Qualified</option>
@@ -185,14 +185,14 @@ export function NewDealModal({ isOpen, onClose, onSubmit }: NewDealModalProps) {
               </select>
             </div>
             <div>
-              <label htmlFor="deal-priority-select" className="block text-ink font-semibold mb-1">
+              <label htmlFor="deal-priority-select" className="block text-ink dark:text-neutral-200 font-semibold mb-1">
                 Priority Level
               </label>
               <select
                 id="deal-priority-select"
                 value={priority}
                 onChange={(e) => setPriority(e.target.value as any)}
-                className="w-full px-3 py-2 rounded-lg border border-border bg-[#FAF9F5] focus:bg-white outline-hidden focus-visible:ring-2 focus-visible:ring-accent text-ink"
+                className="w-full px-3 py-2 rounded-lg border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] focus:bg-white dark:focus:bg-[#181917] outline-hidden focus-visible:ring-2 focus-visible:ring-accent text-ink dark:text-neutral-100"
               >
                 <option value="Hot">🔥 Hot (Immediate close)</option>
                 <option value="High">⚡ High</option>
@@ -202,7 +202,7 @@ export function NewDealModal({ isOpen, onClose, onSubmit }: NewDealModalProps) {
             </div>
           </div>
 
-          <div className="flex items-center justify-end gap-2 pt-4 border-t border-border">
+          <div className="flex items-center justify-end gap-2 pt-4 border-t border-border dark:border-[#2E302A]">
             <button
               type="button"
               onClick={onClose}

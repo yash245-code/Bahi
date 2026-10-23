@@ -91,8 +91,10 @@ export function CrmActivitiesView() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [announcement, setAnnouncement] = useState<string | null>(null);
 
-  // Follow-up prompt state
+  // Follow-up prompt and outcome logger state
   const [completedActivity, setCompletedActivity] = useState<ActivityItem | null>(null);
+  const [outcomeActivity, setOutcomeActivity] = useState<ActivityItem | null>(null);
+  const [activityOutcome, setActivityOutcome] = useState('Executive Demo Completed');
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -104,44 +106,88 @@ export function CrmActivitiesView() {
     try {
       const data = await crmApi.activities.list({ view: activeTab === 'all' ? undefined : activeTab });
       if (data && data.length > 0) {
-        setActivities(
-          data.map((a: any) => ({
-            id: a.id,
-            type: (a.type?.toLowerCase() || 'task') as any,
-            title: a.subject,
-            relatedTo: { name: a.relatedName || 'Related Record', type: a.relatedType || 'deal' },
-            dueTime: a.dueDateTime ? new Date(a.dueDateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Flexible',
-            priority: a.priority === 'URGENT' || a.priority === 'HIGH' ? 'High' : 'Medium',
-            status: a.status === 'COMPLETED' ? 'Completed' : 'Pending',
-            assignee: {
-              name: a.assignee ? `${a.assignee.firstName} ${a.assignee.lastName || ''}`.trim() : 'Sales Rep',
-              avatar: a.assignee ? `${a.assignee.firstName[0]}${a.assignee.lastName?.[0] || ''}` : 'SR',
-            },
-            description: a.description,
-            outcome: a.outcome,
-          }))
-        );
+        const mapped: ActivityItem[] = data.map((a: any) => ({
+          id: a.id,
+          type: (a.type?.toLowerCase() || 'task') as any,
+          title: a.subject,
+          relatedTo: { name: a.relatedName || 'Related Record', type: a.relatedType || 'deal' },
+          dueTime: a.dueDateTime ? new Date(a.dueDateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Flexible',
+          priority: a.priority === 'URGENT' || a.priority === 'HIGH' ? 'High' : 'Medium',
+          status: a.status === 'COMPLETED' ? 'Completed' : 'Pending',
+          assignee: {
+            name: a.assignee ? `${a.assignee.firstName} ${a.assignee.lastName || ''}`.trim() : 'Sales Rep',
+            avatar: a.assignee ? `${a.assignee.firstName[0]}${a.assignee.lastName?.[0] || ''}` : 'SR',
+          },
+          description: a.description,
+          outcome: a.outcome,
+        }));
+        setActivities(mapped);
       }
     } catch {
       // Keep initialActivities fallback
     }
+
+    // Hydrate Quick Notes logged via 'N' hotkey modal
+    try {
+      const quickNotes = JSON.parse(localStorage.getItem('bahi-crm-recent-activities') || '[]');
+      if (Array.isArray(quickNotes) && quickNotes.length > 0) {
+        const mappedNotes: ActivityItem[] = quickNotes.map((n: any) => ({
+          id: `NOTE-${n.id}`,
+          type: (n.type?.toLowerCase() === 'call' ? 'call' : n.type?.toLowerCase() === 'meeting' ? 'meeting' : 'note') as any,
+          title: `[Quick Log] ${n.title}`,
+          relatedTo: { name: n.entity || 'Account', type: 'deal' },
+          dueTime: n.time || 'Today',
+          priority: 'Medium',
+          status: 'Completed',
+          assignee: { name: 'You', avatar: 'ME' },
+          description: n.note,
+          outcome: 'Logged via Quick Action',
+        }));
+        setActivities((prev) => {
+          const ids = new Set(prev.map((a) => a.id));
+          const toAdd = mappedNotes.filter((m) => !ids.has(m.id));
+          return [...toAdd, ...prev];
+        });
+      }
+    } catch (_) {}
   }, [activeTab]);
 
   useEffect(() => {
     loadActivities();
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'bahi-crm-recent-activities') {
+        loadActivities();
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
   }, [loadActivities]);
 
-  const handleComplete = async (act: ActivityItem) => {
-    setActivities((prev) =>
-      prev.map((a) => (a.id === act.id ? { ...a, status: 'Completed', outcome: 'Marked completed by sales rep' } : a))
+  const handleOpenOutcomeModal = (act: ActivityItem) => {
+    setOutcomeActivity(act);
+    setActivityOutcome(
+      act.type === 'call'
+        ? 'Connected & Discussed Proposal'
+        : act.type === 'meeting'
+        ? 'Executive Demo Completed'
+        : 'Action Item Finished'
     );
-    showToast(`Activity "${act.title}" marked completed.`);
+  };
+
+  const handleConfirmOutcome = async () => {
+    if (!outcomeActivity) return;
+    const act = outcomeActivity;
+    setActivities((prev) =>
+      prev.map((a) => (a.id === act.id ? { ...a, status: 'Completed', outcome: activityOutcome } : a))
+    );
+    showToast(`Activity "${act.title}" completed: ${activityOutcome}`);
+    setOutcomeActivity(null);
     setCompletedActivity(act);
 
     try {
-      await crmApi.activities.complete(act.id, 'Completed successfully');
+      await crmApi.activities.complete(act.id, activityOutcome);
     } catch {
-      // Keep optimistic
+      // Optimistic
     }
   };
 
@@ -241,8 +287,8 @@ export function CrmActivitiesView() {
               aria-pressed={activeTab === tab}
               className={`px-3 py-1.5 text-xs font-semibold rounded-lg border capitalize transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-accent ${
                 activeTab === tab
-                  ? 'bg-[#20211F] text-white border-[#20211F]'
-                  : 'bg-white text-ink-muted border-border hover:bg-neutral-100'
+                  ? 'bg-[#20211F] text-white border-[#20211F] dark:bg-white dark:text-[#141513] dark:border-white shadow-2xs'
+                  : 'bg-white text-ink-muted border-border hover:bg-neutral-100 dark:bg-[#1E1F1C] dark:border-[#2E302A] dark:text-[#A0A29C] dark:hover:bg-neutral-800'
               }`}
             >
               {tab}
@@ -256,7 +302,7 @@ export function CrmActivitiesView() {
             aria-label="Filter by activity type"
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value as any)}
-            className="text-xs p-1.5 rounded-lg border border-border bg-white text-ink focus-visible:ring-2 focus-visible:ring-accent"
+            className="text-xs p-1.5 rounded-lg border border-border dark:border-[#2E302A] bg-white dark:bg-[#1E1F1C] text-ink dark:text-white focus-visible:ring-2 focus-visible:ring-accent"
           >
             <option value="all">All Types</option>
             <option value="call">📞 Calls Only</option>
@@ -281,18 +327,18 @@ export function CrmActivitiesView() {
       <div
         role="region"
         aria-label="Activities queue"
-        className="bg-white rounded-2xl border border-border overflow-hidden shadow-xs divide-y divide-border/60"
+        className="bg-white dark:bg-[#1E1F1C] rounded-2xl border border-border dark:border-[#2E302A] overflow-hidden shadow-xs divide-y divide-border/60 dark:divide-[#2E302A]"
       >
         {filtered.length === 0 ? (
-          <div className="p-12 text-center text-ink-muted">
-            <p className="text-sm font-semibold text-ink">No tasks or activities in this queue.</p>
+          <div className="p-12 text-center text-ink-muted dark:text-[#A0A29C]">
+            <p className="text-sm font-semibold text-ink dark:text-white">No tasks or activities in this queue.</p>
             <p className="text-xs mt-1">You are all caught up for this view.</p>
           </div>
         ) : (
           filtered.map((act) => (
             <div
               key={act.id}
-              className="p-4 flex items-start justify-between gap-4 hover:bg-neutral-50/80 transition-colors"
+              className="p-4 flex items-start justify-between gap-4 hover:bg-neutral-50/80 dark:hover:bg-neutral-800/40 transition-colors"
             >
               <div className="flex items-start gap-3">
                 <span className="text-xl mt-0.5 select-none" aria-hidden="true">
@@ -300,27 +346,32 @@ export function CrmActivitiesView() {
                 </span>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h3 className={`text-xs font-bold ${act.status === 'Completed' ? 'line-through text-ink-muted' : 'text-ink'}`}>
+                    <h3 className={`text-xs font-bold ${act.status === 'Completed' ? 'line-through text-ink-muted dark:text-[#A0A29C]' : 'text-ink dark:text-white'}`}>
                       {act.title}
                     </h3>
-                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-neutral-100 text-neutral-800 uppercase">
+                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 uppercase">
                       {act.type}
                     </span>
                     {act.priority === 'High' && (
-                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-red-50 text-red-800 border border-red-200">
+                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-red-50 dark:bg-red-950/40 text-red-800 dark:text-red-300 border border-red-200 dark:border-red-900">
                         ⚡ High
                       </span>
                     )}
                   </div>
                   {act.description && (
-                    <p className="text-[11px] text-ink-muted mt-0.5 max-w-xl">
+                    <p className="text-[11px] text-ink-muted dark:text-[#A0A29C] mt-0.5 max-w-xl">
                       {act.description}
                     </p>
                   )}
-                  <div className="flex items-center gap-3 mt-2 text-[10px] text-ink-muted">
-                    <span>Target: <strong className="text-ink">{act.relatedTo.name}</strong></span>
-                    <span>Due: <strong className={act.dueTime.includes('Overdue') ? 'text-red-700 font-bold' : 'text-ink'}>{act.dueTime}</strong></span>
-                    <span>Assigned: <strong className="text-ink">{act.assignee.name}</strong></span>
+                  <div className="flex items-center gap-3 mt-2 text-[10px] text-ink-muted dark:text-[#A0A29C] flex-wrap">
+                    <span>Target: <strong className="text-ink dark:text-neutral-100">{act.relatedTo.name}</strong></span>
+                    <span>Due: <strong className={act.dueTime.includes('Overdue') ? 'text-red-700 dark:text-red-400 font-bold' : 'text-ink dark:text-neutral-100'}>{act.dueTime}</strong></span>
+                    <span>Assigned: <strong className="text-ink dark:text-neutral-100">{act.assignee.name}</strong></span>
+                    {act.outcome && (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
+                        ✓ {act.outcome}
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -328,17 +379,90 @@ export function CrmActivitiesView() {
               {act.status !== 'Completed' && (
                 <button
                   type="button"
-                  onClick={() => handleComplete(act)}
+                  onClick={() => handleOpenOutcomeModal(act)}
                   aria-label={`Mark task ${act.title} complete`}
-                  className="px-3 py-1 text-xs font-bold rounded-lg bg-[#1F7A4D]/15 text-[#1F7A4D] hover:bg-[#1F7A4D] hover:text-white transition-colors cursor-pointer whitespace-nowrap focus-visible:ring-2 focus-visible:ring-[#1F7A4D]"
+                  className="px-3 py-1.5 text-xs font-bold rounded-lg bg-[#1F7A4D]/15 text-[#1F7A4D] hover:bg-[#1F7A4D] hover:text-white transition-colors cursor-pointer whitespace-nowrap focus-visible:ring-2 focus-visible:ring-[#1F7A4D] shadow-2xs"
                 >
-                  ✓ Mark Complete
+                  ✓ Complete &amp; Log Outcome
                 </button>
               )}
             </div>
           ))
         )}
       </div>
+
+      {/* ── Interaction Outcome Logger Modal (Improvement 5) ── */}
+      {outcomeActivity && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fade-in"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setOutcomeActivity(null);
+          }}
+        >
+          <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl border border-border dark:border-[#2E302A] shadow-2xl max-w-md w-full p-6 space-y-4 text-ink dark:text-neutral-100">
+            <div className="flex items-center justify-between pb-2 border-b border-border dark:border-[#2E302A]">
+              <h3 className="text-base font-bold text-ink dark:text-white">
+                Log Interaction Outcome
+              </h3>
+              <button
+                type="button"
+                onClick={() => setOutcomeActivity(null)}
+                className="text-ink-muted hover:text-ink dark:hover:text-white text-sm p-1 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <p className="text-xs text-ink-muted dark:text-[#A0A29C]">
+              Select the documented outcome for &quot;{outcomeActivity.title}&quot; with <strong>{outcomeActivity.relatedTo.name}</strong>:
+            </p>
+
+            <div className="space-y-1.5 text-xs">
+              {[
+                'Executive Demo Completed (Passed)',
+                'Commercial Terms Agreed',
+                'Left Voicemail / Unanswered',
+                'Meeting Rescheduled for Next Week',
+                'Security & Compliance Documents Sent',
+                'Gatekeeper Blocked / Rescheduling Required',
+              ].map((outcome) => (
+                <button
+                  key={outcome}
+                  type="button"
+                  onClick={() => setActivityOutcome(outcome)}
+                  className={`w-full p-2.5 rounded-xl border text-left font-medium transition-colors cursor-pointer flex items-center justify-between ${
+                    activityOutcome === outcome
+                      ? 'border-accent bg-[#FAF4F2] dark:bg-[#2A1B16] text-accent font-bold ring-1 ring-accent'
+                      : 'border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] text-ink dark:text-neutral-100 hover:bg-white dark:hover:bg-[#181917]'
+                  }`}
+                >
+                  <span>{outcome}</span>
+                  {activityOutcome === outcome && <span>✓</span>}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2 border-t border-border dark:border-[#2E302A]">
+              <button
+                type="button"
+                onClick={() => setOutcomeActivity(null)}
+                className="btn-secondary text-xs py-2 px-3"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                onClick={handleConfirmOutcome}
+                className="btn-primary text-xs py-2 px-4 shadow-sm"
+              >
+                Save Outcome &amp; Finish
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Auto-Follow-Up Modal Prompt ── */}
       {completedActivity && (
@@ -351,14 +475,14 @@ export function CrmActivitiesView() {
             if (e.target === e.currentTarget) setCompletedActivity(null);
           }}
         >
-          <div className="bg-white rounded-2xl border border-border shadow-2xl max-w-md w-full p-6 space-y-4 text-ink">
+          <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl border border-border dark:border-[#2E302A] shadow-2xl max-w-md w-full p-6 space-y-4 text-ink dark:text-neutral-100">
             <div className="flex items-center gap-2">
               <span className="text-xl">🎯</span>
-              <h3 id="followup-dialog-title" className="text-base font-bold text-ink">
+              <h3 id="followup-dialog-title" className="text-base font-bold text-ink dark:text-white">
                 Schedule Next Follow-Up Touchpoint
               </h3>
             </div>
-            <p className="text-xs text-ink-muted">
+            <p className="text-xs text-ink-muted dark:text-[#A0A29C]">
               Great job completing &quot;{completedActivity.title}&quot;! Keep deal momentum going by setting your next step:
             </p>
 
@@ -366,7 +490,7 @@ export function CrmActivitiesView() {
               <button
                 type="button"
                 onClick={() => handleScheduleFollowUp(2, 'Touchpoint Follow-up')}
-                className="w-full p-2.5 rounded-xl border border-border bg-[#FAF9F5] hover:bg-white hover:border-accent font-semibold text-left flex justify-between items-center transition-colors"
+                className="w-full p-2.5 rounded-xl border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] hover:bg-white dark:hover:bg-[#181917] hover:border-accent text-ink dark:text-neutral-100 font-semibold text-left flex justify-between items-center transition-colors"
               >
                 <span>Follow up in 2 days (Standard check-in)</span>
                 <span className="text-accent font-bold">+2 Days →</span>
@@ -374,7 +498,7 @@ export function CrmActivitiesView() {
               <button
                 type="button"
                 onClick={() => handleScheduleFollowUp(7, 'Weekly Review Call')}
-                className="w-full p-2.5 rounded-xl border border-border bg-[#FAF9F5] hover:bg-white hover:border-accent font-semibold text-left flex justify-between items-center transition-colors"
+                className="w-full p-2.5 rounded-xl border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] hover:bg-white dark:hover:bg-[#181917] hover:border-accent text-ink dark:text-neutral-100 font-semibold text-left flex justify-between items-center transition-colors"
               >
                 <span>Weekly progress review call</span>
                 <span className="text-accent font-bold">+1 Week →</span>
@@ -382,7 +506,7 @@ export function CrmActivitiesView() {
               <button
                 type="button"
                 onClick={() => handleScheduleFollowUp(14, 'Commercial Follow-up')}
-                className="w-full p-2.5 rounded-xl border border-border bg-[#FAF9F5] hover:bg-white hover:border-accent font-semibold text-left flex justify-between items-center transition-colors"
+                className="w-full p-2.5 rounded-xl border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] hover:bg-white dark:hover:bg-[#181917] hover:border-accent text-ink dark:text-neutral-100 font-semibold text-left flex justify-between items-center transition-colors"
               >
                 <span>Commercial follow-up (In 2 weeks)</span>
                 <span className="text-accent font-bold">+2 Weeks →</span>
@@ -393,7 +517,7 @@ export function CrmActivitiesView() {
               <button
                 type="button"
                 onClick={() => setCompletedActivity(null)}
-                className="px-3 py-1.5 text-xs rounded-lg border border-border text-ink-muted hover:bg-neutral-100"
+                className="px-3 py-1.5 text-xs rounded-lg border border-border dark:border-[#2E302A] text-ink-muted dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800"
               >
                 Skip Follow-Up
               </button>
@@ -413,15 +537,15 @@ export function CrmActivitiesView() {
             if (e.target === e.currentTarget) setLogModalOpen(false);
           }}
         >
-          <div className="bg-white rounded-2xl border border-border shadow-2xl max-w-md w-full p-6 space-y-4 text-ink">
-            <div className="flex items-center justify-between pb-2 border-b border-border">
-              <h3 id="log-activity-title" className="text-base font-bold text-ink">
+          <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl border border-border dark:border-[#2E302A] shadow-2xl max-w-md w-full p-6 space-y-4 text-ink dark:text-neutral-100">
+            <div className="flex items-center justify-between pb-2 border-b border-border dark:border-[#2E302A]">
+              <h3 id="log-activity-title" className="text-base font-bold text-ink dark:text-white">
                 Log Sales Interaction / Task
               </h3>
               <button
                 type="button"
                 onClick={() => setLogModalOpen(false)}
-                className="text-ink-muted hover:text-ink text-sm p-1 rounded-lg hover:bg-neutral-100"
+                className="text-ink-muted hover:text-ink dark:hover:text-white text-sm p-1 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800"
               >
                 ✕
               </button>
@@ -429,7 +553,7 @@ export function CrmActivitiesView() {
 
             <form onSubmit={handleCreateActivity} className="space-y-3 text-xs">
               <div>
-                <label className="text-xs font-semibold text-ink-muted block mb-1">Interaction Type</label>
+                <label className="text-xs font-semibold text-ink-muted dark:text-[#A0A29C] block mb-1">Interaction Type</label>
                 <div className="grid grid-cols-5 gap-1.5">
                   {(['call', 'meeting', 'whatsapp', 'task', 'note'] as const).map((t) => (
                     <button
@@ -438,8 +562,8 @@ export function CrmActivitiesView() {
                       onClick={() => setActivityType(t)}
                       className={`p-2 rounded-xl text-xs font-bold capitalize border cursor-pointer ${
                         activityType === t
-                          ? 'bg-[#20211F] text-white border-[#20211F]'
-                          : 'bg-white text-ink-muted border-border'
+                          ? 'bg-[#20211F] text-white dark:bg-white dark:text-[#141513] border-[#20211F] dark:border-white'
+                          : 'bg-white dark:bg-[#141513] text-ink-muted dark:text-neutral-300 border-border dark:border-[#2E302A]'
                       }`}
                     >
                       {t}
@@ -449,7 +573,7 @@ export function CrmActivitiesView() {
               </div>
 
               <div>
-                <label htmlFor="activity-subject-input" className="text-xs font-semibold text-ink block mb-1">
+                <label htmlFor="activity-subject-input" className="text-xs font-semibold text-ink dark:text-neutral-200 block mb-1">
                   Subject / Summary *
                 </label>
                 <input
@@ -459,12 +583,12 @@ export function CrmActivitiesView() {
                   placeholder="e.g. Budget review call with VP of Engineering"
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
-                  className="w-full p-2.5 rounded-xl border border-border bg-[#FAF9F5] text-ink focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent"
+                  className="w-full p-2.5 rounded-xl border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] text-ink dark:text-neutral-100 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent"
                 />
               </div>
 
               <div>
-                <label htmlFor="activity-target-input" className="text-xs font-semibold text-ink block mb-1">
+                <label htmlFor="activity-target-input" className="text-xs font-semibold text-ink dark:text-neutral-200 block mb-1">
                   Related Deal or Account
                 </label>
                 <input
@@ -473,12 +597,12 @@ export function CrmActivitiesView() {
                   placeholder="e.g. Apex Tech Enterprise ERP"
                   value={targetName}
                   onChange={(e) => setTargetName(e.target.value)}
-                  className="w-full p-2.5 rounded-xl border border-border bg-[#FAF9F5] text-ink focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent"
+                  className="w-full p-2.5 rounded-xl border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] text-ink dark:text-neutral-100 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent"
                 />
               </div>
 
               <div>
-                <label htmlFor="activity-notes-input" className="text-xs font-semibold text-ink block mb-1">
+                <label htmlFor="activity-notes-input" className="text-xs font-semibold text-ink dark:text-neutral-200 block mb-1">
                   Details &amp; Outcome Notes
                 </label>
                 <textarea
@@ -487,11 +611,11 @@ export function CrmActivitiesView() {
                   placeholder="Notes, key discussion topics, next steps..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full p-2.5 rounded-xl border border-border bg-[#FAF9F5] text-ink focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent"
+                  className="w-full p-2.5 rounded-xl border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] text-ink dark:text-neutral-100 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-2 border-t border-border">
+              <div className="flex justify-end gap-2 pt-2 border-t border-border dark:border-[#2E302A]">
                 <button
                   type="button"
                   onClick={() => setLogModalOpen(false)}

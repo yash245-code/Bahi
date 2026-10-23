@@ -104,10 +104,46 @@ export function CrmAnalyticsView() {
   const [leadModalOpen, setLeadModalOpen] = useState(false);
   const [announcement, setAnnouncement] = useState<string | null>(null);
 
+  // ── Forecast Simulator State ──
+  const [scenario, setScenario] = useState<'conservative' | 'base' | 'bull'>('base');
+  const [winRateSlider, setWinRateSlider] = useState<number>(68);
+  const [slippageSlider, setSlippageSlider] = useState<number>(8);
+  const [quarterTarget, setQuarterTarget] = useState<number>(320000);
+
   const announce = (msg: string) => {
     setAnnouncement(msg);
     setTimeout(() => setAnnouncement(null), 4000);
   };
+
+  const applyScenario = (sc: 'conservative' | 'base' | 'bull') => {
+    setScenario(sc);
+    if (sc === 'conservative') {
+      setWinRateSlider(50);
+      setSlippageSlider(18);
+      announce('Applied Conservative forecast model (50% close, 18% slippage)');
+    } else if (sc === 'base') {
+      setWinRateSlider(Math.round(metrics.winRate));
+      setSlippageSlider(8);
+      announce('Reset to Base weighted forecast model');
+    } else {
+      setWinRateSlider(85);
+      setSlippageSlider(2);
+      announce('Applied Bull / High-Velocity forecast model (85% close, 2% slippage)');
+    }
+  };
+
+  // Real-time dynamic simulator calculations
+  const effectivePipeline = Math.round(metrics.totalOpenPipeline * (1 - slippageSlider / 100));
+  const simulatedNewRevenue = Math.round(effectivePipeline * (winRateSlider / 100));
+  const projectedTotalRevenue = metrics.wonRevenue + simulatedNewRevenue;
+  const variance = projectedTotalRevenue - quarterTarget;
+  const attainmentPct = Math.round((projectedTotalRevenue / quarterTarget) * 100);
+  const pacingStatus: 'Ahead' | 'On Pace' | 'At Risk' =
+    projectedTotalRevenue >= quarterTarget
+      ? 'Ahead'
+      : projectedTotalRevenue >= quarterTarget * 0.92
+      ? 'On Pace'
+      : 'At Risk';
 
   const loadMetrics = useCallback(async () => {
     try {
@@ -156,17 +192,17 @@ export function CrmAnalyticsView() {
 
       {/* ── Key Executive Revenue Indicators ── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white rounded-2xl p-4 border border-border">
+        <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl p-4 border border-border dark:border-[#2E302A]">
           <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted">
             Total Open Pipeline
           </span>
-          <div className="text-2xl font-black font-mono text-ink mt-1">
+          <div className="text-2xl font-black font-mono text-ink dark:text-white mt-1">
             ${metrics.totalOpenPipeline.toLocaleString()}
           </div>
           <span className="text-[11px] text-ink-muted">{metrics.openDealsCount} active opportunities</span>
         </div>
 
-        <div className="bg-white rounded-2xl p-4 border border-border">
+        <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl p-4 border border-border dark:border-[#2E302A]">
           <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted">
             Weighted Forecast
           </span>
@@ -176,33 +212,237 @@ export function CrmAnalyticsView() {
           <span className="text-[11px] text-ink-muted">Probability-adjusted expected close</span>
         </div>
 
-        <div className="bg-white rounded-2xl p-4 border border-border">
+        <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl p-4 border border-border dark:border-[#2E302A]">
           <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted">
             Closed Won Revenue
           </span>
-          <div className="text-2xl font-black font-mono text-[#1F7A4D] mt-1">
+          <div className="text-2xl font-black font-mono text-[#1F7A4D] dark:text-emerald-400 mt-1">
             ${metrics.wonRevenue.toLocaleString()}
           </div>
-          <span className="text-[11px] text-emerald-700 font-semibold">{metrics.wonDealsCount} signed deals</span>
+          <span className="text-[11px] text-emerald-700 dark:text-emerald-400 font-semibold">{metrics.wonDealsCount} signed deals</span>
         </div>
 
-        <div className="bg-white rounded-2xl p-4 border border-border">
+        <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl p-4 border border-border dark:border-[#2E302A]">
           <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted">
             Win / Loss Rate
           </span>
-          <div className="text-2xl font-black font-mono text-ink mt-1">
+          <div className="text-2xl font-black font-mono text-ink dark:text-white mt-1">
             {metrics.winRate}%
           </div>
           <span className="text-[11px] text-ink-muted">{metrics.avgSalesCycleDays} days avg sales cycle</span>
         </div>
       </div>
 
+      {/* ── Interactive "What-If" Forecast Simulator & Pacing ── */}
+      <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl p-6 border border-border dark:border-[#2E302A] shadow-xs space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-border/80 dark:border-[#2E302A]">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold font-mono px-2 py-0.5 rounded bg-accent/10 text-accent">
+                Executive Forecast Lab
+              </span>
+              <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${
+                pacingStatus === 'Ahead'
+                  ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800'
+                  : pacingStatus === 'On Pace'
+                  ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-400 border-amber-200 dark:border-amber-800'
+                  : 'bg-red-50 dark:bg-red-950/40 text-red-800 dark:text-red-400 border-red-200 dark:border-red-800'
+              }`}>
+                {pacingStatus === 'Ahead' ? '✓ Ahead of Quota' : pacingStatus === 'On Pace' ? '⏳ On Pace (Within 8%)' : '⚠️ Revenue at Risk'}
+              </span>
+            </div>
+            <h2 className="text-base font-black text-ink dark:text-white mt-1">
+              Interactive &quot;What-If&quot; Revenue Simulator
+            </h2>
+            <p className="text-xs text-ink-muted">
+              Model closing rates, pipeline slippage, and revenue targets in real time against active opportunities.
+            </p>
+          </div>
+
+          {/* Preset Buttons */}
+          <div className="flex items-center gap-1.5 bg-[#FAF9F5] dark:bg-neutral-800 p-1 rounded-xl border border-border dark:border-[#2E302A]">
+            <button
+              type="button"
+              onClick={() => applyScenario('conservative')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                scenario === 'conservative'
+                  ? 'bg-white dark:bg-neutral-700 text-ink dark:text-white shadow-xs'
+                  : 'text-ink-muted hover:text-ink'
+              }`}
+            >
+              🛡️ Conservative
+            </button>
+            <button
+              type="button"
+              onClick={() => applyScenario('base')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                scenario === 'base'
+                  ? 'bg-white dark:bg-neutral-700 text-ink dark:text-white shadow-xs'
+                  : 'text-ink-muted hover:text-ink'
+              }`}
+            >
+              ⚖️ Base Model
+            </button>
+            <button
+              type="button"
+              onClick={() => applyScenario('bull')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                scenario === 'bull'
+                  ? 'bg-white dark:bg-neutral-700 text-ink dark:text-white shadow-xs'
+                  : 'text-ink-muted hover:text-ink'
+              }`}
+            >
+              🚀 Bull / Stretch
+            </button>
+          </div>
+        </div>
+
+        {/* Sliders Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {/* Win Rate Slider */}
+          <div className="p-3.5 rounded-xl bg-[#FAF9F5] dark:bg-[#141513] border border-border/80 dark:border-[#2E302A] space-y-2">
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-bold text-ink dark:text-white">Simulated Win Rate</span>
+              <span className="font-mono font-black text-accent text-sm">{winRateSlider}%</span>
+            </div>
+            <input
+              type="range"
+              min={25}
+              max={95}
+              value={winRateSlider}
+              onChange={(e) => {
+                setWinRateSlider(Number(e.target.value));
+                setScenario('base');
+              }}
+              className="w-full accent-[#A8462F] cursor-pointer"
+            />
+            <div className="flex justify-between text-[10px] text-ink-muted">
+              <span>25% (Pessimistic)</span>
+              <span>Baseline: {metrics.winRate}%</span>
+              <span>95% (Peak)</span>
+            </div>
+          </div>
+
+          {/* Deal Slippage Slider */}
+          <div className="p-3.5 rounded-xl bg-[#FAF9F5] dark:bg-[#141513] border border-border/80 dark:border-[#2E302A] space-y-2">
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-bold text-ink dark:text-white">Pipeline Slippage Buffer</span>
+              <span className="font-mono font-black text-ink dark:text-white text-sm">{slippageSlider}%</span>
+            </div>
+            <input
+              type="range"
+              min={0}
+              max={30}
+              value={slippageSlider}
+              onChange={(e) => {
+                setSlippageSlider(Number(e.target.value));
+                setScenario('base');
+              }}
+              className="w-full accent-[#20211F] cursor-pointer"
+            />
+            <div className="flex justify-between text-[10px] text-ink-muted">
+              <span>0% (No delays)</span>
+              <span>15% (Typical)</span>
+              <span>30% (High risk)</span>
+            </div>
+          </div>
+
+          {/* Target Revenue Setter */}
+          <div className="p-3.5 rounded-xl bg-[#FAF9F5] dark:bg-[#141513] border border-border/80 dark:border-[#2E302A] space-y-2">
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-bold text-ink dark:text-white">Q3 Executive Target</span>
+              <span className="font-mono font-black text-ink dark:text-white text-sm">
+                ${quarterTarget.toLocaleString()}
+              </span>
+            </div>
+            <input
+              type="range"
+              min={250000}
+              max={500000}
+              step={10000}
+              value={quarterTarget}
+              onChange={(e) => setQuarterTarget(Number(e.target.value))}
+              className="w-full accent-neutral-600 cursor-pointer"
+            />
+            <div className="flex justify-between text-[10px] text-ink-muted">
+              <span>$250k</span>
+              <span>$320k Target</span>
+              <span>$500k Stretch</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Real-time Forecast Projections Bar */}
+        <div className="p-4 rounded-xl bg-[#141513] text-white space-y-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
+            <div>
+              <span className="text-neutral-400 text-[10px] uppercase font-bold tracking-wider">
+                Current Won
+              </span>
+              <div className="text-lg font-black font-mono text-emerald-400 mt-0.5">
+                ${metrics.wonRevenue.toLocaleString()}
+              </div>
+              <span className="text-[10px] text-neutral-400">{metrics.wonDealsCount} signed deals</span>
+            </div>
+            <div>
+              <span className="text-neutral-400 text-[10px] uppercase font-bold tracking-wider">
+                Simulated New Bookings
+              </span>
+              <div className="text-lg font-black font-mono text-amber-300 mt-0.5">
+                +${simulatedNewRevenue.toLocaleString()}
+              </div>
+              <span className="text-[10px] text-neutral-400">From ${effectivePipeline.toLocaleString()} effective</span>
+            </div>
+            <div>
+              <span className="text-neutral-400 text-[10px] uppercase font-bold tracking-wider">
+                Projected Total Q3
+              </span>
+              <div className="text-xl font-black font-mono text-white mt-0.5">
+                ${projectedTotalRevenue.toLocaleString()}
+              </div>
+              <span className="text-[10px] text-neutral-300 font-bold">{attainmentPct}% of target</span>
+            </div>
+            <div>
+              <span className="text-neutral-400 text-[10px] uppercase font-bold tracking-wider">
+                Target Variance
+              </span>
+              <div className={`text-lg font-black font-mono mt-0.5 ${variance >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                {variance >= 0 ? `+$${variance.toLocaleString()}` : `-$${Math.abs(variance).toLocaleString()}`}
+              </div>
+              <span className="text-[10px] text-neutral-400">
+                {variance >= 0 ? 'Surplus buffer' : 'Pipeline deficit'}
+              </span>
+            </div>
+          </div>
+
+          {/* Visual Goal Bar */}
+          <div className="space-y-1 pt-2 border-t border-neutral-800">
+            <div className="flex justify-between text-[11px] text-neutral-300">
+              <span>Combined Attainment: <strong>{attainmentPct}%</strong></span>
+              <span className="font-mono">${projectedTotalRevenue.toLocaleString()} / ${quarterTarget.toLocaleString()}</span>
+            </div>
+            <div className="w-full h-3 bg-neutral-800 rounded-full overflow-hidden flex">
+              <div
+                className="h-full bg-emerald-500 transition-all duration-300"
+                style={{ width: `${Math.min(100, Math.round((metrics.wonRevenue / quarterTarget) * 100))}%` }}
+                title={`Won: $${metrics.wonRevenue.toLocaleString()}`}
+              />
+              <div
+                className="h-full bg-accent transition-all duration-300"
+                style={{ width: `${Math.min(100 - Math.round((metrics.wonRevenue / quarterTarget) * 100), Math.round((simulatedNewRevenue / quarterTarget) * 100))}%` }}
+                title={`Simulated New: $${simulatedNewRevenue.toLocaleString()}`}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* ── Stage Breakdown & Lead Channel Funnel ── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Pipeline Distribution */}
-        <div className="bg-white rounded-2xl p-5 border border-border space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-border/60">
-            <h3 className="text-sm font-bold text-ink">Pipeline Distribution by Conversion Stage</h3>
+        <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl p-5 border border-border dark:border-[#2E302A] space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-border/60 dark:border-[#2E302A]">
+            <h3 className="text-sm font-bold text-ink dark:text-white">Pipeline Distribution by Conversion Stage</h3>
             <span className="text-xs text-ink-muted">Stage Velocity</span>
           </div>
 
@@ -214,10 +454,10 @@ export function CrmAnalyticsView() {
               return (
                 <div key={stg.name} className="space-y-1">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="font-bold text-ink">{stg.name} ({stg.count})</span>
-                    <span className="font-mono text-ink-muted font-bold">${stg.value.toLocaleString()}</span>
+                    <span className="font-bold text-ink dark:text-neutral-200">{stg.name} ({stg.count})</span>
+                    <span className="font-mono text-ink-muted dark:text-neutral-400 font-bold">${stg.value.toLocaleString()}</span>
                   </div>
-                  <div className="w-full h-2 bg-neutral-100 rounded-full overflow-hidden">
+                  <div className="w-full h-2 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
                     <div
                       className="h-full bg-accent rounded-full transition-all duration-300"
                       style={{ width: `${pct}%` }}
@@ -230,9 +470,9 @@ export function CrmAnalyticsView() {
         </div>
 
         {/* Lead Channels Acquisition */}
-        <div className="bg-white rounded-2xl p-5 border border-border space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-border/60">
-            <h3 className="text-sm font-bold text-ink">Inbound Acquisition Channels</h3>
+        <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl p-5 border border-border dark:border-[#2E302A] space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-border/60 dark:border-[#2E302A]">
+            <h3 className="text-sm font-bold text-ink dark:text-white">Inbound Acquisition Channels</h3>
             <span className="text-xs text-ink-muted">Lead Attribution</span>
           </div>
 
@@ -244,12 +484,12 @@ export function CrmAnalyticsView() {
               return (
                 <div key={src.source} className="space-y-1">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="font-medium text-ink">{src.source}</span>
-                    <span className="font-mono text-ink-muted">{src.count} leads ({pct}%)</span>
+                    <span className="font-medium text-ink dark:text-neutral-200">{src.source}</span>
+                    <span className="font-mono text-ink-muted dark:text-neutral-400">{src.count} leads ({pct}%)</span>
                   </div>
-                  <div className="w-full h-2 bg-neutral-100 rounded-full overflow-hidden">
+                  <div className="w-full h-2 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-[#20211F] rounded-full transition-all duration-300"
+                      className="h-full bg-[#20211F] dark:bg-neutral-200 rounded-full transition-all duration-300"
                       style={{ width: `${pct}%` }}
                     />
                   </div>
@@ -263,23 +503,23 @@ export function CrmAnalyticsView() {
       {/* ── Revenue Ops: Quotas & Approvals Queue ── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Deal Approvals Queue */}
-        <div className="bg-white rounded-2xl p-5 border border-border space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-border/60">
+        <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl p-5 border border-border dark:border-[#2E302A] space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-border/60 dark:border-[#2E302A]">
             <div>
-              <h3 className="text-sm font-bold text-ink">Deal Approvals &amp; Discount Exceptions</h3>
+              <h3 className="text-sm font-bold text-ink dark:text-white">Deal Approvals &amp; Discount Exceptions</h3>
               <p className="text-[11px] text-ink-muted">Discounts &gt;10% requiring Sales Manager authorization</p>
             </div>
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300">
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-300 border border-amber-300 dark:border-amber-800">
               {approvals.filter((a) => a.status === 'PENDING').length} Pending
             </span>
           </div>
 
           <div className="space-y-3">
             {approvals.map((app) => (
-              <div key={app.id} className="p-3 rounded-xl bg-[#FAF9F5] border border-border/80 space-y-2">
+              <div key={app.id} className="p-3 rounded-xl bg-[#FAF9F5] dark:bg-[#141513] border border-border/80 dark:border-[#2E302A] space-y-2">
                 <div className="flex items-center justify-between text-xs">
                   <div>
-                    <span className="font-bold text-ink">{app.dealTitle}</span>
+                    <span className="font-bold text-ink dark:text-white">{app.dealTitle}</span>
                     <span className="text-ink-muted ml-2">({app.companyName})</span>
                   </div>
                   <span className="font-bold font-mono text-accent">
@@ -289,14 +529,14 @@ export function CrmAnalyticsView() {
                 <p className="text-[11px] text-ink-muted italic">
                   &quot;{app.reason}&quot;
                 </p>
-                <div className="flex items-center justify-between pt-1 border-t border-border/40 text-[10px]">
-                  <span className="text-ink-muted">Requested by: <strong>{app.requestedBy}</strong></span>
+                <div className="flex items-center justify-between pt-1 border-t border-border/40 dark:border-[#2E302A] text-[10px]">
+                  <span className="text-ink-muted">Requested by: <strong className="text-ink dark:text-neutral-200">{app.requestedBy}</strong></span>
                   {app.status === 'PENDING' ? (
                     <div className="flex items-center gap-2">
                       <button
                         type="button"
                         onClick={() => handleApprovalDecision(app.id, 'REJECTED')}
-                        className="px-2.5 py-1 rounded bg-neutral-200 text-neutral-800 font-bold hover:bg-neutral-300 transition-colors"
+                        className="px-2.5 py-1 rounded bg-neutral-200 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 font-bold hover:bg-neutral-300 dark:hover:bg-neutral-700 transition-colors"
                       >
                         Reject
                       </button>
@@ -309,7 +549,7 @@ export function CrmAnalyticsView() {
                       </button>
                     </div>
                   ) : (
-                    <span className={`font-bold px-2 py-0.5 rounded ${app.status === 'APPROVED' ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}`}>
+                    <span className={`font-bold px-2 py-0.5 rounded ${app.status === 'APPROVED' ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300' : 'bg-red-100 dark:bg-red-950 text-red-800 dark:text-red-300'}`}>
                       {app.status}
                     </span>
                   )}
@@ -320,10 +560,10 @@ export function CrmAnalyticsView() {
         </div>
 
         {/* Sales Quota Attainment Hub */}
-        <div className="bg-white rounded-2xl p-5 border border-border space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-border/60">
+        <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl p-5 border border-border dark:border-[#2E302A] space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-border/60 dark:border-[#2E302A]">
             <div>
-              <h3 className="text-sm font-bold text-ink">Sales Quota Attainment Tracking</h3>
+              <h3 className="text-sm font-bold text-ink dark:text-white">Sales Quota Attainment Tracking</h3>
               <p className="text-[11px] text-ink-muted">Quarterly individual rep quota targets vs closed revenue</p>
             </div>
             <span className="text-xs font-semibold text-ink-muted">Q3 2026</span>
@@ -332,19 +572,32 @@ export function CrmAnalyticsView() {
           <div className="space-y-4">
             {quotas.map((q) => {
               const attainment = Math.round((q.achievedRevenue / q.targetRevenue) * 100);
+              const remaining = Math.max(0, q.targetRevenue - q.achievedRevenue);
+              const dealsNeeded = Math.ceil(remaining / metrics.avgDealSize);
+              const repPacing = attainment >= 80 ? 'Ahead of Target' : attainment >= 65 ? 'On Pace' : 'At Risk';
+              const repBadgeClass =
+                repPacing === 'Ahead of Target'
+                  ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300'
+                  : repPacing === 'On Pace'
+                  ? 'bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300'
+                  : 'bg-red-100 dark:bg-red-950 text-red-800 dark:text-red-300';
+
               return (
-                <div key={q.id} className="space-y-1.5">
+                <div key={q.id} className="p-3 rounded-xl bg-[#FAF9F5] dark:bg-[#141513] border border-border/70 dark:border-[#2E302A] space-y-2">
                   <div className="flex items-center justify-between text-xs">
-                    <div className="font-bold text-ink flex items-center gap-2">
+                    <div className="font-bold text-ink dark:text-white flex items-center gap-2">
                       <span>{q.repName}</span>
-                      <span className="text-[10px] text-ink-muted font-normal">({q.closedDealsCount} won deals)</span>
+                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${repBadgeClass}`}>
+                        {repPacing}
+                      </span>
                     </div>
-                    <div className="font-mono text-ink">
+                    <div className="font-mono text-ink dark:text-neutral-100 text-xs">
                       <strong>${q.achievedRevenue.toLocaleString()}</strong> / ${q.targetRevenue.toLocaleString()} ({attainment}%)
                     </div>
                   </div>
+
                   <div
-                    className="w-full h-2.5 bg-neutral-100 rounded-full overflow-hidden"
+                    className="w-full h-2.5 bg-neutral-200 dark:bg-neutral-800 rounded-full overflow-hidden"
                     role="progressbar"
                     aria-valuenow={attainment}
                     aria-valuemin={0}
@@ -355,6 +608,17 @@ export function CrmAnalyticsView() {
                       className={`h-full rounded-full transition-all duration-300 ${attainment >= 85 ? 'bg-[#1F7A4D]' : attainment >= 70 ? 'bg-accent' : 'bg-amber-600'}`}
                       style={{ width: `${Math.min(attainment, 100)}%` }}
                     />
+                  </div>
+
+                  <div className="flex items-center justify-between text-[11px] text-ink-muted pt-1">
+                    <span>{q.closedDealsCount} closed deals</span>
+                    <span>
+                      {remaining === 0 ? (
+                        <span className="text-emerald-700 dark:text-emerald-400 font-bold">🎉 Quota Met</span>
+                      ) : (
+                        <span>${remaining.toLocaleString()} needed (~{dealsNeeded} deals)</span>
+                      )}
+                    </span>
                   </div>
                 </div>
               );

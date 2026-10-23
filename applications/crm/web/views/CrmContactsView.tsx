@@ -74,6 +74,7 @@ export function CrmContactsView() {
   const [leadModalOpen, setLeadModalOpen] = useState(false);
   const [newContactModalOpen, setNewContactModalOpen] = useState(false);
   const [selectedContact, setSelectedContact] = useState<ContactItem | null>(null);
+  const [selectedContacts, setSelectedContacts] = useState<string[]>([]);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
@@ -87,6 +88,34 @@ export function CrmContactsView() {
     setToastMessage(msg);
     setAnnouncement(msg);
     setTimeout(() => setToastMessage((c) => (c === msg ? null : c)), 3500);
+  };
+
+  const toggleSelectContact = (id: string) => {
+    setSelectedContacts((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedContacts.length === filteredContacts.length) {
+      setSelectedContacts([]);
+    } else {
+      setSelectedContacts(filteredContacts.map((c) => c.id));
+    }
+  };
+
+  const handleBulkStageChange = (newStage: any) => {
+    setContacts((prev) =>
+      prev.map((c) => (selectedContacts.includes(c.id) ? { ...c, lifecycleStage: newStage } : c))
+    );
+    showToast(`Updated lifecycle stage to ${newStage} for ${selectedContacts.length} contacts`);
+    setSelectedContacts([]);
+  };
+
+  const handleBulkDeleteContacts = () => {
+    setContacts((prev) => prev.filter((c) => !selectedContacts.includes(c.id)));
+    showToast(`Deleted ${selectedContacts.length} contacts`);
+    setSelectedContacts([]);
   };
 
   const copyToClipboard = (text: string, label: string) => {
@@ -291,6 +320,52 @@ export function CrmContactsView() {
         </div>
       </div>
 
+      {/* ── Bulk Actions Floating Ribbon (Improvement 4) ── */}
+      {selectedContacts.length > 0 && (
+        <div
+          role="region"
+          aria-label="Bulk actions toolbar"
+          className="p-3 bg-[#20211F] text-white rounded-xl flex flex-wrap items-center justify-between gap-3 text-xs animate-fade-in shadow-xl sticky bottom-4 z-40 border border-white/10"
+        >
+          <div className="flex items-center gap-2 font-bold">
+            <span className="w-2.5 h-2.5 rounded-full bg-accent animate-pulse" aria-hidden="true" />
+            <span>{selectedContacts.length} contacts selected</span>
+          </div>
+
+          <div className="flex items-center gap-2 flex-wrap">
+            <select
+              aria-label="Bulk update lifecycle stage"
+              onChange={(e) => {
+                if (e.target.value) handleBulkStageChange(e.target.value);
+              }}
+              defaultValue=""
+              className="bg-neutral-800 text-white border border-neutral-700 rounded-lg text-xs py-1 px-2 cursor-pointer focus:ring-1 focus:ring-accent"
+            >
+              <option value="" disabled>Change Stage...</option>
+              <option value="Customer">Mark Customer</option>
+              <option value="Opportunity">Mark Opportunity</option>
+              <option value="Lead">Mark Lead</option>
+            </select>
+
+            <button
+              type="button"
+              onClick={handleBulkDeleteContacts}
+              className="px-2.5 py-1 rounded-lg bg-red-800 hover:bg-red-700 text-xs font-semibold transition-colors cursor-pointer"
+            >
+              Bulk Delete
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setSelectedContacts([])}
+              className="px-2 py-1 text-neutral-400 hover:text-white text-xs cursor-pointer"
+            >
+              Deselect All
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* ── Contacts Data Table ── */}
       <div
         role="region"
@@ -301,6 +376,15 @@ export function CrmContactsView() {
           <table className="w-full text-left text-xs border-collapse">
             <thead>
               <tr className="bg-[#FAF9F5] dark:bg-[#141513] border-b border-border dark:border-[#2E302A] text-[11px] font-bold text-ink-muted dark:text-[#A0A29C] uppercase tracking-wider">
+                <th scope="col" className="p-3.5 w-10 text-center">
+                  <input
+                    type="checkbox"
+                    aria-label="Select all contacts"
+                    checked={selectedContacts.length === filteredContacts.length && filteredContacts.length > 0}
+                    onChange={toggleSelectAll}
+                    className="rounded border-border text-accent focus:ring-accent"
+                  />
+                </th>
                 <th scope="col" className={density === 'compact' ? 'py-2 px-3' : 'p-3.5'}>Full Name &amp; Title</th>
                 <th scope="col" className={density === 'compact' ? 'py-2 px-3' : 'p-3.5'}>Company / Account</th>
                 <th scope="col" className={density === 'compact' ? 'py-2 px-3' : 'p-3.5'}>Email &amp; Phone</th>
@@ -312,13 +396,22 @@ export function CrmContactsView() {
             <tbody className="divide-y divide-border/60 dark:divide-[#2E302A]">
               {filteredContacts.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="p-8 text-center text-ink-muted dark:text-[#A0A29C]">
+                  <td colSpan={7} className="p-8 text-center text-ink-muted dark:text-[#A0A29C]">
                     No contacts found matching your query.
                   </td>
                 </tr>
               ) : (
                 filteredContacts.map((c) => (
                   <tr key={c.id} className="hover:bg-neutral-50/80 dark:hover:bg-[#252722] transition-colors">
+                    <td className="p-3.5 text-center">
+                      <input
+                        type="checkbox"
+                        aria-label={`Select contact ${c.name}`}
+                        checked={selectedContacts.includes(c.id)}
+                        onChange={() => toggleSelectContact(c.id)}
+                        className="rounded border-border text-accent focus:ring-accent"
+                      />
+                    </td>
                     <td className={density === 'compact' ? 'py-2 px-3' : 'p-3.5'}>
                       <button
                         type="button"

@@ -176,13 +176,30 @@ export function CrmPipelineView() {
   const [starredDeals, setStarredDeals] = useState<string[]>([]);
   const [density, setDensity] = useState<'normal' | 'compact'>('normal');
 
-  // Load starred deals & density from localStorage
+  // Load starred deals, converted custom deals & density from localStorage
   useEffect(() => {
     try {
       const savedStars = JSON.parse(localStorage.getItem('bahi-crm-starred-deals') || '[]');
       if (Array.isArray(savedStars)) setStarredDeals(savedStars);
       const savedDensity = localStorage.getItem('bahi-crm-density');
       if (savedDensity === 'compact') setDensity('compact');
+      const savedPreset = localStorage.getItem('bahi-crm-pipeline-preset');
+      if (savedPreset) setActiveFilter(savedPreset as any);
+
+      // Hydrate custom deals created via Lead Conversion or Modal
+      const customDeals = JSON.parse(localStorage.getItem('bahi-crm-custom-deals') || '[]');
+      if (Array.isArray(customDeals) && customDeals.length > 0) {
+        setStages((prev) =>
+          prev.map((s) => {
+            if (s.name === 'Qualified') {
+              const existingIds = new Set(s.deals.map((d) => d.id));
+              const toAdd = customDeals.filter((d: any) => !existingIds.has(d.id));
+              return { ...s, deals: [...toAdd, ...s.deals], count: s.deals.length + toAdd.length };
+            }
+            return s;
+          })
+        );
+      }
     } catch (_) {}
 
     const handleDensityChange = (e: any) => {
@@ -191,6 +208,14 @@ export function CrmPipelineView() {
     window.addEventListener('bahi-crm-density-change', handleDensityChange);
     return () => window.removeEventListener('bahi-crm-density-change', handleDensityChange);
   }, []);
+
+  const handleSelectPreset = (preset: any) => {
+    setActiveFilter(preset);
+    try {
+      localStorage.setItem('bahi-crm-pipeline-preset', preset);
+    } catch (_) {}
+    showToast(`Pipeline view filtered: ${preset.toUpperCase()}`);
+  };
 
   const toggleStarDeal = (dealId: string) => {
     setStarredDeals((prev) => {
@@ -583,7 +608,7 @@ export function CrmPipelineView() {
         <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 flex-wrap">
           <div className="flex items-center gap-1">
             <button
-              onClick={() => setActiveFilter('all')}
+              onClick={() => handleSelectPreset('all')}
               aria-pressed={activeFilter === 'all'}
               className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-accent ${
                 activeFilter === 'all'
@@ -594,7 +619,7 @@ export function CrmPipelineView() {
               All Deals ({totalDealsCount})
             </button>
             <button
-              onClick={() => setActiveFilter('hot')}
+              onClick={() => handleSelectPreset('hot')}
               aria-pressed={activeFilter === 'hot'}
               className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-accent ${
                 activeFilter === 'hot'
@@ -605,7 +630,7 @@ export function CrmPipelineView() {
               🔥 Hot Deals
             </button>
             <button
-              onClick={() => setActiveFilter('high_val')}
+              onClick={() => handleSelectPreset('high_val')}
               aria-pressed={activeFilter === 'high_val'}
               className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-accent ${
                 activeFilter === 'high_val'
@@ -616,7 +641,7 @@ export function CrmPipelineView() {
               💰 Over $10k
             </button>
             <button
-              onClick={() => setActiveFilter('rotting')}
+              onClick={() => handleSelectPreset('rotting')}
               aria-pressed={activeFilter === 'rotting'}
               className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-accent ${
                 activeFilter === 'rotting'
@@ -627,7 +652,7 @@ export function CrmPipelineView() {
               ⏳ Stalled Velocity
             </button>
             <button
-              onClick={() => setActiveFilter('starred')}
+              onClick={() => handleSelectPreset('starred')}
               aria-pressed={activeFilter === 'starred'}
               className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-accent ${
                 activeFilter === 'starred'
@@ -857,9 +882,24 @@ export function CrmPipelineView() {
                             >
                               {deal.assignee.avatar}
                             </div>
-                            <span className="text-[10px] text-ink-muted truncate max-w-[85px]">
-                              {deal.contact}
-                            </span>
+                            <div className="flex items-center gap-1 min-w-0">
+                              <a
+                                href={`mailto:${deal.contact}?subject=Regarding%20Deal%3A%20${encodeURIComponent(deal.title)}`}
+                                className="text-[10px] text-ink-muted hover:text-accent hover:underline truncate max-w-[80px]"
+                                title={`Send email to ${deal.contact}`}
+                              >
+                                {deal.contact}
+                              </a>
+                              <a
+                                href={`https://wa.me/?text=Hi%2C%20following%20up%20on%20${encodeURIComponent(deal.title)}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-[10px] text-emerald-600 hover:text-emerald-700 dark:text-emerald-400"
+                                title="Chat on WhatsApp"
+                              >
+                                💬
+                              </a>
+                            </div>
                           </div>
 
                           {/* Stage Transition Action Arrows */}

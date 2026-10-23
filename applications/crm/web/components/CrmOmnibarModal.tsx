@@ -177,18 +177,18 @@ export function CrmOmnibarModal({ isOpen, onClose }: CrmOmnibarModalProps) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
-            className="w-full bg-transparent text-sm text-ink placeholder:text-ink-muted/60 focus:outline-none"
+            className="w-full bg-transparent text-sm text-ink dark:text-white placeholder:text-ink-muted/60 dark:placeholder:text-[#A0A29C]/50 focus:outline-none"
           />
           {query && (
             <button
               onClick={() => setQuery('')}
               aria-label="Clear search input"
-              className="text-xs text-ink-muted hover:text-ink px-1.5 py-0.5 rounded"
+              className="text-xs text-ink-muted hover:text-ink dark:hover:text-white px-1.5 py-0.5 rounded"
             >
               Clear
             </button>
           )}
-          <kbd className="hidden sm:inline-block font-mono text-[10px] font-semibold text-ink-muted bg-white border border-border px-1.5 py-0.5 rounded shadow-2xs ml-2">
+          <kbd className="hidden sm:inline-block font-mono text-[10px] font-semibold text-ink-muted dark:text-[#A0A29C] bg-white dark:bg-[#1E1F1C] border border-border dark:border-[#2E302A] px-1.5 py-0.5 rounded shadow-2xs ml-2">
             ESC to close
           </kbd>
         </div>
@@ -198,7 +198,7 @@ export function CrmOmnibarModal({ isOpen, onClose }: CrmOmnibarModalProps) {
           id={listboxId}
           role="listbox"
           aria-label="Search results"
-          className="max-h-96 overflow-y-auto p-2 space-y-1 divide-y divide-border/20"
+          className="max-h-96 overflow-y-auto p-2 space-y-1 divide-y divide-border/20 dark:divide-[#2E302A]"
         >
           {isLoading ? (
             <div className="py-8 text-center text-xs text-ink-muted flex items-center justify-center gap-2">
@@ -207,7 +207,7 @@ export function CrmOmnibarModal({ isOpen, onClose }: CrmOmnibarModalProps) {
             </div>
           ) : results.length === 0 ? (
             <div className="py-10 text-center space-y-1">
-              <p className="text-xs font-semibold text-ink">No CRM records found</p>
+              <p className="text-xs font-semibold text-ink dark:text-white">No CRM records found</p>
               <p className="text-[11px] text-ink-muted">
                 Try searching by deal name, stakeholder email, or company name.
               </p>
@@ -227,7 +227,7 @@ export function CrmOmnibarModal({ isOpen, onClose }: CrmOmnibarModalProps) {
                   }}
                   onMouseEnter={() => setSelectedIndex(idx)}
                   className={`flex items-center justify-between p-2.5 rounded-xl cursor-pointer transition-colors ${
-                    isSelected ? 'bg-accent/10 border border-accent/30' : 'hover:bg-neutral-50 border border-transparent'
+                    isSelected ? 'bg-accent/15 border border-accent/40 text-ink dark:text-white' : 'hover:bg-neutral-50 dark:hover:bg-[#141513] border border-transparent'
                   }`}
                 >
                   <div className="flex items-center gap-3 min-w-0">
@@ -236,11 +236,11 @@ export function CrmOmnibarModal({ isOpen, onClose }: CrmOmnibarModalProps) {
                     </span>
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-ink truncate">
+                        <span className="text-xs font-bold text-ink dark:text-white truncate">
                           {item.title}
                         </span>
                         {item.badge && (
-                          <span className="text-[10px] font-semibold px-1.5 py-0.2 rounded-full bg-white border border-border text-ink-muted">
+                          <span className="text-[10px] font-semibold px-1.5 py-0.2 rounded-full bg-white dark:bg-[#141513] border border-border dark:border-[#2E302A] text-ink-muted dark:text-[#A0A29C]">
                             {item.badge}
                           </span>
                         )}
@@ -260,12 +260,12 @@ export function CrmOmnibarModal({ isOpen, onClose }: CrmOmnibarModalProps) {
         </div>
 
         {/* Footer Guidance */}
-        <div className="flex items-center justify-between px-4 py-2 bg-[#FAF9F5] border-t border-border text-[11px] text-ink-muted">
+        <div className="flex items-center justify-between px-4 py-2 bg-[#FAF9F5] dark:bg-[#141513] border-t border-border dark:border-[#2E302A] text-[11px] text-ink-muted dark:text-[#A0A29C]">
           <div className="flex items-center gap-3">
-            <span><kbd className="font-mono font-bold bg-white px-1.5 py-0.5 rounded border border-border">↑</kbd> <kbd className="font-mono font-bold bg-white px-1.5 py-0.5 rounded border border-border">↓</kbd> Navigate</span>
-            <span><kbd className="font-mono font-bold bg-white px-1.5 py-0.5 rounded border border-border">↵</kbd> Open Record</span>
+            <span><kbd className="font-mono font-bold bg-white dark:bg-[#1E1F1C] text-ink dark:text-white px-1.5 py-0.5 rounded border border-border dark:border-[#2E302A]">↑</kbd> <kbd className="font-mono font-bold bg-white dark:bg-[#1E1F1C] text-ink dark:text-white px-1.5 py-0.5 rounded border border-border dark:border-[#2E302A]">↓</kbd> Navigate</span>
+            <span><kbd className="font-mono font-bold bg-white dark:bg-[#1E1F1C] text-ink dark:text-white px-1.5 py-0.5 rounded border border-border dark:border-[#2E302A]">↵</kbd> Open Record</span>
           </div>
-          <span className="font-medium text-ink">Bahi Omnibar v1.5</span>
+          <span className="font-medium text-ink dark:text-neutral-300">Bahi Omnibar v1.5</span>
         </div>
       </div>
     </div>

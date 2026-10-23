@@ -95,8 +95,8 @@ export function CrmShortcutsModal({ isOpen, onClose }: CrmShortcutsModalProps) {
           ))}
         </div>
 
-        <div className="flex items-center justify-between pt-3 border-t border-border text-[11px] text-ink-muted">
-          <span>Press <kbd className="font-mono font-bold bg-neutral-100 px-1 py-0.5 rounded border border-border">Esc</kbd> anytime to exit</span>
+        <div className="flex items-center justify-between pt-3 border-t border-border dark:border-[#2E302A] text-[11px] text-ink-muted dark:text-[#A0A29C]">
+          <span>Press <kbd className="font-mono font-bold bg-neutral-100 dark:bg-neutral-800 text-ink dark:text-neutral-200 px-1 py-0.5 rounded border border-border dark:border-[#2E302A]">Esc</kbd> anytime to exit</span>
           <button
             onClick={onClose}
             className="btn-secondary text-xs py-1.5 px-4 focus-visible:ring-2 focus-visible:ring-accent"

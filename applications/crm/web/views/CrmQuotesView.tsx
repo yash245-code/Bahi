@@ -127,15 +127,163 @@ export function CrmQuotesView() {
   const [leadModalOpen, setLeadModalOpen] = useState(false);
   const [announcement, setAnnouncement] = useState<string | null>(null);
 
-  // New quote draft state
+  // New quote draft state & catalog items
   const [draftDealTitle, setDraftDealTitle] = useState('TechStart Enterprise OS');
   const [draftCompany, setDraftCompany] = useState('TechStart Inc.');
   const [draftContactEmail, setDraftContactEmail] = useState('sarah@techstart.io');
-  const [draftAmount, setDraftAmount] = useState('18500');
+  const [draftDiscountPercent, setDraftDiscountPercent] = useState('5');
+  const [draftTaxPercent, setDraftTaxPercent] = useState('8');
+  const [draftLineItems, setDraftLineItems] = useState<QuoteLineItem[]>([
+    { id: '1', description: 'Bahi Enterprise Core Platform License', quantity: 1, unitPrice: 24000, total: 24000 },
+    { id: '2', description: 'Multi-Warehouse Inventory & Dispatch Module', quantity: 1, unitPrice: 12000, total: 12000 },
+  ]);
+
+  const catalogProducts = [
+    { name: 'Bahi Enterprise Core Platform License', unitPrice: 24000 },
+    { name: 'Multi-Warehouse Inventory & Dispatch Module', unitPrice: 12000 },
+    { name: 'Legacy ERP Migration & Architecture Onboarding', unitPrice: 8500 },
+    { name: 'Mission-Critical 24/7 SLA Support Agreement', unitPrice: 5000 },
+    { name: 'Additional User Seat License Pack (10 Seats)', unitPrice: 2000 },
+  ];
 
   const announce = (msg: string) => {
     setAnnouncement(msg);
     setTimeout(() => setAnnouncement(null), 4000);
+  };
+
+  const handleAddLineItem = (productName?: string, unitPrice?: number) => {
+    const pName = productName || catalogProducts[0]?.name || 'Custom Product License';
+    const price = unitPrice !== undefined ? unitPrice : (catalogProducts[0]?.unitPrice || 5000);
+    const newItem: QuoteLineItem = {
+      id: Date.now().toString(),
+      description: pName,
+      quantity: 1,
+      unitPrice: price,
+      total: price,
+    };
+    setDraftLineItems((prev) => [...prev, newItem]);
+  };
+
+  const handleUpdateLineItem = (id: string, field: 'description' | 'quantity' | 'unitPrice', val: any) => {
+    setDraftLineItems((prev) =>
+      prev.map((item) => {
+        if (item.id !== id) return item;
+        const updated = { ...item, [field]: val };
+        if (field === 'quantity' || field === 'unitPrice') {
+          const qty = field === 'quantity' ? Math.max(1, Number(val) || 1) : item.quantity;
+          const uPrice = field === 'unitPrice' ? Math.max(0, Number(val) || 0) : item.unitPrice;
+          updated.quantity = qty;
+          updated.unitPrice = uPrice;
+          updated.total = qty * uPrice;
+        }
+        return updated;
+      })
+    );
+  };
+
+  const handleRemoveLineItem = (id: string) => {
+    if (draftLineItems.length <= 1) return;
+    setDraftLineItems((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  const draftSubtotal = draftLineItems.reduce((acc, item) => acc + item.total, 0);
+  const draftDiscount = Math.round((draftSubtotal * (Number(draftDiscountPercent) || 0)) / 100);
+  const draftTax = Math.round(((draftSubtotal - draftDiscount) * (Number(draftTaxPercent) || 0)) / 100);
+  const draftTotal = draftSubtotal - draftDiscount + draftTax;
+
+  const handlePrintQuote = (q: QuoteRecord) => {
+    announce(`Preparing printable proposal document for ${q.quoteNumber}...`);
+    setTimeout(() => {
+      window.print();
+    }, 200);
+  };
+
+  const handleDownloadHtml = (q: QuoteRecord) => {
+    const htmlContent = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Proposal - ${q.quoteNumber}</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 40px; color: #20211F; background: #fff; }
+    .header { border-bottom: 2px solid #A8462F; padding-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-end; }
+    .logo { font-size: 28px; font-weight: 900; color: #A8462F; letter-spacing: -1px; }
+    .meta { font-size: 13px; color: #75766E; text-align: right; }
+    .section { margin-top: 30px; }
+    .card { background: #FAF9F5; border: 1px solid #E6E3DC; border-radius: 12px; padding: 18px; margin-top: 15px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 13px; }
+    th { background: #FAF9F5; text-align: left; padding: 10px; border-bottom: 2px solid #E6E3DC; font-weight: bold; }
+    td { padding: 12px 10px; border-bottom: 1px solid #EFECE6; }
+    .totals { width: 300px; margin-left: auto; margin-top: 25px; font-size: 14px; }
+    .totals tr td:last-child { text-align: right; font-weight: bold; }
+    .grand-total { font-size: 18px; font-weight: 900; color: #20211F; border-top: 2px solid #A8462F; }
+    .signature { margin-top: 50px; border-top: 1px dashed #75766E; padding-top: 20px; display: flex; justify-content: space-between; font-size: 13px; color: #75766E; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div>
+      <div class="logo">BAHI ENTERPRISE</div>
+      <div style="font-size: 12px; color: #75766E; margin-top: 4px;">Next-Generation ERP & Revenue Engine</div>
+    </div>
+    <div class="meta">
+      <strong>Quote #:</strong> ${q.quoteNumber}<br/>
+      <strong>Date:</strong> ${q.createdAt}<br/>
+      <strong>Valid Until:</strong> ${q.validUntil}
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="font-weight: bold; color: #A8462F; text-transform: uppercase; font-size: 11px;">PREPARED FOR:</div>
+    <div style="font-size: 18px; font-weight: bold; margin-top: 4px;">${q.companyName}</div>
+    <div style="font-size: 13px; color: #75766E;">Contact: ${q.contactName} (${q.contactEmail})</div>
+    <div style="font-size: 13px; margin-top: 6px;">Opportunity: <strong>${q.dealTitle}</strong></div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Description</th>
+        <th style="text-align: center;">Qty</th>
+        <th style="text-align: right;">Unit Price</th>
+        <th style="text-align: right;">Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${q.lineItems.map(item => `
+        <tr>
+          <td>${item.description}</td>
+          <td style="text-align: center;">${item.quantity}</td>
+          <td style="text-align: right;">$${item.unitPrice.toLocaleString()}</td>
+          <td style="text-align: right;">$${item.total.toLocaleString()}</td>
+        </tr>
+      `).join('')}
+    </tbody>
+  </table>
+
+  <table class="totals">
+    <tr><td>Subtotal:</td><td>$${q.subtotal.toLocaleString()}</td></tr>
+    ${q.discountPercent > 0 ? `<tr><td style="color: #1F7A4D;">Discount (${q.discountPercent}%):</td><td style="color: #1F7A4D;">-$${Math.round((q.subtotal * q.discountPercent) / 100).toLocaleString()}</td></tr>` : ''}
+    <tr><td>Sales Tax (${q.taxPercent}%):</td><td>+$${Math.round((q.subtotal * (q.taxPercent / 100))).toLocaleString()}</td></tr>
+    <tr class="grand-total"><td style="padding-top: 10px;">Total Due:</td><td style="padding-top: 10px;">$${q.total.toLocaleString()}</td></tr>
+  </table>
+
+  <div class="signature">
+    <div>Authorized Bahi Representative: Yash Rawat, Head of Revenue</div>
+    <div>Client Signatory: ${q.signerName || 'Pending Client Signature'}</div>
+  </div>
+</body>
+</html>`;
+
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `Proposal_${q.quoteNumber}_${q.companyName.replace(/[^a-zA-Z0-9]/g, '_')}.html`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    announce(`Downloaded proposal ${q.quoteNumber} as printable HTML document.`);
   };
 
   const loadQuotes = useCallback(async () => {
@@ -190,7 +338,6 @@ export function CrmQuotesView() {
   const handleCreateQuote = async (e: React.FormEvent) => {
     e.preventDefault();
     const newQuoteNum = `QUO-2026-${Math.floor(1000 + Math.random() * 9000)}`;
-    const amt = Number(draftAmount) || 15000;
     const created: QuoteRecord = {
       id: `QUO-${Date.now().toString().slice(-4)}`,
       quoteNumber: newQuoteNum,
@@ -198,21 +345,19 @@ export function CrmQuotesView() {
       companyName: draftCompany,
       contactName: 'Executive Sponsor',
       contactEmail: draftContactEmail,
-      subtotal: amt,
-      discountPercent: 0,
-      taxPercent: 8,
-      total: Math.round(amt * 1.08),
+      subtotal: draftSubtotal,
+      discountPercent: Number(draftDiscountPercent) || 0,
+      taxPercent: Number(draftTaxPercent) || 8,
+      total: draftTotal,
       status: 'SENT',
       validUntil: 'Nov 30, 2026',
       createdAt: 'Today',
-      lineItems: [
-        { id: '1', description: 'Core Application Service License', quantity: 1, unitPrice: amt, total: amt },
-      ],
+      lineItems: draftLineItems,
     };
 
     setQuotes((prev) => [created, ...prev]);
     setNewQuoteModalOpen(false);
-    announce(`Created proposal quotation ${newQuoteNum} for ${draftCompany}`);
+    announce(`Created proposal quotation ${newQuoteNum} for ${draftCompany} ($${draftTotal.toLocaleString()})`);
   };
 
   const handleSendReminder = (q: QuoteRecord) => {
@@ -232,27 +377,27 @@ export function CrmQuotesView() {
 
       {/* ── Key Metrics Header ── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white rounded-2xl p-4 border border-border">
+        <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl p-4 border border-border dark:border-[#2E302A]">
           <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted">
             Total Pipeline Quoted
           </span>
-          <div className="text-2xl font-black font-mono text-ink mt-1">
+          <div className="text-2xl font-black font-mono text-ink dark:text-white mt-1">
             ${totalQuotedValue.toLocaleString()}
           </div>
           <span className="text-[11px] text-ink-muted">{quotes.length} total proposals</span>
         </div>
 
-        <div className="bg-white rounded-2xl p-4 border border-border">
+        <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl p-4 border border-border dark:border-[#2E302A]">
           <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted">
             Signed &amp; Accepted (Won)
           </span>
-          <div className="text-2xl font-black font-mono text-[#1F7A4D] mt-1">
+          <div className="text-2xl font-black font-mono text-[#1F7A4D] dark:text-emerald-400 mt-1">
             ${acceptedValue.toLocaleString()}
           </div>
-          <span className="text-[11px] text-emerald-700 font-semibold">Legally binding e-signatures</span>
+          <span className="text-[11px] text-emerald-700 dark:text-emerald-400 font-semibold">Legally binding e-signatures</span>
         </div>
 
-        <div className="bg-white rounded-2xl p-4 border border-border">
+        <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl p-4 border border-border dark:border-[#2E302A]">
           <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted">
             Awaiting Customer Action
           </span>
@@ -262,11 +407,11 @@ export function CrmQuotesView() {
           <span className="text-[11px] text-ink-muted">Live public portal review</span>
         </div>
 
-        <div className="bg-white rounded-2xl p-4 border border-border">
+        <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl p-4 border border-border dark:border-[#2E302A]">
           <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted">
             Drafting Proposals
           </span>
-          <div className="text-2xl font-black font-mono text-ink mt-1">
+          <div className="text-2xl font-black font-mono text-ink dark:text-white mt-1">
             {quotes.filter((q) => q.status === 'DRAFT').length}
           </div>
           <span className="text-[11px] text-ink-muted">Internal pricing reviews</span>
@@ -293,13 +438,13 @@ export function CrmQuotesView() {
               placeholder="Search by quote number, company, or deal..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl border border-border bg-white text-ink placeholder:text-ink-muted/60 focus:outline-none focus:ring-1 focus:ring-accent"
+              className="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl border border-border dark:border-[#2E302A] bg-white dark:bg-[#181917] text-ink dark:text-neutral-100 placeholder:text-ink-muted/60 focus:outline-none focus:ring-1 focus:ring-accent"
             />
           </div>
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
-          <div className="flex items-center gap-1 bg-[#F3F2EE] p-0.5 rounded-xl border border-border">
+          <div className="flex items-center gap-1 bg-[#F3F2EE] dark:bg-neutral-800 p-0.5 rounded-xl border border-border dark:border-[#2E302A]">
             {(['ALL', 'SENT', 'ACCEPTED', 'DRAFT', 'EXPIRED'] as const).map((st) => (
               <button
                 key={st}
@@ -307,8 +452,8 @@ export function CrmQuotesView() {
                 onClick={() => setFilterStatus(st)}
                 className={`px-3 py-1 text-xs font-semibold rounded-lg transition-colors cursor-pointer ${
                   filterStatus === st
-                    ? 'bg-[#20211F] text-white shadow-2xs'
-                    : 'text-ink-muted hover:text-ink'
+                    ? 'bg-[#20211F] dark:bg-accent text-white shadow-2xs'
+                    : 'text-ink-muted hover:text-ink dark:hover:text-white'
                 }`}
               >
                 {st === 'ALL' ? 'All Quotes' : st.charAt(0) + st.slice(1).toLowerCase()}
@@ -327,11 +472,11 @@ export function CrmQuotesView() {
       </div>
 
       {/* ── Quotation Table ── */}
-      <div className="bg-white rounded-2xl border border-border overflow-hidden shadow-xs">
+      <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl border border-border dark:border-[#2E302A] overflow-hidden shadow-xs">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="bg-[#FAF9F5] border-b border-border text-ink-muted uppercase tracking-wider text-[10px] font-bold">
+              <tr className="bg-[#FAF9F5] dark:bg-[#181917] border-b border-border dark:border-[#2E302A] text-ink-muted uppercase tracking-wider text-[10px] font-bold">
                 <th className="py-3 px-4">Quote Number</th>
                 <th className="py-3 px-4">Deal / Opportunity</th>
                 <th className="py-3 px-4">Account / Client</th>
@@ -341,7 +486,7 @@ export function CrmQuotesView() {
                 <th className="py-3 px-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border/60">
+            <tbody className="divide-y divide-border/60 dark:divide-[#2E302A]">
               {filteredQuotes.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="py-12 text-center text-ink-muted">
@@ -350,35 +495,35 @@ export function CrmQuotesView() {
                 </tr>
               ) : (
                 filteredQuotes.map((q) => (
-                  <tr key={q.id} className="hover:bg-neutral-50/80 transition-colors">
+                  <tr key={q.id} className="hover:bg-neutral-50/80 dark:hover:bg-neutral-800/40 transition-colors">
                     <td className="py-3 px-4 font-mono font-bold text-accent">
                       {q.quoteNumber}
                     </td>
-                    <td className="py-3 px-4 font-semibold text-ink">
+                    <td className="py-3 px-4 font-semibold text-ink dark:text-white">
                       {q.dealTitle}
                     </td>
                     <td className="py-3 px-4">
-                      <div className="font-semibold text-ink">{q.companyName}</div>
+                      <div className="font-semibold text-ink dark:text-neutral-100">{q.companyName}</div>
                       <div className="text-[11px] text-ink-muted">{q.contactEmail}</div>
                     </td>
-                    <td className="py-3 px-4 font-mono font-black text-ink text-sm">
+                    <td className="py-3 px-4 font-mono font-black text-ink dark:text-white text-sm">
                       ${q.total.toLocaleString()}
                     </td>
                     <td className="py-3 px-4">
                       {q.status === 'ACCEPTED' ? (
-                        <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-300">
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
                           ✓ Signed &amp; Won
                         </span>
                       ) : q.status === 'SENT' ? (
-                        <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-800 border border-blue-300">
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-800 dark:text-blue-300 border border-blue-300 dark:border-blue-800">
                           ✉ Sent (Awaiting Sign)
                         </span>
                       ) : q.status === 'DRAFT' ? (
-                        <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-neutral-100 text-neutral-700 border border-neutral-300">
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 border border-neutral-300 dark:border-neutral-700">
                           ✎ Draft
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-50 text-red-800 border border-red-300">
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-50 dark:bg-red-950/60 text-red-800 dark:text-red-300 border border-red-300 dark:border-red-800">
                           ✕ Expired
                         </span>
                       )}
@@ -391,7 +536,7 @@ export function CrmQuotesView() {
                         <button
                           type="button"
                           onClick={() => setSelectedQuote(q)}
-                          className="px-2.5 py-1 text-xs font-semibold rounded-lg bg-neutral-100 hover:bg-neutral-200 text-ink transition-colors cursor-pointer"
+                          className="px-2.5 py-1 text-xs font-semibold rounded-lg bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-ink dark:text-neutral-200 transition-colors cursor-pointer"
                         >
                           View Quote
                         </button>
@@ -425,14 +570,14 @@ export function CrmQuotesView() {
             if (e.target === e.currentTarget) setSelectedQuote(null);
           }}
         >
-          <div className="bg-white rounded-2xl border border-border shadow-2xl max-w-2xl w-full p-6 space-y-5 text-ink">
+          <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl border border-border dark:border-[#2E302A] shadow-2xl max-w-2xl w-full p-6 space-y-5 text-ink dark:text-neutral-100">
             {/* Header */}
-            <div className="flex items-center justify-between pb-3 border-b border-border">
+            <div className="flex items-center justify-between pb-3 border-b border-border dark:border-[#2E302A]">
               <div>
                 <span className="text-[10px] font-mono uppercase tracking-wider text-ink-muted">
                   Official Quotation
                 </span>
-                <h2 id="quote-detail-title" className="text-xl font-black text-ink">
+                <h2 id="quote-detail-title" className="text-xl font-black text-ink dark:text-white">
                   {selectedQuote.quoteNumber}
                 </h2>
               </div>
@@ -440,28 +585,28 @@ export function CrmQuotesView() {
                 type="button"
                 onClick={() => setSelectedQuote(null)}
                 aria-label="Close quote modal"
-                className="text-ink-muted hover:text-ink text-sm p-1 rounded-lg hover:bg-neutral-100"
+                className="text-ink-muted hover:text-ink dark:hover:text-white text-sm p-1 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800"
               >
                 ✕
               </button>
             </div>
 
             {/* Recipient and Details */}
-            <div className="grid grid-cols-2 gap-4 text-xs bg-[#FAF9F5] p-3 rounded-xl border border-border">
+            <div className="grid grid-cols-2 gap-4 text-xs bg-[#FAF9F5] dark:bg-[#141513] p-3 rounded-xl border border-border dark:border-[#2E302A]">
               <div>
                 <span className="text-[10px] font-bold text-ink-muted uppercase">Prepared For:</span>
-                <div className="font-bold text-ink text-sm mt-0.5">{selectedQuote.companyName}</div>
+                <div className="font-bold text-ink dark:text-white text-sm mt-0.5">{selectedQuote.companyName}</div>
                 <div className="text-ink-muted">{selectedQuote.contactName} ({selectedQuote.contactEmail})</div>
-                <div className="text-ink-muted mt-1">Opportunity: <strong>{selectedQuote.dealTitle}</strong></div>
+                <div className="text-ink-muted mt-1">Opportunity: <strong className="text-ink dark:text-neutral-200">{selectedQuote.dealTitle}</strong></div>
               </div>
               <div className="text-right">
                 <span className="text-[10px] font-bold text-ink-muted uppercase">Validity &amp; Status:</span>
-                <div className="font-semibold text-ink mt-0.5">Expires: {selectedQuote.validUntil}</div>
+                <div className="font-semibold text-ink dark:text-neutral-200 mt-0.5">Expires: {selectedQuote.validUntil}</div>
                 <div className="mt-1">
                   Status: <strong>{selectedQuote.status}</strong>
                 </div>
                 {selectedQuote.signerName && (
-                  <div className="mt-1 text-[11px] text-emerald-800 font-bold">
+                  <div className="mt-1 text-[11px] text-emerald-800 dark:text-emerald-400 font-bold">
                     Signed by {selectedQuote.signerName} on {selectedQuote.signedAt}
                   </div>
                 )}
@@ -473,8 +618,8 @@ export function CrmQuotesView() {
               <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted">
                 Line Items
               </span>
-              <table className="w-full text-left text-xs border border-border rounded-xl overflow-hidden">
-                <thead className="bg-[#FAF9F5] border-b border-border text-[10px] uppercase font-bold text-ink-muted">
+              <table className="w-full text-left text-xs border border-border dark:border-[#2E302A] rounded-xl overflow-hidden">
+                <thead className="bg-[#FAF9F5] dark:bg-[#141513] border-b border-border dark:border-[#2E302A] text-[10px] uppercase font-bold text-ink-muted">
                   <tr>
                     <th className="p-2.5">Item Description</th>
                     <th className="p-2.5 text-center">Qty</th>
@@ -482,7 +627,7 @@ export function CrmQuotesView() {
                     <th className="p-2.5 text-right">Total</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border/60">
+                <tbody className="divide-y divide-border/60 dark:divide-[#2E302A]">
                   {selectedQuote.lineItems.map((item) => (
                     <tr key={item.id}>
                       <td className="p-2.5 font-medium">{item.description}</td>
@@ -497,13 +642,13 @@ export function CrmQuotesView() {
 
             {/* Calculations Breakdown */}
             <div className="flex justify-end text-xs">
-              <div className="w-56 space-y-1.5 p-3 rounded-xl bg-[#FAF9F5] border border-border font-mono">
+              <div className="w-56 space-y-1.5 p-3 rounded-xl bg-[#FAF9F5] dark:bg-[#141513] border border-border dark:border-[#2E302A] font-mono">
                 <div className="flex justify-between text-ink-muted">
                   <span>Subtotal:</span>
                   <span>${selectedQuote.subtotal.toLocaleString()}</span>
                 </div>
                 {selectedQuote.discountPercent > 0 && (
-                  <div className="flex justify-between text-emerald-700">
+                  <div className="flex justify-between text-emerald-700 dark:text-emerald-400">
                     <span>Discount ({selectedQuote.discountPercent}%):</span>
                     <span>-${Math.round((selectedQuote.subtotal * selectedQuote.discountPercent) / 100).toLocaleString()}</span>
                   </div>
@@ -512,7 +657,7 @@ export function CrmQuotesView() {
                   <span>Tax ({selectedQuote.taxPercent}%):</span>
                   <span>+${Math.round((selectedQuote.subtotal * (selectedQuote.taxPercent / 100))).toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between text-base font-black text-ink border-t border-border pt-1">
+                <div className="flex justify-between text-base font-black text-ink dark:text-white border-t border-border dark:border-[#2E302A] pt-1">
                   <span>Total:</span>
                   <span>${selectedQuote.total.toLocaleString()}</span>
                 </div>
@@ -520,24 +665,30 @@ export function CrmQuotesView() {
             </div>
 
             {/* Footer Buttons */}
-            <div className="flex items-center justify-between pt-3 border-t border-border">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-border dark:border-[#2E302A]">
               <span className="text-[11px] text-ink-muted">
-                Digital hash authenticated with audit telemetry
+                Digital hash authenticated with audit telemetry &amp; legal e-signature compliance
               </span>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <button
                   type="button"
-                  onClick={() => {
-                    announce(`Downloaded Quote ${selectedQuote.quoteNumber} as PDF.`);
-                  }}
-                  className="btn-secondary text-xs py-2 px-3"
+                  onClick={() => handlePrintQuote(selectedQuote)}
+                  className="px-3 py-1.5 rounded-lg border border-border dark:border-[#2E302A] bg-white dark:bg-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-700 text-ink dark:text-neutral-200 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                  title="Print proposal or save to PDF"
                 >
-                  Download PDF
+                  <span>🖨️ Print / Save PDF</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleDownloadHtml(selectedQuote)}
+                  className="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5"
+                >
+                  <span>📄 Download Proposal</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setSelectedQuote(null)}
-                  className="btn-primary text-xs py-2 px-4"
+                  className="btn-primary text-xs py-1.5 px-4"
                 >
                   Close
                 </button>
@@ -547,7 +698,7 @@ export function CrmQuotesView() {
         </div>
       )}
 
-      {/* ── Create New Quotation Modal ── */}
+      {/* ── Create New Quotation Modal with Multi-Item Catalog Builder ── */}
       {newQuoteModalOpen && (
         <div
           role="dialog"
@@ -558,38 +709,42 @@ export function CrmQuotesView() {
             if (e.target === e.currentTarget) setNewQuoteModalOpen(false);
           }}
         >
-          <div className="bg-white rounded-2xl border border-border shadow-2xl max-w-lg w-full p-6 space-y-4 text-ink">
-            <div className="flex items-center justify-between pb-3 border-b border-border">
-              <h3 id="new-quote-modal-title" className="text-base font-bold text-ink">
-                Create Proposal Quotation
-              </h3>
+          <div className="bg-white dark:bg-[#1E1F1C] rounded-2xl border border-border dark:border-[#2E302A] shadow-2xl max-w-2xl w-full p-6 space-y-4 text-ink dark:text-neutral-100 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-border dark:border-[#2E302A]">
+              <div>
+                <h3 id="new-quote-modal-title" className="text-base font-bold text-ink dark:text-white">
+                  Create Proposal Quotation
+                </h3>
+                <p className="text-[11px] text-ink-muted">
+                  Configure contract line items, price-book catalog products, and commercial discounts.
+                </p>
+              </div>
               <button
                 type="button"
                 onClick={() => setNewQuoteModalOpen(false)}
-                className="text-ink-muted hover:text-ink text-sm p-1 rounded-lg hover:bg-neutral-100"
+                className="text-ink-muted hover:text-ink dark:hover:text-white text-sm p-1 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 cursor-pointer"
               >
                 ✕
               </button>
             </div>
 
-            <form onSubmit={handleCreateQuote} className="space-y-3 text-xs">
-              <div>
-                <label htmlFor="quote-deal-input" className="block font-semibold text-ink mb-1">
-                  Opportunity Deal Title *
-                </label>
-                <input
-                  id="quote-deal-input"
-                  type="text"
-                  required
-                  value={draftDealTitle}
-                  onChange={(e) => setDraftDealTitle(e.target.value)}
-                  className="w-full p-2.5 rounded-xl border border-border bg-[#FAF9F5] text-ink"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
+            <form onSubmit={handleCreateQuote} className="space-y-4 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label htmlFor="quote-company-input" className="block font-semibold text-ink mb-1">
+                  <label htmlFor="quote-deal-input" className="block font-semibold text-ink dark:text-neutral-200 mb-1">
+                    Opportunity Deal Title *
+                  </label>
+                  <input
+                    id="quote-deal-input"
+                    type="text"
+                    required
+                    value={draftDealTitle}
+                    onChange={(e) => setDraftDealTitle(e.target.value)}
+                    className="w-full p-2.5 rounded-xl border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] text-ink dark:text-neutral-100 focus:outline-none focus:ring-1 focus:ring-accent"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="quote-company-input" className="block font-semibold text-ink dark:text-neutral-200 mb-1">
                     Company Name *
                   </label>
                   <input
@@ -598,39 +753,173 @@ export function CrmQuotesView() {
                     required
                     value={draftCompany}
                     onChange={(e) => setDraftCompany(e.target.value)}
-                    className="w-full p-2.5 rounded-xl border border-border bg-[#FAF9F5] text-ink"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="quote-email-input" className="block font-semibold text-ink mb-1">
-                    Contact Email *
-                  </label>
-                  <input
-                    id="quote-email-input"
-                    type="email"
-                    required
-                    value={draftContactEmail}
-                    onChange={(e) => setDraftContactEmail(e.target.value)}
-                    className="w-full p-2.5 rounded-xl border border-border bg-[#FAF9F5] text-ink"
+                    className="w-full p-2.5 rounded-xl border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] text-ink dark:text-neutral-100 focus:outline-none focus:ring-1 focus:ring-accent"
                   />
                 </div>
               </div>
 
               <div>
-                <label htmlFor="quote-amount-input" className="block font-semibold text-ink mb-1">
-                  Proposed Contract Value ($) *
+                <label htmlFor="quote-email-input" className="block font-semibold text-ink dark:text-neutral-200 mb-1">
+                  Recipient Contact Email *
                 </label>
                 <input
-                  id="quote-amount-input"
-                  type="number"
+                  id="quote-email-input"
+                  type="email"
                   required
-                  value={draftAmount}
-                  onChange={(e) => setDraftAmount(e.target.value)}
-                  className="w-full p-2.5 rounded-xl border border-border bg-[#FAF9F5] text-ink font-mono"
+                  value={draftContactEmail}
+                  onChange={(e) => setDraftContactEmail(e.target.value)}
+                  className="w-full p-2.5 rounded-xl border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] text-ink dark:text-neutral-100 focus:outline-none focus:ring-1 focus:ring-accent"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t border-border">
+              {/* Catalog Quick-Add Toolbar */}
+              <div className="p-3 bg-[#FAF9F5] dark:bg-[#141513] border border-border dark:border-[#2E302A] rounded-xl space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-[11px] uppercase tracking-wider text-ink-muted">
+                    Add Catalog Product (Price Book)
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleAddLineItem()}
+                    className="text-accent hover:underline font-bold text-[11px] cursor-pointer"
+                  >
+                    + Add Custom Item
+                  </button>
+                </div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  {catalogProducts.map((prd, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => handleAddLineItem(prd.name, prd.unitPrice)}
+                      className="px-2.5 py-1 text-[11px] rounded-lg border border-border dark:border-[#2E302A] bg-white dark:bg-neutral-800 hover:border-accent hover:text-accent font-medium transition-colors cursor-pointer text-ink dark:text-neutral-200"
+                    >
+                      + {prd.name.slice(0, 24)}... (${(prd.unitPrice / 1000).toFixed(0)}k)
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Line Items Table */}
+              <div className="space-y-2">
+                <span className="font-bold text-[11px] uppercase tracking-wider text-ink-muted">
+                  Configured Line Items ({draftLineItems.length})
+                </span>
+                <div className="border border-border dark:border-[#2E302A] rounded-xl overflow-hidden">
+                  <table className="w-full text-left text-xs">
+                    <thead className="bg-[#FAF9F5] dark:bg-[#141513] border-b border-border dark:border-[#2E302A] text-[10px] uppercase font-bold text-ink-muted">
+                      <tr>
+                        <th className="p-2">Description</th>
+                        <th className="p-2 w-16 text-center">Qty</th>
+                        <th className="p-2 w-28 text-right">Unit Price ($)</th>
+                        <th className="p-2 w-24 text-right">Total</th>
+                        <th className="p-2 w-10 text-center"></th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border/60 dark:divide-[#2E302A]">
+                      {draftLineItems.map((item) => (
+                        <tr key={item.id} className="hover:bg-neutral-50/50 dark:hover:bg-neutral-800/40">
+                          <td className="p-2">
+                            <input
+                              type="text"
+                              value={item.description}
+                              onChange={(e) => handleUpdateLineItem(item.id, 'description', e.target.value)}
+                              className="w-full p-1 rounded border border-transparent hover:border-border dark:hover:border-[#2E302A] focus:border-accent text-xs bg-transparent text-ink dark:text-neutral-100"
+                            />
+                          </td>
+                          <td className="p-2 text-center">
+                            <input
+                              type="number"
+                              min={1}
+                              value={item.quantity}
+                              onChange={(e) => handleUpdateLineItem(item.id, 'quantity', e.target.value)}
+                              className="w-12 text-center p-1 rounded border border-border dark:border-[#2E302A] bg-white dark:bg-neutral-800 text-xs font-mono text-ink dark:text-neutral-100"
+                            />
+                          </td>
+                          <td className="p-2 text-right">
+                            <input
+                              type="number"
+                              min={0}
+                              value={item.unitPrice}
+                              onChange={(e) => handleUpdateLineItem(item.id, 'unitPrice', e.target.value)}
+                              className="w-24 text-right p-1 rounded border border-border dark:border-[#2E302A] bg-white dark:bg-neutral-800 text-xs font-mono text-ink dark:text-neutral-100"
+                            />
+                          </td>
+                          <td className="p-2 text-right font-mono font-bold text-ink dark:text-white">
+                            ${item.total.toLocaleString()}
+                          </td>
+                          <td className="p-2 text-center">
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveLineItem(item.id)}
+                              disabled={draftLineItems.length <= 1}
+                              className="text-neutral-400 hover:text-red-600 disabled:opacity-20 cursor-pointer text-xs"
+                              title="Delete item"
+                            >
+                              ✕
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Commercial Discounts & Taxes Breakdown */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end pt-2">
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-[11px] font-semibold text-ink-muted mb-1">
+                      Discount (%)
+                    </label>
+                    <input
+                      type="number"
+                      min={0}
+                      max={100}
+                      value={draftDiscountPercent}
+                      onChange={(e) => setDraftDiscountPercent(e.target.value)}
+                      className="w-full p-2 rounded-xl border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] text-ink dark:text-neutral-100 font-mono"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-ink-muted mb-1">
+                      Tax Rate (%)
+                    </label>
+                    <input
+                      type="number"
+                      min={0}
+                      max={30}
+                      value={draftTaxPercent}
+                      onChange={(e) => setDraftTaxPercent(e.target.value)}
+                      className="w-full p-2 rounded-xl border border-border dark:border-[#2E302A] bg-[#FAF9F5] dark:bg-[#141513] text-ink dark:text-neutral-100 font-mono"
+                    />
+                  </div>
+                </div>
+
+                <div className="p-3 bg-[#FAF9F5] dark:bg-[#141513] border border-border dark:border-[#2E302A] rounded-xl space-y-1 font-mono text-xs">
+                  <div className="flex justify-between text-ink-muted">
+                    <span>Subtotal:</span>
+                    <span>${draftSubtotal.toLocaleString()}</span>
+                  </div>
+                  {draftDiscount > 0 && (
+                    <div className="flex justify-between text-emerald-700 dark:text-emerald-400">
+                      <span>Discount ({draftDiscountPercent}%):</span>
+                      <span>-${draftDiscount.toLocaleString()}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between text-ink-muted">
+                    <span>Tax ({draftTaxPercent}%):</span>
+                    <span>+${draftTax.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between font-bold text-sm text-ink dark:text-white border-t border-border dark:border-[#2E302A] pt-1">
+                    <span>Total Due:</span>
+                    <span className="text-accent">${draftTotal.toLocaleString()}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-3 border-t border-border dark:border-[#2E302A]">
                 <button
                   type="button"
                   onClick={() => setNewQuoteModalOpen(false)}
@@ -640,9 +929,9 @@ export function CrmQuotesView() {
                 </button>
                 <button
                   type="submit"
-                  className="btn-primary text-xs py-2 px-4"
+                  className="btn-primary text-xs py-2 px-4 shadow-sm"
                 >
-                  Generate &amp; Dispatch Quote
+                  Generate &amp; Dispatch Quote (${draftTotal.toLocaleString()})
                 </button>
               </div>
             </form>

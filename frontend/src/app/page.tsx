@@ -346,11 +346,11 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-neutral-900 text-neutral-50 font-sans selection:bg-accent selection:text-white relative overflow-x-clip">
-      {/* ─── Grain / Noise Texture Overlay ────────────────────────── */}
-      <div className="fixed inset-0 pointer-events-none bg-noise z-40 opacity-40" />
+      {/* ─── Grain / Noise Texture Overlay (Gentle Subtle Vignette) ────────────────────────── */}
+      <div className="fixed inset-0 pointer-events-none bg-noise z-40 opacity-15" />
 
       {/* ─── Subtle Dark Grid Background ──────────────────────────── */}
-      <div className="fixed inset-0 pointer-events-none bg-dark-grid z-0 opacity-50" />
+      <div className="fixed inset-0 pointer-events-none bg-dark-grid z-0 opacity-40" />
 
       {/* ─── Redesigned High-Performance Navigation Bar ─────────── */}
       <Navbar
@@ -383,7 +383,7 @@ export default function LandingPage() {
           {/* ── Left Column (~58%): Headline, Subtext, CTAs ───────── */}
           <div className="lg:col-span-7 space-y-6">
             {/* Live Status Pill */}
-            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-neutral-800 border border-neutral-700 shadow-xs">
+            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#0E0F0C] border border-white/[0.08] shadow-xs">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-success opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-status-success"></span>
@@ -424,7 +424,7 @@ export default function LandingPage() {
 
               <Link
                 href="/applications"
-                className="inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl font-semibold text-sm text-neutral-50 bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 transition-colors"
+                className="inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl font-semibold text-sm text-neutral-200 hover:text-white bg-[#0E0F0C] hover:bg-[#151613] border border-white/[0.08] hover:border-white/[0.16] transition-colors shadow-xs"
               >
                 <svg className="w-4 h-4 text-accent" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z" />
@@ -475,10 +475,10 @@ export default function LandingPage() {
       <section id="stats" className="relative z-10 py-12 px-6 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
           {/* Card 1: Prominent Feature Bento (5 cols) */}
-          <div className="md:col-span-5 rounded-2xl bg-neutral-800 border border-neutral-700 p-6 hover:border-neutral-600 transition-all relative overflow-hidden group">
+          <div className="md:col-span-5 rounded-2xl bg-[#0E0F0C] border border-white/[0.08] p-6 hover:border-white/[0.18] transition-all relative overflow-hidden group shadow-xl">
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs uppercase tracking-wider font-bold text-accent">Real Results</span>
-              <span className="text-[10px] font-mono text-neutral-400 bg-neutral-900 px-2 py-0.5 rounded border border-neutral-700">
+              <span className="text-[10px] font-mono text-neutral-400 bg-[#000000] px-2 py-0.5 rounded border border-white/[0.08]">
                 Loved by Owners
               </span>
             </div>
@@ -492,7 +492,7 @@ export default function LandingPage() {
           </div>
 
           {/* Card 2: Enterprise SLA (3 cols) */}
-          <div className="md:col-span-3 rounded-2xl bg-neutral-800 border border-neutral-700 p-6 hover:border-neutral-600 transition-all relative group">
+          <div className="md:col-span-3 rounded-2xl bg-[#0E0F0C] border border-white/[0.08] p-6 hover:border-white/[0.18] transition-all relative group shadow-xl">
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs uppercase tracking-wider font-bold text-status-success">Always Open</span>
               <span className="flex h-2 w-2 rounded-full bg-status-success" />
@@ -507,10 +507,10 @@ export default function LandingPage() {
           </div>
 
           {/* Card 3: Terracotta Accent Bento (4 cols) */}
-          <div className="md:col-span-4 rounded-2xl bg-gradient-to-br from-accent to-brand-800 border border-brand-400/40 p-6 text-white hover:brightness-105 transition-all shadow-accent">
+          <div className="md:col-span-4 rounded-2xl bg-gradient-to-br from-[#A8462F] to-[#682315] border border-white/20 p-6 text-white hover:brightness-105 transition-all shadow-xl shadow-[#A8462F]/20">
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs uppercase tracking-wider font-bold text-white/90">Blink of an Eye</span>
-              <span className="text-[10px] font-mono text-white/90 bg-black/20 px-2 py-0.5 rounded border border-white/20">
+              <span className="text-[10px] font-mono text-white/90 bg-black/25 px-2 py-0.5 rounded border border-white/20">
                 Instant
               </span>
             </div>
@@ -579,7 +579,7 @@ export default function LandingPage() {
                 onClick={() => setActiveTab(tabKey)}
                 className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${isActive
                     ? (moduleActiveClasses[tabKey] || 'bg-accent text-white shadow-accent border border-accent/40')
-                    : 'bg-neutral-800 text-neutral-400 hover:text-white border border-neutral-700 hover:bg-neutral-700'
+                    : 'bg-[#0E0F0C] text-neutral-400 hover:text-white border border-white/[0.08] hover:border-white/[0.16] hover:bg-[#151613]'
                   }`}
               >
                 {tabNames[tabKey] || tabKey}
@@ -591,7 +591,7 @@ export default function LandingPage() {
         {/* Layered / Overlapping Card Structure */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           {/* Main Info Card (7 Cols) */}
-          <div className="lg:col-span-7 rounded-2xl bg-neutral-800 border border-neutral-700 p-8 sm:p-10 shadow-xl space-y-5">
+          <div className="lg:col-span-7 rounded-2xl bg-[#0C0D0B] border border-white/[0.08] p-8 sm:p-10 shadow-2xl space-y-5">
             <span className="inline-block text-xs uppercase tracking-wider font-bold px-3 py-1 rounded-full bg-accent/20 text-brand-200 border border-accent/40">
               {currentMod.tag}
             </span>
@@ -617,7 +617,7 @@ export default function LandingPage() {
             </div>
 
             {/* Link to module */}
-            <div className="pt-4 border-t border-neutral-700 flex items-center justify-between">
+            <div className="pt-4 border-t border-white/[0.06] flex items-center justify-between">
               <Link
                 href={`/${activeTab}`}
                 className="inline-flex items-center gap-2 font-bold text-xs text-accent hover:text-brand-400 transition-colors"
@@ -639,17 +639,17 @@ export default function LandingPage() {
           {/* Overlapping Tactile Preview Cards (5 Cols) */}
           <div className="lg:col-span-5 relative flex flex-col items-center justify-center min-h-[340px]">
             {/* Background Under-Card with slight counter-rotation */}
-            <div className="w-full max-w-sm rounded-2xl bg-neutral-900 border border-neutral-700 p-5 shadow-2xl transform -rotate-2 hover:rotate-0 transition-transform duration-300">
+            <div className="w-full max-w-sm rounded-2xl bg-[#080907] border border-white/[0.06] p-5 shadow-2xl transform -rotate-2 hover:rotate-0 transition-transform duration-300">
               <div className="flex items-center justify-between mb-3 text-xs text-neutral-400">
                 <span>Safety &amp; Protection</span>
                 <span className="font-mono text-[10px] text-status-success">✓ 100% Safe</span>
               </div>
               <div className="space-y-2 text-xs">
-                <div className="p-2.5 rounded-lg bg-neutral-800 border border-neutral-700 flex justify-between">
+                <div className="p-2.5 rounded-lg bg-[#0E0F0C] border border-white/[0.06] flex justify-between">
                   <span className="text-white font-medium">Saved to Cloud</span>
                   <span className="text-status-success font-semibold">✓ Safe &amp; Sound</span>
                 </div>
-                <div className="p-2.5 rounded-lg bg-neutral-800 border border-neutral-700 flex justify-between">
+                <div className="p-2.5 rounded-lg bg-[#0E0F0C] border border-white/[0.06] flex justify-between">
                   <span className="text-white font-medium">Who Can Edit</span>
                   <span className="text-neutral-300">Manager &amp; Team Only</span>
                 </div>
@@ -657,7 +657,7 @@ export default function LandingPage() {
             </div>
 
             {/* Overlapping Top Card with slight positive rotation and hover lift */}
-            <div className="w-full max-w-sm rounded-2xl bg-gradient-to-br from-neutral-800 to-neutral-900 border border-neutral-600 p-6 shadow-2xl -mt-20 transform rotate-2 hover:rotate-0 hover:-translate-y-2 transition-all duration-300 relative z-20 group">
+            <div className="w-full max-w-sm rounded-2xl bg-gradient-to-br from-[#141512] to-[#0A0B08] border border-white/[0.12] p-6 shadow-2xl shadow-black/80 -mt-20 transform rotate-2 hover:rotate-0 hover:-translate-y-2 transition-all duration-300 relative z-20 group">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-accent/20 text-brand-200 border border-accent/40">
                   {currentMod.previewCard.priority}
@@ -674,7 +674,7 @@ export default function LandingPage() {
                 {currentMod.previewCard.client}
               </p>
 
-              <div className="p-3 rounded-xl bg-neutral-900 border border-neutral-700 flex items-center justify-between text-xs">
+              <div className="p-3 rounded-xl bg-[#050604] border border-white/[0.06] flex items-center justify-between text-xs">
                 <span className="text-neutral-400">Stage Status</span>
                 <span className="font-semibold text-white">{currentMod.previewCard.stage}</span>
               </div>
@@ -753,10 +753,10 @@ export default function LandingPage() {
           </p>
 
           {/* Billing Cycle Toggle */}
-          <div className="mt-6 inline-flex items-center p-1 rounded-xl bg-neutral-800 border border-neutral-700 text-xs">
+          <div className="mt-6 inline-flex items-center p-1 rounded-xl bg-[#0E0F0C] border border-white/[0.08] text-xs">
             <button
               onClick={() => setBillingCycle('monthly')}
-              className={`px-4 py-1.5 rounded-lg font-bold transition-all ${billingCycle === 'monthly' ? 'bg-neutral-700 text-white shadow-xs' : 'text-neutral-400 hover:text-white'
+              className={`px-4 py-1.5 rounded-lg font-bold transition-all ${billingCycle === 'monthly' ? 'bg-[#181915] text-white border border-white/[0.08] shadow-xs' : 'text-neutral-400 hover:text-white'
                 }`}
             >
               Pay Monthly
@@ -773,7 +773,7 @@ export default function LandingPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Starter Plan */}
-          <div className="rounded-2xl bg-neutral-800 border border-neutral-700 p-8 space-y-6 hover:border-neutral-600 transition-all">
+          <div className="rounded-2xl bg-[#0C0D0B] border border-white/[0.08] p-8 space-y-6 hover:border-white/[0.18] transition-all shadow-xl">
             <div>
               <h3 className="text-lg font-bold text-white">Starter</h3>
               <p className="text-xs text-neutral-400 mt-1">For small shops, boutiques &amp; solo founders</p>
@@ -784,7 +784,7 @@ export default function LandingPage() {
               </span>
               <span className="text-xs text-neutral-400">/ month</span>
             </div>
-            <ul className="space-y-2.5 text-xs text-neutral-200 border-t border-neutral-700 pt-4">
+            <ul className="space-y-2.5 text-xs text-neutral-200 border-t border-white/[0.06] pt-4">
               <li className="flex items-center gap-2">✓ Up to 5 Team Members</li>
               <li className="flex items-center gap-2">✓ All 6 Business Tools Included</li>
               <li className="flex items-center gap-2">✓ 1 Shop or Warehouse Location</li>
@@ -792,14 +792,14 @@ export default function LandingPage() {
             </ul>
             <Link
               href="/signup"
-              className="w-full btn-secondary text-xs py-3 text-center block"
+              className="w-full inline-flex items-center justify-center rounded-xl bg-[#141512] hover:bg-[#1C1E18] border border-white/[0.1] hover:border-white/[0.2] text-white text-xs font-semibold py-3 text-center transition-all shadow-sm"
             >
               Start Free Trial
             </Link>
           </div>
 
           {/* Business Tier (Highlighted with Rust Border) */}
-          <div className="rounded-2xl bg-gradient-to-b from-neutral-800 to-neutral-900 border-2 border-accent p-8 space-y-6 relative shadow-2xl">
+          <div className="rounded-2xl bg-gradient-to-b from-[#141512] via-[#0E0F0C] to-[#080907] border-2 border-accent p-8 space-y-6 relative shadow-2xl shadow-accent/15">
             <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-accent text-white text-[10px] uppercase font-bold tracking-widest shadow-md">
               Most Popular
             </div>
@@ -813,7 +813,7 @@ export default function LandingPage() {
               </span>
               <span className="text-xs text-neutral-400">/ month</span>
             </div>
-            <ul className="space-y-2.5 text-xs text-neutral-200 border-t border-neutral-700 pt-4">
+            <ul className="space-y-2.5 text-xs text-neutral-200 border-t border-white/[0.08] pt-4">
               <li className="flex items-center gap-2">✓ Up to 25 Team Members</li>
               <li className="flex items-center gap-2">✓ Unlimited Stores &amp; Warehouses</li>
               <li className="flex items-center gap-2">✓ 1-Tap Manager Approvals</li>
@@ -829,7 +829,7 @@ export default function LandingPage() {
           </div>
 
           {/* Enterprise Plan */}
-          <div className="rounded-2xl bg-neutral-800 border border-neutral-700 p-8 space-y-6 hover:border-neutral-600 transition-all">
+          <div className="rounded-2xl bg-[#0C0D0B] border border-white/[0.08] p-8 space-y-6 hover:border-white/[0.18] transition-all shadow-xl">
             <div>
               <h3 className="text-lg font-bold text-white">Enterprise</h3>
               <p className="text-xs text-neutral-400 mt-1">For large companies with lots of staff</p>
@@ -837,7 +837,7 @@ export default function LandingPage() {
             <div className="flex items-baseline gap-1">
               <span className="text-4xl font-black text-white font-mono">Custom</span>
             </div>
-            <ul className="space-y-2.5 text-xs text-neutral-200 border-t border-neutral-700 pt-4">
+            <ul className="space-y-2.5 text-xs text-neutral-200 border-t border-white/[0.06] pt-4">
               <li className="flex items-center gap-2">✓ Unlimited Team Members</li>
               <li className="flex items-center gap-2">✓ Private, Super-Fast Server</li>
               <li className="flex items-center gap-2">✓ 99.99% Reliability Promise</li>
@@ -846,7 +846,7 @@ export default function LandingPage() {
             </ul>
             <a
               href="mailto:sales@bahi.io"
-              className="w-full btn-secondary text-xs py-3 text-center block"
+              className="w-full inline-flex items-center justify-center rounded-xl bg-[#141512] hover:bg-[#1C1E18] border border-white/[0.1] hover:border-white/[0.2] text-white text-xs font-semibold py-3 text-center transition-all shadow-sm"
             >
               Talk to Our Friendly Team
             </a>
@@ -854,8 +854,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ─── Global Footer (Dark Slate) ───────────────────────────── */}
-      <footer className="relative z-10 border-t border-neutral-700 bg-neutral-950 py-12 px-6 text-xs text-neutral-400">
+      {/* ─── Global Footer (Pitch Obsidian) ───────────────────────────── */}
+      <footer className="relative z-10 border-t border-white/[0.08] bg-[#000000] py-12 px-6 text-xs text-neutral-400">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
             <div className="w-7 h-7 rounded-lg bg-accent flex items-center justify-center text-white font-bold text-sm">

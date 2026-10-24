@@ -349,7 +349,7 @@ export function ServicesCarousel({ activeModuleId, onSelectModule }: ServicesCar
             className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all flex items-center gap-2 ${
               isAutoScrolling
                 ? 'bg-accent/20 border-accent/40 text-brand-200'
-                : 'bg-neutral-800 border-neutral-700 text-neutral-400 hover:text-white'
+                : 'bg-[#0E0F0C] border-white/[0.08] text-neutral-400 hover:text-white hover:border-white/[0.16]'
             }`}
             title={isAutoScrolling ? 'Pause Auto-Slide' : 'Enable Auto-Slide'}
           >
@@ -375,7 +375,7 @@ export function ServicesCarousel({ activeModuleId, onSelectModule }: ServicesCar
           <button
             onClick={() => handleScroll('left')}
             aria-label="Scroll left or loop to end"
-            className="w-10 h-10 rounded-xl flex items-center justify-center border transition-all bg-neutral-800 border-neutral-700 text-white hover:bg-accent hover:border-accent shadow-md cursor-pointer active:scale-95"
+            className="w-10 h-10 rounded-xl flex items-center justify-center border transition-all bg-[#0E0F0C] border-white/[0.08] text-white hover:bg-accent hover:border-accent hover:border-white/20 shadow-md cursor-pointer active:scale-95"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2.2} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
@@ -386,7 +386,7 @@ export function ServicesCarousel({ activeModuleId, onSelectModule }: ServicesCar
           <button
             onClick={() => handleScroll('right')}
             aria-label="Scroll right or loop to start"
-            className="w-10 h-10 rounded-xl flex items-center justify-center border transition-all bg-neutral-800 border-neutral-700 text-white hover:bg-accent hover:border-accent shadow-md cursor-pointer active:scale-95"
+            className="w-10 h-10 rounded-xl flex items-center justify-center border transition-all bg-[#0E0F0C] border-white/[0.08] text-white hover:bg-accent hover:border-accent hover:border-white/20 shadow-md cursor-pointer active:scale-95"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2.2} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
@@ -418,8 +418,8 @@ export function ServicesCarousel({ activeModuleId, onSelectModule }: ServicesCar
                 onClick={() => handleCardClick(service)}
                 className={`flex-shrink-0 snap-start aspect-square w-[230px] h-[230px] sm:w-[260px] sm:h-[260px] rounded-2xl p-5 flex flex-col justify-between transition-all duration-300 relative overflow-hidden group cursor-pointer ${
                   isSelected
-                    ? 'bg-gradient-to-b from-neutral-800 to-neutral-900 border-2 border-accent shadow-2xl ring-2 ring-accent/30 -translate-y-1.5'
-                    : 'bg-neutral-800 hover:bg-neutral-700/80 border border-neutral-700 hover:border-neutral-600 hover:shadow-2xl hover:-translate-y-2'
+                    ? 'bg-gradient-to-b from-[#141512] to-[#080907] border-2 border-accent shadow-2xl ring-2 ring-accent/30 -translate-y-1.5'
+                    : 'bg-[#0E0F0C] hover:bg-[#141512] border border-white/[0.08] hover:border-white/[0.18] hover:shadow-2xl hover:-translate-y-2'
                 }`}
               >
                 {/* Ambient dynamic radial glow on hover */}
@@ -467,7 +467,7 @@ export function ServicesCarousel({ activeModuleId, onSelectModule }: ServicesCar
                 </div>
 
                 {/* Card Bottom: Metric Pill & Action Arrow */}
-                <div className="flex items-center justify-between pt-2 border-t border-neutral-700 relative z-10">
+                <div className="flex items-center justify-between pt-2 border-t border-white/[0.06] relative z-10">
                   <div className="flex items-center gap-1.5">
                     <span
                       className="w-2 h-2 rounded-full inline-block shrink-0 animate-pulse"

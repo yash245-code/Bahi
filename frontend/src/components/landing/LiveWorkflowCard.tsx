@@ -111,7 +111,7 @@ export function LiveWorkflowCard() {
       />
 
       <div
-        className="rounded-2xl bg-neutral-950 border border-neutral-700 shadow-2xl overflow-hidden"
+        className="rounded-2xl bg-[#050505] border border-white/[0.08] shadow-2xl overflow-hidden"
         role="img"
         aria-label="Animated demo showing one order flowing through Bahi's modules"
       >
@@ -120,7 +120,7 @@ export function LiveWorkflowCard() {
         </span>
 
         {/* ─── 1. Header Bar ────────────────────────────────────────── */}
-        <div className="px-4 py-3 bg-neutral-950 border-b border-neutral-800 flex items-center justify-between">
+        <div className="px-4 py-3 bg-[#050505] border-b border-white/[0.06] flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="w-3 h-3 rounded-full bg-status-danger/80 inline-block" aria-hidden="true" />
             <span className="w-3 h-3 rounded-full bg-status-warning/80 inline-block" aria-hidden="true" />
@@ -140,7 +140,7 @@ export function LiveWorkflowCard() {
         </div>
 
         {/* ─── 2. Progress Bar ──────────────────────────────────────── */}
-        <div className="h-[2px] w-full bg-neutral-800/80 overflow-hidden" aria-hidden="true">
+        <div className="h-[2px] w-full bg-white/[0.06] overflow-hidden" aria-hidden="true">
           <div
             className="h-full bg-gradient-to-r from-accent to-brand-500 transition-all duration-500 ease-out"
             style={{ width: `${progressPercentage}%` }}
@@ -148,7 +148,7 @@ export function LiveWorkflowCard() {
         </div>
 
         {/* ─── 3. Steps List ────────────────────────────────────────── */}
-        <div className="p-3.5 sm:p-4 bg-neutral-950">
+        <div className="p-3.5 sm:p-4 bg-[#050505]">
           <ul className="space-y-2">
             {WORKFLOW_STEPS.map((step, idx) => {
               const Icon = step.icon;
@@ -156,7 +156,7 @@ export function LiveWorkflowCard() {
               const isActive = idx === done && done < 7;
 
               let rowStyle = 'border-transparent opacity-40 bg-transparent';
-              let iconTileStyle = 'bg-neutral-800/80 text-neutral-400 border border-neutral-700/60';
+              let iconTileStyle = 'bg-[#101010] text-neutral-400 border border-white/[0.06]';
               let badgeStyle = 'opacity-0 scale-75 bg-transparent border-transparent text-transparent';
 
               if (isComplete) {
@@ -164,8 +164,8 @@ export function LiveWorkflowCard() {
                 iconTileStyle = 'bg-accent text-white border border-accent/60 shadow-xs';
                 badgeStyle = 'opacity-100 scale-100 bg-status-success/20 text-status-success border border-status-success/40';
               } else if (isActive) {
-                rowStyle = 'border-white/20 bg-white/[0.04] opacity-100';
-                iconTileStyle = 'bg-neutral-800 text-neutral-100 border border-white/20';
+                rowStyle = 'border-white/[0.1] bg-white/[0.03] opacity-100';
+                iconTileStyle = 'bg-[#141512] text-neutral-100 border border-white/[0.1]';
                 badgeStyle = 'opacity-0 scale-75 bg-transparent border-transparent text-transparent';
               }
 
@@ -208,7 +208,7 @@ export function LiveWorkflowCard() {
         </div>
 
         {/* ─── 4. Footer ────────────────────────────────────────────── */}
-        <div className="px-4 py-3 bg-neutral-900 border-t border-neutral-800 flex items-center justify-between text-xs">
+        <div className="px-4 py-3 bg-[#000000] border-t border-white/[0.06] flex items-center justify-between text-xs">
           <span className="text-neutral-400 text-[11px] sm:text-xs">
             Everything talks to each other. You only type things once.
           </span>

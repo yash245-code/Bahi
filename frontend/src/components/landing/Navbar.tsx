@@ -280,19 +280,14 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
     <>
       {/* ─── Sticky Glassmorphism Header (Zero Layout Shift Fixed Height) ─── */}
       <header
-        className={`sticky top-0 z-50 h-16 transition-colors duration-300 ease-in-out ${isScrolled
-            ? 'bg-[#181917]/95 backdrop-blur-2xl shadow-xl shadow-black/50'
-            : 'bg-[#222222]/90 backdrop-blur-xl'
+        className={`sticky top-0 z-50 h-16 transition-colors duration-300 ease-in-out border-b ${isScrolled
+            ? 'bg-[#000000]/95 backdrop-blur-2xl shadow-2xl shadow-black/90 border-white/[0.08]'
+            : 'bg-[#050505]/90 backdrop-blur-xl border-white/[0.06]'
           }`}
       >
-        {/* ─── Horizontal 1px Gradient Bottom Border (Orange → Transparent) ── */}
+        {/* Subtle luxury accent line under header */}
         <div
-          className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-[#e8623d]/90 via-[#e8623d]/35 to-transparent pointer-events-none transition-opacity duration-300"
-          aria-hidden="true"
-        />
-        {/* Subtle orange accent glow under border */}
-        <div
-          className="absolute bottom-0 left-0 w-80 h-[2px] bg-gradient-to-r from-[#e8623d]/40 to-transparent blur-[2px] pointer-events-none"
+          className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-accent/60 via-white/5 to-transparent pointer-events-none"
           aria-hidden="true"
         />
 
@@ -318,7 +313,7 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
 
             {/* Live-Status Badge (Online & Ready - Strictly 1 line) */}
             <div
-              className="hidden xl:flex items-center gap-2 px-2.5 py-1 rounded-full bg-[#1A1B18]/90 border border-[#33352F] text-[11px] shadow-inner select-none whitespace-nowrap flex-shrink-0"
+              className="hidden xl:flex items-center gap-2 px-2.5 py-1 rounded-full bg-[#0E0F0C] border border-white/[0.08] text-[11px] shadow-inner select-none whitespace-nowrap flex-shrink-0"
               title={`All systems online (${latency}ms) and running smoothly`}
             >
               <span className="relative flex h-2 w-2 flex-shrink-0">
@@ -393,12 +388,12 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
                   onMouseEnter={handleModulesMouseEnter}
                   onMouseLeave={handleModulesMouseLeave}
                 >
-                  <div className="rounded-2xl bg-[#181917]/95 backdrop-blur-2xl border border-[#33352F] shadow-2xl p-5 overflow-hidden relative">
+                  <div className="rounded-2xl bg-[#050505]/98 backdrop-blur-2xl border border-white/[0.08] shadow-2xl p-5 overflow-hidden relative">
                     {/* Top subtle highlight */}
                     <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#e8623d]/60 to-transparent" />
 
                     {/* Header */}
-                    <div className="flex items-center justify-between pb-3 mb-3 border-b border-[#292A25]">
+                    <div className="flex items-center justify-between pb-3 mb-3 border-b border-white/[0.06]">
                       <div className="flex items-center gap-2">
                         <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-[#e8623d]/15 text-[#e8623d] border border-[#e8623d]/25 font-bold">
                           App Suite
@@ -418,15 +413,15 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
                             type="button"
                             onClick={() => handleModuleClick(mod.id)}
                             className={`text-left p-3 rounded-xl border transition-all duration-150 group relative ${isSelected
-                                ? 'bg-[#262723] border-[#e8623d]/50 shadow-md shadow-[#e8623d]/10'
-                                : 'bg-[#1E1F1C]/70 hover:bg-[#262723] border-[#2E302A] hover:border-[#42443C]'
+                                ? 'bg-[#181915] border-[#e8623d]/60 shadow-md shadow-[#e8623d]/10'
+                                : 'bg-[#0E0F0C] hover:bg-[#151613] border-white/[0.06] hover:border-white/[0.14]'
                               }`}
                           >
                             <div className="flex items-center justify-between mb-1.5">
                               <div className={`w-7 h-7 rounded-lg bg-gradient-to-br ${mod.color} flex items-center justify-center border border-white/10 group-hover:scale-105 transition-transform`}>
                                 {mod.icon}
                               </div>
-                              <span className="text-[9px] font-mono uppercase tracking-wider text-[#7A7C73] px-1.5 py-0.5 rounded bg-[#141513] border border-[#2B2C27]">
+                              <span className="text-[9px] font-mono uppercase tracking-wider text-[#7A7C73] px-1.5 py-0.5 rounded bg-[#000000] border border-white/[0.06]">
                                 {mod.tag}
                               </span>
                             </div>
@@ -445,7 +440,7 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
                     </div>
 
                     {/* Dropdown Footer */}
-                    <div className="mt-3 pt-3 border-t border-[#292A25] flex items-center justify-between text-xs">
+                    <div className="mt-3 pt-3 border-t border-white/[0.06] flex items-center justify-between text-xs">
                       <a
                         href="#modules"
                         onClick={() => setIsModulesOpen(false)}
@@ -505,7 +500,7 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
             <button
               type="button"
               onClick={() => setIsCommandPaletteOpen(true)}
-              className="hidden sm:flex items-center justify-between gap-3 px-3.5 py-2 w-44 md:w-56 lg:w-64 rounded-xl bg-[#20211E]/90 hover:bg-[#282924] border border-[#343630] hover:border-[#4B4D43] text-xs transition-all duration-150 whitespace-nowrap flex-shrink-0 group shadow-xs cursor-pointer"
+              className="hidden sm:flex items-center justify-between gap-3 px-3.5 py-2 w-44 md:w-56 lg:w-64 rounded-xl bg-[#0E0F0C] hover:bg-[#151613] border border-white/[0.08] hover:border-white/[0.16] text-xs transition-all duration-150 whitespace-nowrap flex-shrink-0 group shadow-xs cursor-pointer"
               aria-label="Search apps, sections, or guides (Press ⌘K or Ctrl+K)"
               title="Search (⌘K / Ctrl+K)"
             >
@@ -523,7 +518,7 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
                   Search...
                 </span>
               </div>
-              <kbd className="text-[10px] px-1.5 py-0.5 rounded-md bg-[#141513] border border-[#33352F] text-[#858780] font-mono group-hover:text-[#FAF4F2] shadow-2xs flex-shrink-0">
+              <kbd className="text-[10px] px-1.5 py-0.5 rounded-md bg-[#000000] border border-white/[0.08] text-[#858780] font-mono group-hover:text-[#FAF4F2] shadow-2xs flex-shrink-0">
                 ⌘K
               </kbd>
             </button>
@@ -558,7 +553,7 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
             <button
               type="button"
               onClick={() => setIsMobileMenuOpen((prev) => !prev)}
-              className="lg:hidden p-2 rounded-lg bg-[#20211E] border border-[#343630] text-[#9A9B93] hover:text-white focus:outline-none focus:ring-2 focus:ring-[#e8623d] flex-shrink-0"
+              className="lg:hidden p-2 rounded-lg bg-[#0E0F0C] border border-white/[0.08] text-[#9A9B93] hover:text-white focus:outline-none focus:ring-2 focus:ring-[#e8623d] flex-shrink-0"
               aria-label={isMobileMenuOpen ? 'Close Navigation Menu' : 'Open Navigation Menu'}
               aria-expanded={isMobileMenuOpen}
             >
@@ -577,9 +572,9 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
 
         {/* ─── Mobile Menu Drawer ─────────────────────────────────── */}
         {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-[#33352F] bg-[#181917]/95 backdrop-blur-2xl px-5 py-4 space-y-3 animate-slide-down">
+          <div className="md:hidden border-t border-white/[0.08] bg-[#050505]/98 backdrop-blur-2xl px-5 py-4 space-y-3 animate-slide-down">
             {/* Live status badge mobile */}
-            <div className="flex items-center justify-between pb-2 border-b border-[#292A25]">
+            <div className="flex items-center justify-between pb-2 border-b border-white/[0.06]">
               <div className="flex items-center gap-2 text-xs">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#1F7A4D] opacity-75"></span>
@@ -616,7 +611,7 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
                       key={mod.id}
                       type="button"
                       onClick={() => handleModuleClick(mod.id)}
-                      className="flex items-center gap-2 p-2 rounded-lg bg-[#20211E] border border-[#2E302A] text-left"
+                      className="flex items-center gap-2 p-2 rounded-lg bg-[#0E0F0C] border border-white/[0.06] text-left"
                     >
                       <div className={`w-6 h-6 rounded bg-gradient-to-br ${mod.color} flex items-center justify-center`}>
                         {mod.icon}
@@ -634,15 +629,15 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
       {/* ─── Command Palette Modal (⌘K / Ctrl+K) ─────────────────── */}
       {isCommandPaletteOpen && (
         <div
-          className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-md flex items-start justify-center pt-20 px-4 animate-fade-in"
+          className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-start justify-center pt-20 px-4 animate-fade-in"
           onClick={() => setIsCommandPaletteOpen(false)}
         >
           <div
-            className="w-full max-w-xl rounded-2xl bg-[#1A1B18] border border-[#383A32] shadow-2xl overflow-hidden animate-scale-in"
+            className="w-full max-w-xl rounded-2xl bg-[#050505] border border-white/[0.1] shadow-2xl overflow-hidden animate-scale-in"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Input row */}
-            <div className="flex items-center gap-3.5 px-5 py-4 border-b border-[#2D2F28]">
+            <div className="flex items-center gap-3.5 px-5 py-4 border-b border-white/[0.06]">
               <svg className="w-5 h-5 text-[#e8623d]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
               </svg>
@@ -654,7 +649,7 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
                 placeholder="Search apps, sections, or guides..."
                 className="w-full bg-transparent text-white placeholder-[#75766E] text-base outline-none font-sans"
               />
-              <kbd className="text-[11px] px-2 py-0.5 rounded-md bg-[#121311] border border-[#343630] text-[#7A7C73] font-mono">
+              <kbd className="text-[11px] px-2 py-0.5 rounded-md bg-[#000000] border border-white/[0.08] text-[#7A7C73] font-mono">
                 ESC
               </kbd>
             </div>
@@ -667,7 +662,7 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
                     key={idx}
                     type="button"
                     onClick={item.action}
-                    className="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-[#252722] transition-colors text-left group"
+                    className="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-white/[0.05] transition-colors text-left group"
                   >
                     <div>
                       <div className="text-xs font-bold text-white group-hover:text-[#e8623d] transition-colors">
@@ -675,7 +670,7 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
                       </div>
                       <div className="text-[11px] text-[#8E9088]">{item.subtitle}</div>
                     </div>
-                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#141513] text-[#7A7C73] border border-[#2B2C27]">
+                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#000000] text-[#7A7C73] border border-white/[0.06]">
                       {item.tag}
                     </span>
                   </button>
@@ -688,7 +683,7 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
             </div>
 
             {/* Modal footer */}
-            <div className="px-4 py-2.5 bg-[#141513] border-t border-[#292A25] flex items-center justify-between text-[11px] text-[#75766E] font-mono">
+            <div className="px-4 py-2.5 bg-[#000000] border-t border-white/[0.06] flex items-center justify-between text-[11px] text-[#75766E] font-mono">
               <span>Bahi • The Easy Business App</span>
               <span>↑↓ Navigate • ↵ Select • ESC Close</span>
             </div>

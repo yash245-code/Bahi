@@ -6,14 +6,22 @@ import { getAllApplications } from '@bahi/applications';
 import { ThemeToggle } from '@/components/ThemeToggle';
 
 const appRouteTitles: Record<string, string> = {
-  '/applications': 'User Overview',
+  '/applications': 'Applications Suite Hub',
   '/crm': 'Customer Relationship Management',
   '/sales': 'Sales Orders & Quotations',
+  '/subscriptions': 'Subscriptions & Recurring Billing',
   '/inventory': 'Inventory & Stock Control',
-  '/accounting': 'Accounting & Double-Entry Ledger',
-  '/hr': 'Human Resources & Workforce',
-  '/projects': 'Projects & Sprint Delivery',
   '/services': 'Field Services & Dispatch',
+  '/procurement': 'Procurement & Purchasing',
+  '/accounting': 'Accounting & Double-Entry Ledger',
+  '/invoicing': 'Customer Invoicing & Payments',
+  '/expenses': 'Corporate Expenses & Claims',
+  '/hr': 'Human Resources & Workforce',
+  '/attendance': 'Time Tracking & Shift Attendance',
+  '/leave': 'Leave & Vacation Time-Off',
+  '/projects': 'Projects & Sprint Delivery',
+  '/helpdesk': 'Customer Support & Helpdesk',
+  '/documents': 'Digital Contracts & Signatures',
 };
 
 const routeNames: Record<string, string> = {

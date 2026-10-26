@@ -2,240 +2,438 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Plus, Search } from 'lucide-react';
+import {
+  FileSpreadsheet,
+  ShoppingBag,
+  TrendingUp,
+  Clock,
+  ArrowRight,
+  CheckCircle2,
+  AlertTriangle,
+  ShieldCheck,
+} from 'lucide-react';
+import { SalesNav } from '@/components/sales/SalesNav';
+import { useSalesStore } from '@/components/sales/useSalesStore';
+import { NewQuoteModal } from '@/components/sales/NewQuoteModal';
+import { NewOrderModal } from '@/components/sales/NewOrderModal';
+import { QuoteDetailsModal } from '@/components/sales/QuoteDetailsModal';
+import { OrderDetailsModal } from '@/components/sales/OrderDetailsModal';
+import { Quote, SalesOrder } from '@/components/sales/salesData';
 
-interface Quote {
-  id: string;
-  customer: string;
-  contact: string;
-  date: string;
-  amount: number;
-  itemsCount: number;
-  status: 'Draft' | 'Sent' | 'Approved' | 'Invoiced';
-}
+export default function SalesOverviewPage() {
+  const {
+    quotes,
+    orders,
+    discountRules,
+    toastMessage,
+    pipelineValue,
+    ordersBookedValue,
+    winRate,
+    addQuote,
+    updateQuoteStatus,
+    convertQuoteToOrder,
+    addOrder,
+    updateOrderStatus,
+  } = useSalesStore();
 
-const initialQuotes: Quote[] = [
-  { id: 'QT-2026-091', customer: 'Green Garden Cafe', contact: 'Maya Lin', date: 'Oct 23, 2026', amount: 1450.00, itemsCount: 4, status: 'Approved' },
-  { id: 'QT-2026-092', customer: 'Apex Logistics Hub', contact: 'Devon Vance', date: 'Oct 22, 2026', amount: 3820.00, itemsCount: 8, status: 'Sent' },
-  { id: 'QT-2026-093', customer: 'Nordic Warehouses', contact: 'Erik Solberg', date: 'Oct 21, 2026', amount: 5600.00, itemsCount: 12, status: 'Invoiced' },
-  { id: 'QT-2026-094', customer: 'Summit Medical Clinic', contact: 'Dr. Sarah Chen', date: 'Oct 20, 2026', amount: 920.00, itemsCount: 2, status: 'Draft' },
-  { id: 'QT-2026-095', customer: 'Highland Residency Club', contact: 'Carlos Mendez', date: 'Oct 19, 2026', amount: 2150.00, itemsCount: 5, status: 'Approved' },
-];
+  const [quoteModalOpen, setQuoteModalOpen] = useState(false);
+  const [orderModalOpen, setOrderModalOpen] = useState(false);
+  const [selectedQuote, setSelectedQuote] = useState<Quote | null>(null);
+  const [selectedOrder, setSelectedOrder] = useState<SalesOrder | null>(null);
 
-export default function SalesPage() {
-  const [quotes, setQuotes] = useState<Quote[]>(initialQuotes);
-  const [filter, setFilter] = useState<string>('all');
-  const [search, setSearch] = useState('');
-  const [newModalOpen, setNewModalOpen] = useState(false);
-  const [customer, setCustomer] = useState('');
-  const [amount, setAmount] = useState('');
+  // Stats calculation
+  const draftQuotesCount = quotes.filter((q) => q.status === 'Draft').length;
+  const sentQuotesCount = quotes.filter((q) => q.status === 'Sent').length;
+  const approvedQuotesCount = quotes.filter((q) => q.status === 'Approved').length;
 
-  const filteredQuotes = quotes.filter((q) => {
-    const matchesFilter = filter === 'all' || q.status.toLowerCase() === filter.toLowerCase();
-    const matchesSearch =
-      q.customer.toLowerCase().includes(search.toLowerCase()) ||
-      q.id.toLowerCase().includes(search.toLowerCase());
-    return matchesFilter && matchesSearch;
-  });
-
-  const handleCreate = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!customer || !amount) return;
-
-    const newQuote: Quote = {
-      id: `QT-2026-${Math.floor(100 + Math.random() * 900)}`,
-      customer,
-      contact: 'Primary Contact',
-      date: 'Today',
-      amount: parseFloat(amount) || 0,
-      itemsCount: 1,
-      status: 'Draft',
-    };
-
-    setQuotes([newQuote, ...quotes]);
-    setNewModalOpen(false);
-    setCustomer('');
-    setAmount('');
-  };
+  const pendingOrdersCount = orders.filter(
+    (o) => o.status === 'Confirmed' || o.status === 'Processing'
+  ).length;
 
   return (
-    <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-6 animate-fade-in">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#A8462F]/15 text-[#A8462F] border border-[#A8462F]/30 font-mono">
-              Sales &amp; Quotations
+    <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-7 animate-fade-in">
+      {/* Toast */}
+      {toastMessage && (
+        <div className="fixed top-20 right-6 z-50 bg-[#141513] text-white px-4 py-2.5 rounded-xl shadow-2xl border border-neutral-700 flex items-center gap-2 text-xs font-semibold animate-slide-down">
+          <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+          <span>{toastMessage}</span>
+        </div>
+      )}
+
+      {/* Navigation */}
+      <SalesNav
+        quotesCount={quotes.length}
+        ordersCount={orders.length}
+        pipelineTotal={`$${pipelineValue.toLocaleString('en-US', { minimumFractionDigits: 0 })}`}
+        onNewQuote={() => setQuoteModalOpen(true)}
+        onNewOrder={() => setOrderModalOpen(true)}
+      />
+
+      {/* ─── Top KPI Cards ──────────────────────────────── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Card 1: Pipeline */}
+        <div className="bg-white dark:bg-[#1A1B18] border border-border dark:border-[#2A2B27] p-5 rounded-2xl shadow-xs hover:border-[#A8462F]/40 transition-all group">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-[11px] font-bold text-ink-muted dark:text-neutral-400 uppercase tracking-wider">
+              Quotation Pipeline
             </span>
-            <span className="text-[10px] font-mono text-ink-muted bg-neutral-100 dark:bg-neutral-800 border border-border px-1.5 py-0.5 rounded">
-              Active Module
+            <span className="inline-flex items-center gap-1 bg-[#A8462F]/10 dark:bg-[#A8462F]/20 text-accent border border-[#A8462F]/20 px-2 py-0.5 rounded-md text-[10px] font-bold font-mono">
+              {quotes.length} active
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-ink dark:text-white tracking-tight">
-            Commercial Orders &amp; Price Quotes
-          </h1>
-          <p className="text-xs sm:text-sm text-ink-muted dark:text-neutral-400 mt-0.5">
-            Generate customized commercial proposals, automate discount limits, and convert quotes to orders.
+          <div className="text-2xl font-black text-ink dark:text-white font-mono tracking-tight">
+            ${pipelineValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </div>
+          <p className="text-xs text-ink-muted dark:text-neutral-400 mt-2 flex items-center gap-1">
+            <Clock className="w-3.5 h-3.5 text-accent" />
+            <span>Avg proposal validity 14 days</span>
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        {/* Card 2: Booked Orders */}
+        <div className="bg-white dark:bg-[#1A1B18] border border-border dark:border-[#2A2B27] p-5 rounded-2xl shadow-xs hover:border-emerald-500/40 transition-all group">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-[11px] font-bold text-ink-muted dark:text-neutral-400 uppercase tracking-wider">
+              Confirmed Orders
+            </span>
+            <span className="inline-flex items-center gap-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-md text-[10px] font-bold font-mono">
+              <TrendingUp className="w-2.5 h-2.5" />
+              {orders.length} booked
+            </span>
+          </div>
+          <div className="text-2xl font-black text-ink dark:text-white font-mono tracking-tight">
+            ${ordersBookedValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </div>
+          <p className="text-xs text-ink-muted dark:text-neutral-400 mt-2">
+            {pendingOrdersCount} orders currently in fulfillment
+          </p>
+        </div>
+
+        {/* Card 3: Win / Conversion Rate */}
+        <div className="bg-white dark:bg-[#1A1B18] border border-border dark:border-[#2A2B27] p-5 rounded-2xl shadow-xs hover:border-[#A8462F]/40 transition-all group">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-[11px] font-bold text-ink-muted dark:text-neutral-400 uppercase tracking-wider">
+              Quote-to-Order Win Rate
+            </span>
+            <span className="inline-flex items-center gap-1 bg-[#1F7A4D]/10 text-[#1F7A4D] dark:text-[#38BD7E] border border-[#1F7A4D]/25 px-2 py-0.5 rounded-md text-[10px] font-bold">
+              +4.2% vs Q3
+            </span>
+          </div>
+          <div className="text-2xl font-black text-ink dark:text-white font-mono tracking-tight">
+            {winRate}%
+          </div>
+          <p className="text-xs text-ink-muted dark:text-neutral-400 mt-2">
+            {approvedQuotesCount} converted or approved of {quotes.length}
+          </p>
+        </div>
+
+        {/* Card 4: Governance & Safeguards */}
+        <div className="bg-white dark:bg-[#1A1B18] border border-border dark:border-[#2A2B27] p-5 rounded-2xl shadow-xs hover:border-[#A8462F]/40 transition-all group">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-[11px] font-bold text-ink-muted dark:text-neutral-400 uppercase tracking-wider">
+              Price Books &amp; Limits
+            </span>
+            <span className="inline-flex items-center gap-1 bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/25 px-2 py-0.5 rounded-md text-[10px] font-bold">
+              Floor 25%
+            </span>
+          </div>
+          <div className="text-2xl font-black text-ink dark:text-white font-mono tracking-tight">
+            {discountRules.filter((r) => r.isActive).length} Active Rules
+          </div>
+          <p className="text-xs text-ink-muted dark:text-neutral-400 mt-2 flex items-center gap-1">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+            <span>Margin Safeguard enforced</span>
+          </p>
+        </div>
+      </div>
+
+      {/* ─── Commercial Conversion Funnel ─────────────── */}
+      <div className="bg-white dark:bg-[#1A1B18] border border-border dark:border-[#2A2B27] p-5 rounded-2xl shadow-xs space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <h2 className="text-sm font-bold uppercase tracking-wider text-ink dark:text-white flex items-center gap-2">
+              <span>Commercial Velocity Funnel</span>
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-accent/10 text-accent font-mono font-bold">
+                End-to-End Commerce
+              </span>
+            </h2>
+            <p className="text-xs text-ink-muted dark:text-neutral-400 mt-0.5">
+              Live progression from draft proposal generation through customer approval to sales order booking.
+            </p>
+          </div>
+
           <Link
-            href="/applications"
-            className="px-3 py-2 text-xs font-semibold rounded-xl border border-border dark:border-[#2A2B27] bg-white dark:bg-[#1A1B18] text-ink dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
+            href="/sales/quotes"
+            className="text-xs font-bold text-accent hover:underline flex items-center gap-1"
           >
-            ← Apps Suite
+            <span>Manage Quotations</span>
+            <ArrowRight className="w-3 h-3" />
           </Link>
+        </div>
+
+        {/* Funnel Progress Bars */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2">
+          {/* Step 1 */}
+          <div className="p-3.5 rounded-xl bg-[#FAF9F5] dark:bg-[#141513] border border-border dark:border-[#2A2B27] space-y-1">
+            <span className="text-[10px] uppercase font-bold text-ink-muted dark:text-neutral-400">
+              1. Draft Quotes
+            </span>
+            <div className="text-xl font-black text-ink dark:text-white font-mono">
+              {draftQuotesCount}
+            </div>
+            <p className="text-[11px] text-ink-muted">In preparation</p>
+          </div>
+
+          {/* Step 2 */}
+          <div className="p-3.5 rounded-xl bg-[#FAF9F5] dark:bg-[#141513] border border-border dark:border-[#2A2B27] space-y-1">
+            <span className="text-[10px] uppercase font-bold text-blue-600 dark:text-blue-400">
+              2. Sent to Client
+            </span>
+            <div className="text-xl font-black text-ink dark:text-white font-mono">
+              {sentQuotesCount}
+            </div>
+            <p className="text-[11px] text-ink-muted">Awaiting decision</p>
+          </div>
+
+          {/* Step 3 */}
+          <div className="p-3.5 rounded-xl bg-[#FAF9F5] dark:bg-[#141513] border border-border dark:border-[#2A2B27] space-y-1">
+            <span className="text-[10px] uppercase font-bold text-emerald-600 dark:text-emerald-400">
+              3. Accepted
+            </span>
+            <div className="text-xl font-black text-ink dark:text-white font-mono">
+              {approvedQuotesCount}
+            </div>
+            <p className="text-[11px] text-ink-muted">Ready to book</p>
+          </div>
+
+          {/* Step 4 */}
+          <div className="p-3.5 rounded-xl bg-[#FAF9F5] dark:bg-[#141513] border border-border dark:border-[#2A2B27] space-y-1">
+            <span className="text-[10px] uppercase font-bold text-accent">
+              4. Booked Orders
+            </span>
+            <div className="text-xl font-black text-ink dark:text-white font-mono">
+              {orders.length}
+            </div>
+            <p className="text-[11px] text-ink-muted">Fulfillment live</p>
+          </div>
+        </div>
+      </div>
+
+      {/* ─── Urgent Action Items Banner ───────────────── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Alert 1 */}
+        <div className="p-4 rounded-2xl bg-[#FAF9F5] dark:bg-[#1A1B18] border border-amber-500/30 flex items-start gap-3">
+          <div className="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center shrink-0">
+            <AlertTriangle className="w-4 h-4" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="text-xs font-bold text-ink dark:text-white">
+              Quote Expiry Notice: Summit Medical Clinic
+            </h3>
+            <p className="text-xs text-ink-muted dark:text-neutral-400 mt-0.5">
+              QT-2026-094 ($920.00) valid until Nov 03. Requires sales follow-up call.
+            </p>
+          </div>
           <button
             type="button"
-            onClick={() => setNewModalOpen(true)}
-            className="px-3.5 py-2 text-xs font-bold rounded-xl bg-accent text-white hover:bg-accent-hover transition-colors shadow-xs flex items-center gap-1.5 cursor-pointer"
+            onClick={() => {
+              const q = quotes.find((x) => x.id === 'QT-2026-094');
+              if (q) setSelectedQuote(q);
+            }}
+            className="text-xs font-bold text-accent hover:underline shrink-0 cursor-pointer"
           >
-            <Plus className="w-4 h-4" />
-            <span>Create Price Quote</span>
+            Review →
+          </button>
+        </div>
+
+        {/* Alert 2 */}
+        <div className="p-4 rounded-2xl bg-[#FAF9F5] dark:bg-[#1A1B18] border border-emerald-500/30 flex items-start gap-3">
+          <div className="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0">
+            <CheckCircle2 className="w-4 h-4" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="text-xs font-bold text-ink dark:text-white">
+              Green Garden Cafe Approved Quote
+            </h3>
+            <p className="text-xs text-ink-muted dark:text-neutral-400 mt-0.5">
+              QT-2026-091 ($1,450.00) accepted. 1-click conversion to sales order available.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              const q = quotes.find((x) => x.id === 'QT-2026-091');
+              if (q) setSelectedQuote(q);
+            }}
+            className="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline shrink-0 cursor-pointer"
+          >
+            Convert →
           </button>
         </div>
       </div>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Total Pipeline Value</span>
-          <div className="text-2xl font-black text-ink dark:text-white font-mono">$13,940.00</div>
-          <p className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold">+18.5% win rate</p>
-        </div>
-        <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Approved Quotes</span>
-          <div className="text-2xl font-black text-ink dark:text-white font-mono">2</div>
-          <p className="text-xs text-ink-muted dark:text-neutral-400">Ready for order fulfillment</p>
-        </div>
-        <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Avg Cycle Time</span>
-          <div className="text-2xl font-black text-ink dark:text-white font-mono">4.2 Days</div>
-          <p className="text-xs text-ink-muted dark:text-neutral-400">Quote sent to acceptance</p>
-        </div>
-        <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Active Proposals</span>
-          <div className="text-2xl font-black text-ink dark:text-white font-mono">{quotes.length}</div>
-          <p className="text-xs text-ink-muted dark:text-neutral-400">Acme Corp catalog items</p>
-        </div>
-      </div>
+      {/* ─── 2-Column Split: Active Quotations & Orders ─── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Left Column: Recent Quotations */}
+        <div className="bg-white dark:bg-[#1A1B18] border border-border dark:border-[#2A2B27] rounded-2xl shadow-xs overflow-hidden">
+          <div className="p-4 border-b border-border dark:border-[#2A2B27] flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <FileSpreadsheet className="w-4 h-4 text-accent" />
+              <h2 className="text-sm font-bold text-ink dark:text-white">
+                Active Commercial Quotations
+              </h2>
+            </div>
+            <Link
+              href="/sales/quotes"
+              className="text-xs font-bold text-accent hover:underline flex items-center gap-1"
+            >
+              <span>View All ({quotes.length})</span>
+              <ArrowRight className="w-3 h-3" />
+            </Link>
+          </div>
 
-      {/* Filter and Table */}
-      <div className="bg-white dark:bg-[#1A1B18] rounded-2xl border border-border dark:border-[#2A2B27] shadow-xs overflow-hidden">
-        <div className="p-4 border-b border-border dark:border-[#2A2B27] flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto">
-            {['all', 'draft', 'sent', 'approved', 'invoiced'].map((st) => (
-              <button
-                key={st}
-                onClick={() => setFilter(st)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition-colors cursor-pointer ${
-                  filter === st
-                    ? 'bg-accent/15 text-accent border border-accent/30 font-bold'
-                    : 'text-ink-muted dark:text-neutral-400 hover:text-ink dark:hover:text-white'
-                }`}
+          <div className="divide-y divide-border/60 dark:divide-[#2A2B27]">
+            {quotes.slice(0, 4).map((q) => (
+              <div
+                key={q.id}
+                onClick={() => setSelectedQuote(q)}
+                className="p-4 hover:bg-[#FAF9F5] dark:hover:bg-[#141513] transition-colors cursor-pointer group flex items-center justify-between gap-3"
               >
-                {st}
-              </button>
-            ))}
-          </div>
-
-          <div className="relative w-full sm:w-64">
-            <Search className="w-4 h-4 text-ink-muted dark:text-neutral-500 absolute left-2.5 top-2.5" />
-            <input
-              type="text"
-              placeholder="Search quotes or client..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full text-xs pl-8 pr-3 py-1.5 rounded-lg border border-border dark:border-[#2A2B27] bg-neutral-50 dark:bg-neutral-900 text-ink dark:text-white focus:outline-hidden focus:border-accent"
-            />
-          </div>
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-[#FAF9F5] dark:bg-[#141513] text-ink-muted dark:text-neutral-400 font-bold uppercase tracking-wider border-b border-border dark:border-[#2A2B27]">
-              <tr>
-                <th className="py-3 px-4">Quote Ref</th>
-                <th className="py-3 px-4">Client / Company</th>
-                <th className="py-3 px-4">Date</th>
-                <th className="py-3 px-4">Status</th>
-                <th className="py-3 px-4 text-right">Amount</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border dark:divide-[#2A2B27]">
-              {filteredQuotes.map((q) => (
-                <tr key={q.id} className="hover:bg-neutral-50 dark:hover:bg-neutral-800/40 transition-colors">
-                  <td className="py-3.5 px-4 font-mono font-bold text-accent">{q.id}</td>
-                  <td className="py-3.5 px-4 font-semibold text-ink dark:text-white">{q.customer}</td>
-                  <td className="py-3.5 px-4 text-ink-muted dark:text-neutral-400">{q.date}</td>
-                  <td className="py-3.5 px-4">
-                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                      q.status === 'Approved' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20' :
-                      q.status === 'Sent' ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20' :
-                      q.status === 'Invoiced' ? 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20' :
-                      'bg-neutral-500/10 text-neutral-500'
-                    }`}>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <span className="font-mono text-xs font-bold text-accent">
+                      {q.id}
+                    </span>
+                    <span
+                      className={`text-[9px] font-bold px-2 py-0.2 rounded-full uppercase tracking-wider ${
+                        q.status === 'Approved'
+                          ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
+                          : q.status === 'Sent'
+                          ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20'
+                          : q.status === 'Converted'
+                          ? 'bg-[#A8462F]/15 text-[#A8462F] dark:text-[#E0724F] border border-[#A8462F]/30'
+                          : 'bg-neutral-500/10 text-neutral-500'
+                      }`}
+                    >
                       {q.status}
                     </span>
-                  </td>
-                  <td className="py-3.5 px-4 text-right font-mono font-bold text-ink dark:text-white">
+                  </div>
+                  <p className="text-xs font-semibold text-ink dark:text-white truncate group-hover:text-accent transition-colors">
+                    {q.customer}
+                  </p>
+                  <p className="text-[11px] text-ink-muted dark:text-neutral-400">
+                    {q.contact} • {q.itemsCount} items
+                  </p>
+                </div>
+
+                <div className="text-right shrink-0">
+                  <div className="font-mono text-xs font-black text-ink dark:text-white">
                     ${q.amount.toFixed(2)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  </div>
+                  <span className="text-[10px] text-ink-muted">
+                    Due {q.validUntil}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Right Column: Confirmed Sales Orders */}
+        <div className="bg-white dark:bg-[#1A1B18] border border-border dark:border-[#2A2B27] rounded-2xl shadow-xs overflow-hidden">
+          <div className="p-4 border-b border-border dark:border-[#2A2B27] flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <ShoppingBag className="w-4 h-4 text-emerald-600" />
+              <h2 className="text-sm font-bold text-ink dark:text-white">
+                Confirmed Sales Orders
+              </h2>
+            </div>
+            <Link
+              href="/sales/orders"
+              className="text-xs font-bold text-accent hover:underline flex items-center gap-1"
+            >
+              <span>View All ({orders.length})</span>
+              <ArrowRight className="w-3 h-3" />
+            </Link>
+          </div>
+
+          <div className="divide-y divide-border/60 dark:divide-[#2A2B27]">
+            {orders.slice(0, 4).map((o) => (
+              <div
+                key={o.id}
+                onClick={() => setSelectedOrder(o)}
+                className="p-4 hover:bg-[#FAF9F5] dark:hover:bg-[#141513] transition-colors cursor-pointer group flex items-center justify-between gap-3"
+              >
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <span className="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                      {o.id}
+                    </span>
+                    <span
+                      className={`text-[9px] font-bold px-2 py-0.2 rounded-full uppercase tracking-wider ${
+                        o.status === 'Fulfilled'
+                          ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
+                          : o.status === 'Processing'
+                          ? 'bg-amber-500/10 text-amber-600 border border-amber-500/20'
+                          : 'bg-blue-500/10 text-blue-600 border border-blue-500/20'
+                      }`}
+                    >
+                      {o.status}
+                    </span>
+                  </div>
+                  <p className="text-xs font-semibold text-ink dark:text-white truncate group-hover:text-accent transition-colors">
+                    {o.customer}
+                  </p>
+                  <p className="text-[11px] text-ink-muted dark:text-neutral-400">
+                    Est. delivery: {o.deliveryDate}
+                  </p>
+                </div>
+
+                <div className="text-right shrink-0">
+                  <div className="font-mono text-xs font-black text-ink dark:text-white">
+                    ${o.amount.toFixed(2)}
+                  </div>
+                  <span
+                    className={`text-[10px] font-bold ${
+                      o.paymentStatus === 'Paid' ? 'text-emerald-600' : 'text-amber-600'
+                    }`}
+                  >
+                    {o.paymentStatus}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Modal */}
-      {newModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#1E1F1C] border border-border dark:border-[#2A2B27] rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
-            <h3 className="font-bold text-lg text-ink dark:text-white">New Price Quote</h3>
-            <form onSubmit={handleCreate} className="space-y-3 text-xs">
-              <div>
-                <label className="block font-bold text-ink dark:text-neutral-300 mb-1">Customer Name</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Acme Industrial"
-                  value={customer}
-                  onChange={(e) => setCustomer(e.target.value)}
-                  className="w-full p-2.5 rounded-lg border border-border dark:border-[#2A2B27] bg-neutral-50 dark:bg-neutral-900 text-ink dark:text-white"
-                />
-              </div>
-              <div>
-                <label className="block font-bold text-ink dark:text-neutral-300 mb-1">Total Quote Amount ($)</label>
-                <input
-                  type="number"
-                  required
-                  placeholder="e.g. 2400"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  className="w-full p-2.5 rounded-lg border border-border dark:border-[#2A2B27] bg-neutral-50 dark:bg-neutral-900 text-ink dark:text-white"
-                />
-              </div>
-              <div className="pt-2 flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setNewModalOpen(false)}
-                  className="px-3 py-2 rounded-lg border border-border dark:border-[#2A2B27] text-ink dark:text-white"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 rounded-lg bg-accent text-white font-bold"
-                >
-                  Save Quote
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      {/* ─── Modals ────────────────────────────────────── */}
+      <NewQuoteModal
+        isOpen={quoteModalOpen}
+        onClose={() => setQuoteModalOpen(false)}
+        onCreateQuote={addQuote}
+      />
+
+      <NewOrderModal
+        isOpen={orderModalOpen}
+        onClose={() => setOrderModalOpen(false)}
+        onCreateOrder={addOrder}
+      />
+
+      <QuoteDetailsModal
+        quote={selectedQuote}
+        isOpen={Boolean(selectedQuote)}
+        onClose={() => setSelectedQuote(null)}
+        onConvertToOrder={convertQuoteToOrder}
+        onStatusChange={updateQuoteStatus}
+      />
+
+      <OrderDetailsModal
+        order={selectedOrder}
+        isOpen={Boolean(selectedOrder)}
+        onClose={() => setSelectedOrder(null)}
+        onStatusChange={updateOrderStatus}
+      />
     </div>
   );
 }

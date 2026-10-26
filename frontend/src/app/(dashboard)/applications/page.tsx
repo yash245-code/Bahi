@@ -39,6 +39,7 @@ interface ApplicationItem {
   badgeClass: string;
   features: string[];
   icon: React.ReactNode;
+  status: 'ready' | 'not-ready';
 }
 
 interface CategoryGroup {
@@ -101,6 +102,7 @@ const ALL_APPLICATIONS: ApplicationItem[] = [
     badgeClass: 'bg-[#C2542F]/10 text-[#C2542F] dark:text-[#E0724F] border-[#C2542F]/20',
     features: ['Kanban Pipeline', 'Lead Scoring', 'Accounts & Contacts'],
     icon: <Users className="w-6 h-6" />,
+    status: 'ready',
   },
   {
     id: 'sales',
@@ -114,6 +116,7 @@ const ALL_APPLICATIONS: ApplicationItem[] = [
     badgeClass: 'bg-[#A8462F]/10 text-[#A8462F] dark:text-[#D16249] border-[#A8462F]/20',
     features: ['Quotations', 'Sales Orders', 'Discount Rules'],
     icon: <FileSpreadsheet className="w-6 h-6" />,
+    status: 'ready',
   },
   {
     id: 'subscriptions',
@@ -127,6 +130,7 @@ const ALL_APPLICATIONS: ApplicationItem[] = [
     badgeClass: 'bg-[#E11D48]/10 text-[#E11D48] dark:text-[#FB7185] border-[#E11D48]/20',
     features: ['Recurring Plans', 'Dunning Engine', 'MRR Analytics'],
     icon: <CreditCard className="w-6 h-6" />,
+    status: 'not-ready',
   },
 
   // ─── 2. Operations & Supply Chain (3 Apps) ───────────────
@@ -142,6 +146,7 @@ const ALL_APPLICATIONS: ApplicationItem[] = [
     badgeClass: 'bg-[#3E7FBF]/10 text-[#3E7FBF] dark:text-[#5B9BD9] border-[#3E7FBF]/20',
     features: ['Multi-Warehouse', 'Stock Alerts', 'Shipments & Transfers'],
     icon: <Package className="w-6 h-6" />,
+    status: 'ready',
   },
   {
     id: 'services',
@@ -155,6 +160,7 @@ const ALL_APPLICATIONS: ApplicationItem[] = [
     badgeClass: 'bg-[#2DD4BF]/10 text-[#0F766E] dark:text-[#2DD4BF] border-[#2DD4BF]/20',
     features: ['Technician Dispatch', 'On-Site Work Orders', 'GPS Scheduling'],
     icon: <Wrench className="w-6 h-6" />,
+    status: 'ready',
   },
   {
     id: 'procurement',
@@ -168,6 +174,7 @@ const ALL_APPLICATIONS: ApplicationItem[] = [
     badgeClass: 'bg-[#0284C7]/10 text-[#0284C7] dark:text-[#38BDF8] border-[#0284C7]/20',
     features: ['Purchase Orders', 'Supplier RFQs', '3-Way Matching'],
     icon: <Truck className="w-6 h-6" />,
+    status: 'not-ready',
   },
 
   // ─── 3. Finance & Accounting (3 Apps) ────────────────────
@@ -183,6 +190,7 @@ const ALL_APPLICATIONS: ApplicationItem[] = [
     badgeClass: 'bg-[#2E9169]/10 text-[#2E9169] dark:text-[#42B786] border-[#2E9169]/20',
     features: ['General Ledger', 'Chart of Accounts', 'Trial Balance'],
     icon: <Landmark className="w-6 h-6" />,
+    status: 'ready',
   },
   {
     id: 'invoicing',
@@ -196,6 +204,7 @@ const ALL_APPLICATIONS: ApplicationItem[] = [
     badgeClass: 'bg-[#10B981]/10 text-[#059669] dark:text-[#34D399] border-[#10B981]/20',
     features: ['E-Invoicing', 'Payment Links', 'Automated Reminders'],
     icon: <Receipt className="w-6 h-6" />,
+    status: 'not-ready',
   },
   {
     id: 'expenses',
@@ -209,6 +218,7 @@ const ALL_APPLICATIONS: ApplicationItem[] = [
     badgeClass: 'bg-[#84CC16]/10 text-[#65A30D] dark:text-[#A3E635] border-[#84CC16]/20',
     features: ['Receipt OCR', 'Claim Approvals', 'Per Diem Rates'],
     icon: <Wallet className="w-6 h-6" />,
+    status: 'not-ready',
   },
 
   // ─── 4. Human Resources & People (3 Apps) ────────────────
@@ -224,6 +234,7 @@ const ALL_APPLICATIONS: ApplicationItem[] = [
     badgeClass: 'bg-[#C24A6B]/10 text-[#C24A6B] dark:text-[#DE6889] border-[#C24A6B]/20',
     features: ['Staff Directory', 'Org Hierarchy', 'Compliance Files'],
     icon: <UserCheck className="w-6 h-6" />,
+    status: 'ready',
   },
   {
     id: 'attendance',
@@ -237,6 +248,7 @@ const ALL_APPLICATIONS: ApplicationItem[] = [
     badgeClass: 'bg-[#EC4899]/10 text-[#DB2777] dark:text-[#F472B6] border-[#EC4899]/20',
     features: ['Shift Rosters', 'Biometric Sync', 'Overtime Logs'],
     icon: <Clock className="w-6 h-6" />,
+    status: 'not-ready',
   },
   {
     id: 'leave',
@@ -250,6 +262,7 @@ const ALL_APPLICATIONS: ApplicationItem[] = [
     badgeClass: 'bg-[#F43F5E]/10 text-[#E11D48] dark:text-[#FB7185] border-[#F43F5E]/20',
     features: ['Time-Off Requests', 'Leave Accruals', 'Holiday Calendars'],
     icon: <Calendar className="w-6 h-6" />,
+    status: 'not-ready',
   },
 
   // ─── 5. Productivity & Delivery (3 Apps) ─────────────────
@@ -265,6 +278,7 @@ const ALL_APPLICATIONS: ApplicationItem[] = [
     badgeClass: 'bg-[#D1A536]/10 text-[#D1A536] dark:text-[#E8BD4D] border-[#D1A536]/20',
     features: ['Task Kanbans', 'Sprint Burndown', 'Milestones'],
     icon: <FolderKanban className="w-6 h-6" />,
+    status: 'ready',
   },
   {
     id: 'helpdesk',
@@ -278,6 +292,7 @@ const ALL_APPLICATIONS: ApplicationItem[] = [
     badgeClass: 'bg-[#8B5CF6]/10 text-[#7C3AED] dark:text-[#A78BFA] border-[#8B5CF6]/20',
     features: ['Support Tickets', 'SLA Escalation', 'Help Center'],
     icon: <Headphones className="w-6 h-6" />,
+    status: 'not-ready',
   },
   {
     id: 'documents',
@@ -291,6 +306,7 @@ const ALL_APPLICATIONS: ApplicationItem[] = [
     badgeClass: 'bg-[#6366F1]/10 text-[#4F46E5] dark:text-[#818CF8] border-[#6366F1]/20',
     features: ['E-Signatures', 'Contract Vault', 'Audit Trails'],
     icon: <FileText className="w-6 h-6" />,
+    status: 'not-ready',
   },
 ];
 
@@ -347,14 +363,14 @@ export default function UserOverviewPage() {
               Enterprise Suite
             </span>
             <span className="text-xs font-mono text-ink-muted dark:text-neutral-400">
-              Acme Global • 15 Applications Active
+              Acme Global • 7 Ready Applications • 8 In Development
             </span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-ink dark:text-neutral-100">
             {greeting}, <span className="text-accent">Yash</span>
           </h1>
           <p className="text-sm text-ink-muted dark:text-neutral-400 mt-1 max-w-2xl leading-relaxed">
-            All-in-one business application suite. Categorized into 5 core business operations with at least 3 dedicated workspace applications per domain.
+            All-in-one business application suite. Categorized into 5 core business operations with 7 live production-ready workspaces and 8 upcoming roadmap modules.
           </p>
         </div>
 
@@ -434,10 +450,10 @@ export default function UserOverviewPage() {
           </div>
           <div className="text-lg font-black text-ink dark:text-neutral-100 flex items-center gap-1.5">
             <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
-            <span>All Systems Normal</span>
+            <span>Core Engine Nominal</span>
           </div>
           <p className="text-xs text-ink-muted dark:text-neutral-400 mt-2">
-            15 modules live • Cloud synced
+            7 live apps • 8 in development
           </p>
         </div>
       </div>
@@ -536,7 +552,9 @@ export default function UserOverviewPage() {
                     <Link
                       href={app.route}
                       key={app.id}
-                      className={`group relative flex flex-col justify-between p-6 rounded-2xl bg-white dark:bg-[#1A1B18] border border-border dark:border-[#2A2B27] shadow-xs hover:shadow-card-hover dark:hover:shadow-glass-dark transition-all duration-200 hover:-translate-y-1 cursor-pointer overflow-hidden ${app.glowClass}`}
+                      className={`group relative flex flex-col justify-between p-6 rounded-2xl bg-white dark:bg-[#1A1B18] border border-border dark:border-[#2A2B27] shadow-xs hover:shadow-card-hover dark:hover:shadow-glass-dark transition-all duration-200 hover:-translate-y-1 cursor-pointer overflow-hidden ${app.glowClass} ${
+                        app.status === 'not-ready' ? 'opacity-90 hover:opacity-100' : ''
+                      }`}
                     >
                       {/* Top Row: Icon + Category Badge + Arrow */}
                       <div>
@@ -551,6 +569,11 @@ export default function UserOverviewPage() {
                             <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider border font-mono ${app.badgeClass}`}>
                               {app.categoryLabel}
                             </span>
+                            {app.status === 'not-ready' && (
+                              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md uppercase tracking-wider bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/25 font-mono">
+                                In Dev
+                              </span>
+                            )}
                             <div className="w-7 h-7 rounded-lg flex items-center justify-center text-ink-muted dark:text-neutral-500 group-hover:text-accent group-hover:bg-accent/10 transition-colors">
                               <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                             </div>
@@ -580,11 +603,30 @@ export default function UserOverviewPage() {
                         </div>
 
                         <div className="flex items-center justify-between text-xs pt-1">
-                          <span className="text-[11px] font-semibold text-ink-muted dark:text-neutral-500">
-                            Status: <strong className="text-emerald-600 dark:text-emerald-400 font-medium">Ready</strong>
+                          <span className="text-[11px] font-semibold text-ink-muted dark:text-neutral-500 flex items-center gap-1.5">
+                            Status:
+                            {app.status === 'ready' ? (
+                              <strong className="text-emerald-600 dark:text-emerald-400 font-semibold inline-flex items-center gap-1">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
+                                Ready
+                              </strong>
+                            ) : (
+                              <strong className="text-amber-600 dark:text-amber-400 font-semibold inline-flex items-center gap-1">
+                                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 inline-block"></span>
+                                Not Ready
+                              </strong>
+                            )}
                           </span>
-                          <span className="font-semibold text-accent flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
-                            Open Workspace <ArrowRight className="w-3 h-3" />
+                          <span className={`font-semibold flex items-center gap-1 group-hover:translate-x-0.5 transition-transform ${app.status === 'ready' ? 'text-accent' : 'text-ink-muted dark:text-neutral-400'}`}>
+                            {app.status === 'ready' ? (
+                              <>
+                                Open Workspace <ArrowRight className="w-3 h-3" />
+                              </>
+                            ) : (
+                              <>
+                                Preview / WIP <ArrowRight className="w-3 h-3" />
+                              </>
+                            )}
                           </span>
                         </div>
                       </div>

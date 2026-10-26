@@ -8,7 +8,11 @@ import { ThemeToggle } from '@/components/ThemeToggle';
 const appRouteTitles: Record<string, string> = {
   '/applications': 'Applications Suite Hub',
   '/crm': 'Customer Relationship Management',
-  '/sales': 'Sales Orders & Quotations',
+  '/sales': 'Sales & Commercial Operations',
+  '/sales/quotes': 'Commercial Quotations & Proposals',
+  '/sales/orders': 'Sales Orders & Fulfillment',
+  '/sales/price-books': 'Price Books & Discount Matrix',
+  '/sales/analytics': 'Sales Analytics & Conversion',
   '/subscriptions': 'Subscriptions & Recurring Billing',
   '/inventory': 'Inventory & Stock Control',
   '/services': 'Field Services & Dispatch',

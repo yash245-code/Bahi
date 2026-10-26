@@ -21,7 +21,11 @@ export const salesManifest: ApplicationManifest = {
     'sales.multiCurrency': false,
   },
   navigation: [
-    { label: 'Quotations & Orders', href: '/sales', icon: 'DocumentTextIcon' },
+    { label: 'Overview', href: '/sales', icon: 'ChartBarIcon' },
+    { label: 'Quotations', href: '/sales/quotes', icon: 'DocumentTextIcon' },
+    { label: 'Sales Orders', href: '/sales/orders', icon: 'ShoppingBagIcon' },
+    { label: 'Price Books', href: '/sales/price-books', icon: 'TagIcon' },
+    { label: 'Analytics', href: '/sales/analytics', icon: 'PresentationChartLineIcon' },
   ],
 };
 

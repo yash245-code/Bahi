@@ -1,0 +1,171 @@
+'use client';
+
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import {
+  FileSpreadsheet,
+  ShoppingBag,
+  Tag,
+  BarChart3,
+  Plus,
+  ArrowLeft,
+  LayoutDashboard,
+  Sparkles,
+  TrendingUp,
+} from 'lucide-react';
+
+interface SalesNavProps {
+  onNewQuote?: () => void;
+  onNewOrder?: () => void;
+  quotesCount?: number;
+  ordersCount?: number;
+  pipelineTotal?: string;
+}
+
+export function SalesNav({
+  onNewQuote,
+  onNewOrder,
+  quotesCount = 6,
+  ordersCount = 5,
+  pipelineTotal = '$22,390',
+}: SalesNavProps) {
+  const pathname = usePathname();
+
+  const navItems = [
+    {
+      name: 'Overview',
+      href: '/sales',
+      exact: true,
+      badge: null,
+      icon: <LayoutDashboard className="w-4 h-4" />,
+    },
+    {
+      name: 'Quotations',
+      href: '/sales/quotes',
+      exact: false,
+      badge: `${quotesCount}`,
+      icon: <FileSpreadsheet className="w-4 h-4" />,
+    },
+    {
+      name: 'Sales Orders',
+      href: '/sales/orders',
+      exact: false,
+      badge: `${ordersCount}`,
+      icon: <ShoppingBag className="w-4 h-4" />,
+    },
+    {
+      name: 'Price Books & Discounts',
+      href: '/sales/price-books',
+      exact: false,
+      badge: '4 Rules',
+      icon: <Tag className="w-4 h-4" />,
+    },
+    {
+      name: 'Analytics',
+      href: '/sales/analytics',
+      exact: false,
+      badge: 'Live',
+      icon: <BarChart3 className="w-4 h-4" />,
+    },
+  ];
+
+  return (
+    <header className="space-y-4 pb-2 border-b border-border/80 dark:border-[#2A2B27] relative" role="banner">
+      {/* ─── Top Control Header ─── */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-2 mb-1 flex-wrap">
+            <span className="text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#A8462F]/10 dark:bg-[#A8462F]/20 text-[#A8462F] dark:text-[#D16249] border border-[#A8462F]/25 font-mono inline-flex items-center gap-1.5">
+              <Sparkles className="w-3 h-3 text-[#A8462F]" />
+              Sales &amp; Quotations
+            </span>
+            <span className="text-[10px] font-mono text-ink-muted bg-white dark:bg-[#1A1B18] border border-border dark:border-[#2A2B27] px-2 py-0.5 rounded-md">
+              v1.3.8 Active
+            </span>
+            <span className="inline-flex items-center gap-1 bg-[#1F7A4D]/10 dark:bg-[#1F7A4D]/20 text-[#1F7A4D] dark:text-[#38BD7E] border border-[#1F7A4D]/25 px-2 py-0.5 rounded-full text-[10px] font-bold">
+              <TrendingUp className="w-2.5 h-2.5" />
+              {pipelineTotal} Active Pipeline
+            </span>
+          </div>
+
+          <h1 className="text-2xl sm:text-3xl font-black text-ink dark:text-neutral-100 tracking-tight">
+            Commercial Orders &amp; Price Quotes
+          </h1>
+          <p className="text-xs sm:text-sm text-ink-muted dark:text-neutral-400 mt-0.5 max-w-2xl">
+            Streamline quotation generation, governance discount thresholds, customer order booking, and revenue conversion velocity.
+          </p>
+        </div>
+
+        {/* Action Controls */}
+        <div className="flex items-center gap-2 flex-wrap">
+          <Link
+            href="/applications"
+            className="px-3 py-2 text-xs font-semibold rounded-xl border border-border dark:border-[#2A2B27] bg-white dark:bg-[#1A1B18] text-ink dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors shadow-2xs flex items-center gap-1.5"
+            title="Return to Applications Suite Hub"
+          >
+            <ArrowLeft className="w-3.5 h-3.5 text-ink-muted" />
+            <span className="hidden sm:inline">Suite Hub</span>
+          </Link>
+
+          {onNewOrder && (
+            <button
+              type="button"
+              onClick={onNewOrder}
+              className="px-3.5 py-2 text-xs font-bold rounded-xl border border-border dark:border-[#2A2B27] bg-white dark:bg-[#1A1B18] text-ink dark:text-neutral-200 hover:border-accent hover:text-accent transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer"
+            >
+              <Plus className="w-3.5 h-3.5 text-accent" />
+              <span>New Order</span>
+            </button>
+          )}
+
+          {onNewQuote && (
+            <button
+              type="button"
+              onClick={onNewQuote}
+              className="px-4 py-2 text-xs font-bold rounded-xl bg-accent text-white hover:bg-accent-hover transition-all shadow-xs flex items-center gap-1.5 cursor-pointer group"
+            >
+              <Plus className="w-4 h-4 transition-transform group-hover:rotate-90 duration-200" />
+              <span>Create Price Quote</span>
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* ─── Sub-Page Tab Bar ─── */}
+      <nav aria-label="Sales Module Navigation" className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar border-t border-border/80 dark:border-[#2A2B27] pt-3">
+        {navItems.map((item) => {
+          const isActive = item.exact
+            ? pathname === item.href
+            : pathname.startsWith(item.href);
+
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              aria-current={isActive ? 'page' : undefined}
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
+                isActive
+                  ? 'bg-accent text-white shadow-xs font-bold'
+                  : 'text-ink-muted dark:text-neutral-400 hover:text-ink dark:hover:text-white hover:bg-white dark:hover:bg-[#1A1B18]'
+              }`}
+            >
+              <span className={isActive ? 'text-white' : 'text-ink-muted/80'}>{item.icon}</span>
+              <span>{item.name}</span>
+              {item.badge && (
+                <span
+                  className={`text-[9px] px-1.5 py-0.2 rounded-full font-bold font-mono ${
+                    isActive
+                      ? 'bg-white/20 text-white'
+                      : 'bg-neutral-100 dark:bg-neutral-800 text-ink-muted dark:text-neutral-400 border border-border/60 dark:border-neutral-700'
+                  }`}
+                >
+                  {item.badge}
+                </span>
+              )}
+            </Link>
+          );
+        })}
+      </nav>
+    </header>
+  );
+}

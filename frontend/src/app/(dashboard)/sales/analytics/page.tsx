@@ -9,11 +9,14 @@ import { SalesNav } from '@/components/sales/SalesNav';
 import { useSalesStore } from '@/components/sales/useSalesStore';
 import { NewQuoteModal } from '@/components/sales/NewQuoteModal';
 import { NewOrderModal } from '@/components/sales/NewOrderModal';
+import { formatCurrency } from '@/components/sales/salesData';
 
 export default function SalesAnalyticsPage() {
   const {
     quotes,
     orders,
+    currency,
+    setCurrency,
     toastMessage,
     pipelineValue,
     ordersBookedValue,
@@ -57,7 +60,9 @@ export default function SalesAnalyticsPage() {
       <SalesNav
         quotesCount={quotes.length}
         ordersCount={orders.length}
-        pipelineTotal={`$${pipelineValue.toLocaleString('en-US', { minimumFractionDigits: 0 })}`}
+        pipelineTotal={formatCurrency(pipelineValue, currency)}
+        currency={currency}
+        onCurrencyChange={setCurrency}
         onNewQuote={() => setQuoteModalOpen(true)}
         onNewOrder={() => setOrderModalOpen(true)}
       />
@@ -220,6 +225,7 @@ export default function SalesAnalyticsPage() {
       {/* Modals */}
       <NewQuoteModal
         isOpen={quoteModalOpen}
+        currency={currency}
         onClose={() => setQuoteModalOpen(false)}
         onCreateQuote={addQuote}
       />

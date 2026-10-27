@@ -1,5 +1,88 @@
 'use client';
 
+export type CurrencyCode = 'USD' | 'EUR' | 'GBP' | 'INR' | 'AED' | 'JPY';
+
+export interface CurrencyConfig {
+  code: CurrencyCode;
+  symbol: string;
+  label: string;
+  rate: number; // against 1 USD
+  flag: string;
+}
+
+export const CURRENCIES: Record<CurrencyCode, CurrencyConfig> = {
+  USD: { code: 'USD', symbol: '$', label: 'USD ($)', rate: 1.0, flag: '🇺🇸' },
+  EUR: { code: 'EUR', symbol: '€', label: 'EUR (€)', rate: 0.92, flag: '🇪🇺' },
+  GBP: { code: 'GBP', symbol: '£', label: 'GBP (£)', rate: 0.79, flag: '🇬🇧' },
+  INR: { code: 'INR', symbol: '₹', label: 'INR (₹)', rate: 83.45, flag: '🇮🇳' },
+  AED: { code: 'AED', symbol: 'AED ', label: 'AED (AED)', rate: 3.67, flag: '🇦🇪' },
+  JPY: { code: 'JPY', symbol: '¥', label: 'JPY (¥)', rate: 154.2, flag: '🇯🇵' },
+};
+
+export function convertAmount(amountInUSD: number, currency: CurrencyCode = 'USD'): number {
+  const cfg = CURRENCIES[currency] || CURRENCIES.USD;
+  return Math.round(amountInUSD * cfg.rate * 100) / 100;
+}
+
+export function formatCurrency(amountInUSD: number, currency: CurrencyCode = 'USD'): string {
+  const cfg = CURRENCIES[currency] || CURRENCIES.USD;
+  const converted = amountInUSD * cfg.rate;
+  if (cfg.code === 'JPY') {
+    return `${cfg.symbol}${Math.round(converted).toLocaleString('en-US')}`;
+  }
+  return `${cfg.symbol}${converted.toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+}
+
+export function getExpiryStatus(validUntilStr: string): {
+  label: string;
+  daysLeft: number;
+  isUrgent: boolean;
+  isExpired: boolean;
+  badgeClass: string;
+} {
+  const target = new Date(validUntilStr);
+  const now = new Date('2026-10-27T12:00:00Z'); // normalized to current mocked system date
+  const diffMs = target.getTime() - now.getTime();
+  const daysLeft = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+  if (daysLeft < 0) {
+    return {
+      label: `Expired ${Math.abs(daysLeft)}d ago`,
+      daysLeft,
+      isUrgent: false,
+      isExpired: true,
+      badgeClass: 'bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20',
+    };
+  } else if (daysLeft === 0) {
+    return {
+      label: 'Expires Today!',
+      daysLeft,
+      isUrgent: true,
+      isExpired: false,
+      badgeClass: 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30 animate-pulse font-bold',
+    };
+  } else if (daysLeft <= 3) {
+    return {
+      label: `⏰ ${daysLeft}d left!`,
+      daysLeft,
+      isUrgent: true,
+      isExpired: false,
+      badgeClass: 'bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/30 font-semibold',
+    };
+  } else {
+    return {
+      label: `${daysLeft}d validity`,
+      daysLeft,
+      isUrgent: false,
+      isExpired: false,
+      badgeClass: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20',
+    };
+  }
+}
+
 export interface QuoteLine {
   id: string;
   productId: string;
@@ -9,6 +92,23 @@ export interface QuoteLine {
   unitPrice: number;
   discountPercent: number;
   total: number;
+}
+
+export interface QuoteRevision {
+  version: number;
+  date: string;
+  author: string;
+  amount: number;
+  discountPercent: number;
+  notes: string;
+}
+
+export interface QuoteSignature {
+  signedBy: string;
+  title: string;
+  signedAt: string;
+  signatureData?: string;
+  ipAddress?: string;
 }
 
 export interface Quote {
@@ -28,6 +128,11 @@ export interface Quote {
   status: 'Draft' | 'Sent' | 'Approved' | 'Converted' | 'Rejected' | 'Expired';
   notes?: string;
   lines: QuoteLine[];
+  version?: number;
+  revisions?: QuoteRevision[];
+  winProbability?: number; // 0 - 100%
+  tags?: string[];
+  signature?: QuoteSignature;
 }
 
 export interface SalesOrderLine {
@@ -95,6 +200,13 @@ export const initialQuotes: Quote[] = [
     paymentTerms: 'Net 30',
     status: 'Approved',
     notes: 'Includes seasonal discount for cafeteria POS deployment.',
+    version: 2,
+    winProbability: 95,
+    tags: ['Retail POS', 'Seasonal Promo'],
+    revisions: [
+      { version: 1, date: 'Oct 20, 2026', author: 'Alex Morgan', amount: 1520.00, discountPercent: 0, notes: 'Initial proposal generated.' },
+      { version: 2, date: 'Oct 23, 2026', author: 'Alex Morgan', amount: 1450.00, discountPercent: 5, notes: 'Applied 5% seasonal discount after client pricing review.' }
+    ],
     lines: [
       { id: 'QL-1', productId: 'PROD-01', productName: 'Cloud ERP Core Tenant License', sku: 'ERP-CORE-01', quantity: 2, unitPrice: 450.00, discountPercent: 5, total: 855.00 },
       { id: 'QL-2', productId: 'PROD-04', productName: 'High-Speed Thermal Receipt Printer', sku: 'HW-PRN-04', quantity: 3, unitPrice: 195.00, discountPercent: 0, total: 585.00 },
@@ -116,6 +228,12 @@ export const initialQuotes: Quote[] = [
     paymentTerms: 'Net 15',
     status: 'Sent',
     notes: 'Multi-dock scanner setup for western distribution hub.',
+    version: 1,
+    winProbability: 78,
+    tags: ['Logistics', 'Enterprise Hardware'],
+    revisions: [
+      { version: 1, date: 'Oct 22, 2026', author: 'Devon Miller', amount: 3820.00, discountPercent: 10, notes: 'Volume tier discount applied.' }
+    ],
     lines: [
       { id: 'QL-3', productId: 'PROD-02', productName: 'Warehouse IoT Barcode Scanner Terminal', sku: 'HW-SCAN-80', quantity: 10, unitPrice: 280.00, discountPercent: 10, total: 2520.00 },
       { id: 'QL-4', productId: 'PROD-05', productName: 'Dedicated Database Replica Migration', sku: 'SVC-MIG-05', quantity: 1, unitPrice: 850.00, discountPercent: 0, total: 850.00 },
@@ -137,6 +255,14 @@ export const initialQuotes: Quote[] = [
     paymentTerms: 'Net 30',
     status: 'Converted',
     notes: 'Converted to Sales Order #SO-2026-103.',
+    version: 1,
+    winProbability: 100,
+    tags: ['Global', 'Warehouse'],
+    signature: {
+      signedBy: 'Erik Solberg',
+      title: 'VP Operations',
+      signedAt: 'Oct 22, 2026 14:15 CET',
+    },
     lines: [
       { id: 'QL-5', productId: 'PROD-01', productName: 'Cloud ERP Core Tenant License', sku: 'ERP-CORE-01', quantity: 6, unitPrice: 450.00, discountPercent: 8, total: 2484.00 },
       { id: 'QL-6', productId: 'PROD-02', productName: 'Warehouse IoT Barcode Scanner Terminal', sku: 'HW-SCAN-80', quantity: 10, unitPrice: 280.00, discountPercent: 5, total: 2660.00 },
@@ -149,7 +275,7 @@ export const initialQuotes: Quote[] = [
     email: 'sarah.chen@summitmed.org',
     phone: '+1 (555) 732-9012',
     date: 'Oct 20, 2026',
-    validUntil: 'Nov 03, 2026',
+    validUntil: 'Oct 29, 2026', // within 2 days to trigger urgency radar!
     subtotal: 850.00,
     tax: 70.00,
     amount: 920.00,
@@ -158,6 +284,9 @@ export const initialQuotes: Quote[] = [
     paymentTerms: 'Due on Receipt',
     status: 'Draft',
     notes: 'Awaiting Dr. Chen confirmation on add-on requirements.',
+    version: 1,
+    winProbability: 62,
+    tags: ['Healthcare', 'Clinical Add-on'],
     lines: [
       { id: 'QL-7', productId: 'PROD-01', productName: 'Cloud ERP Core Tenant License', sku: 'ERP-CORE-01', quantity: 1, unitPrice: 450.00, discountPercent: 0, total: 450.00 },
       { id: 'QL-8', productId: 'PROD-03', productName: 'Technician Field Dispatch App Add-On', sku: 'SVC-DISP-03', quantity: 3, unitPrice: 120.00, discountPercent: 0, total: 360.00 },
@@ -179,6 +308,13 @@ export const initialQuotes: Quote[] = [
     paymentTerms: 'Net 30',
     status: 'Approved',
     notes: 'Member management and accounting billing integration.',
+    version: 2,
+    winProbability: 91,
+    tags: ['Hospitality', 'Audit Verified'],
+    revisions: [
+      { version: 1, date: 'Oct 15, 2026', author: 'Sarah Lin', amount: 2310.00, discountPercent: 0, notes: 'Standard quote.' },
+      { version: 2, date: 'Oct 19, 2026', author: 'Sarah Lin', amount: 2150.00, discountPercent: 7, notes: 'Board approved multi-year agreement discount.' }
+    ],
     lines: [
       { id: 'QL-9', productId: 'PROD-01', productName: 'Cloud ERP Core Tenant License', sku: 'ERP-CORE-01', quantity: 3, unitPrice: 450.00, discountPercent: 7, total: 1255.50 },
       { id: 'QL-10', productId: 'PROD-06', productName: 'Multi-Tenant Security & Compliance Audit', sku: 'SEC-AUD-06', quantity: 1, unitPrice: 1200.00, discountPercent: 10, total: 1080.00 },
@@ -200,6 +336,9 @@ export const initialQuotes: Quote[] = [
     paymentTerms: 'Net 60',
     status: 'Expired',
     notes: 'Quote expired without acceptance. Rep requested re-engagement.',
+    version: 1,
+    winProbability: 38,
+    tags: ['Finance Enterprise', 'Re-quote Target'],
     lines: [
       { id: 'QL-11', productId: 'PROD-01', productName: 'Cloud ERP Core Tenant License', sku: 'ERP-CORE-01', quantity: 10, unitPrice: 450.00, discountPercent: 12, total: 3960.00 },
       { id: 'QL-12', productId: 'PROD-06', productName: 'Multi-Tenant Security & Compliance Audit', sku: 'SEC-AUD-06', quantity: 3, unitPrice: 1200.00, discountPercent: 10, total: 3240.00 },

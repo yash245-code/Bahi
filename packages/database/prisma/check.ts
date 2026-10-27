@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function check() {
-  console.log('🔄 Checking MongoDB Atlas connection...');
+  console.log('🔄 Checking PostgreSQL connection...');
   const start = Date.now();
 
   const tenant = await prisma.tenant.findUnique({
@@ -33,7 +33,7 @@ async function check() {
     console.log(`📊 CRM Pipelines:  ${tenant.pipelineStages.length} stages`);
     console.log('────────────────────────────────────────────\n');
   } else {
-    console.log('⚠️  Connected to MongoDB, but no tenant records found. Run `npm run db:seed` to populate data.');
+    console.log('⚠️  Connected to PostgreSQL, but no tenant records found. Run `npm run db:seed` to populate data.');
   }
 }
 

@@ -14,12 +14,14 @@ import { useSalesStore } from '@/components/sales/useSalesStore';
 import { NewOrderModal } from '@/components/sales/NewOrderModal';
 import { NewQuoteModal } from '@/components/sales/NewQuoteModal';
 import { OrderDetailsModal } from '@/components/sales/OrderDetailsModal';
-import { SalesOrder } from '@/components/sales/salesData';
+import { SalesOrder, formatCurrency } from '@/components/sales/salesData';
 
 export default function SalesOrdersPage() {
   const {
     quotes,
     orders,
+    currency,
+    setCurrency,
     toastMessage,
     pipelineValue,
     ordersBookedValue,
@@ -67,7 +69,9 @@ export default function SalesOrdersPage() {
       <SalesNav
         quotesCount={quotes.length}
         ordersCount={orders.length}
-        pipelineTotal={`$${pipelineValue.toLocaleString('en-US', { minimumFractionDigits: 0 })}`}
+        pipelineTotal={formatCurrency(pipelineValue, currency)}
+        currency={currency}
+        onCurrencyChange={setCurrency}
         onNewQuote={() => setQuoteModalOpen(true)}
         onNewOrder={() => setOrderModalOpen(true)}
       />
@@ -250,7 +254,7 @@ export default function SalesOrdersPage() {
                       </span>
                     </td>
                     <td className="py-3.5 px-4 text-right font-mono font-bold text-ink dark:text-white">
-                      ${o.amount.toFixed(2)}
+                      {formatCurrency(o.amount, currency)}
                     </td>
                     <td className="py-3.5 px-4 text-right">
                       <div
@@ -306,6 +310,7 @@ export default function SalesOrdersPage() {
 
       <NewQuoteModal
         isOpen={quoteModalOpen}
+        currency={currency}
         onClose={() => setQuoteModalOpen(false)}
         onCreateQuote={addQuote}
       />

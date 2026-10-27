@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -12,7 +13,10 @@ import {
   LayoutDashboard,
   Sparkles,
   TrendingUp,
+  Globe2,
+  ChevronDown,
 } from 'lucide-react';
+import { CurrencyCode, CURRENCIES } from './salesData';
 
 interface SalesNavProps {
   onNewQuote?: () => void;
@@ -20,6 +24,8 @@ interface SalesNavProps {
   quotesCount?: number;
   ordersCount?: number;
   pipelineTotal?: string;
+  currency?: CurrencyCode;
+  onCurrencyChange?: (code: CurrencyCode) => void;
 }
 
 export function SalesNav({
@@ -28,8 +34,13 @@ export function SalesNav({
   quotesCount = 6,
   ordersCount = 5,
   pipelineTotal = '$22,390',
+  currency = 'USD',
+  onCurrencyChange,
 }: SalesNavProps) {
   const pathname = usePathname();
+  const [currencyDropdownOpen, setCurrencyDropdownOpen] = useState(false);
+
+  const activeCurrency = CURRENCIES[currency] || CURRENCIES.USD;
 
   const navItems = [
     {
@@ -77,14 +88,20 @@ export function SalesNav({
           <div className="flex items-center gap-2 mb-1 flex-wrap">
             <span className="text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#A8462F]/10 dark:bg-[#A8462F]/20 text-[#A8462F] dark:text-[#D16249] border border-[#A8462F]/25 font-mono inline-flex items-center gap-1.5">
               <Sparkles className="w-3 h-3 text-[#A8462F]" />
-              Sales &amp; Quotations
+              Sales &amp; Quotations Suite
             </span>
             <span className="text-[10px] font-mono text-ink-muted bg-white dark:bg-[#1A1B18] border border-border dark:border-[#2A2B27] px-2 py-0.5 rounded-md">
-              v1.3.8 Active
+              v1.4.0 Extended
             </span>
             <span className="inline-flex items-center gap-1 bg-[#1F7A4D]/10 dark:bg-[#1F7A4D]/20 text-[#1F7A4D] dark:text-[#38BD7E] border border-[#1F7A4D]/25 px-2 py-0.5 rounded-full text-[10px] font-bold">
               <TrendingUp className="w-2.5 h-2.5" />
               {pipelineTotal} Active Pipeline
+            </span>
+
+            {/* Live FX Rates Ticker Badge */}
+            <span className="hidden xl:inline-flex items-center gap-1.5 bg-blue-500/10 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300 border border-blue-500/25 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium">
+              <Globe2 className="w-3 h-3 text-blue-500 animate-spin-slow" />
+              <span>Live FX: 1 USD = 0.92 EUR • 83.45 INR • 3.67 AED</span>
             </span>
           </div>
 
@@ -92,12 +109,68 @@ export function SalesNav({
             Commercial Orders &amp; Price Quotes
           </h1>
           <p className="text-xs sm:text-sm text-ink-muted dark:text-neutral-400 mt-0.5 max-w-2xl">
-            Streamline quotation generation, governance discount thresholds, customer order booking, and revenue conversion velocity.
+            Streamline quotation generation, multi-currency live pricing, governance discount thresholds, customer order booking, and revenue velocity.
           </p>
         </div>
 
-        {/* Action Controls */}
+        {/* Action Controls & Currency Selector */}
         <div className="flex items-center gap-2 flex-wrap">
+          {/* Multi-Currency Dropdown */}
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setCurrencyDropdownOpen(!currencyDropdownOpen)}
+              className="px-3 py-2 text-xs font-bold rounded-xl border border-border dark:border-[#2A2B27] bg-white dark:bg-[#1A1B18] text-ink dark:text-neutral-200 hover:border-accent transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer"
+              title="Change Global Currency"
+            >
+              <span>{activeCurrency.flag}</span>
+              <span className="font-mono">{activeCurrency.code}</span>
+              <span className="text-ink-muted font-normal">({activeCurrency.symbol})</span>
+              <ChevronDown className="w-3 h-3 text-ink-muted ml-0.5" />
+            </button>
+
+            {currencyDropdownOpen && (
+              <>
+                <div
+                  className="fixed inset-0 z-40"
+                  onClick={() => setCurrencyDropdownOpen(false)}
+                />
+                <div className="absolute right-0 mt-1.5 w-48 rounded-xl bg-white dark:bg-[#1A1B18] border border-border dark:border-[#2A2B27] shadow-xl z-50 p-1.5 py-1 text-xs animate-in fade-in zoom-in-95">
+                  <div className="px-2.5 py-1.5 text-[10px] font-bold text-ink-muted uppercase tracking-wider border-b border-border/60 dark:border-neutral-800">
+                    Select Currency
+                  </div>
+                  {(Object.keys(CURRENCIES) as CurrencyCode[]).map((cCode) => {
+                    const c = CURRENCIES[cCode];
+                    const isSelected = currency === cCode;
+                    return (
+                      <button
+                        key={cCode}
+                        type="button"
+                        onClick={() => {
+                          onCurrencyChange?.(cCode);
+                          setCurrencyDropdownOpen(false);
+                        }}
+                        className={`w-full text-left px-2.5 py-2 rounded-lg flex items-center justify-between text-xs transition-colors cursor-pointer ${
+                          isSelected
+                            ? 'bg-accent/10 text-accent font-bold'
+                            : 'text-ink dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800'
+                        }`}
+                      >
+                        <span className="flex items-center gap-2">
+                          <span>{c.flag}</span>
+                          <span>{c.label}</span>
+                        </span>
+                        <span className="font-mono text-[11px] text-ink-muted">
+                          {c.rate === 1.0 ? 'Base' : `${c.rate}x`}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+          </div>
+
           <Link
             href="/applications"
             className="px-3 py-2 text-xs font-semibold rounded-xl border border-border dark:border-[#2A2B27] bg-white dark:bg-[#1A1B18] text-ink dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors shadow-2xs flex items-center gap-1.5"

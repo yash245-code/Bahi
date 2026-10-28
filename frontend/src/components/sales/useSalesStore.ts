@@ -8,9 +8,11 @@ import {
   CurrencyCode,
   QuoteRevision,
   QuoteSignature,
+  QuoteActivity,
   initialQuotes,
   initialOrders,
   initialDiscountRules,
+  formatCurrency,
 } from './salesData';
 
 const QUOTES_STORAGE_KEY = 'bahi-sales-quotes';
@@ -40,6 +42,20 @@ export function useSalesStore() {
           ...q,
           version: q.version || 1,
           winProbability: q.winProbability ?? Math.floor(65 + Math.random() * 30),
+          taxRate: q.taxRate ?? (q.subtotal > 0 ? Math.round((q.tax / q.subtotal) * 1000) / 10 : 8.0),
+          shippingFee: q.shippingFee ?? 0,
+          activities:
+            q.activities && q.activities.length > 0
+              ? q.activities
+              : [
+                  {
+                    id: `act-init-${q.id}`,
+                    timestamp: `${q.date} 10:00 AM`,
+                    type: 'created' as const,
+                    author: 'Sales Executive',
+                    message: `Quotation ${q.id} created for ${q.customer}.`,
+                  },
+                ],
           revisions: q.revisions || [
             {
               version: 1,
@@ -134,7 +150,29 @@ export function useSalesStore() {
 
   const batchUpdateQuoteStatus = useCallback(
     (ids: string[], status: Quote['status']) => {
-      const next = quotes.map((q) => (ids.includes(q.id) ? { ...q, status } : q));
+      const now = new Date().toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+
+      const next = quotes.map((q) => {
+        if (!ids.includes(q.id)) return q;
+        const newAct: QuoteActivity = {
+          id: `act-${Date.now()}-${q.id}`,
+          timestamp: now,
+          type: status === 'Approved' ? 'approved' : status === 'Sent' ? 'sent' : 'revised',
+          author: 'Sales Operations',
+          message: `Status updated to ${status} via bulk update.`,
+        };
+        return {
+          ...q,
+          status,
+          activities: [newAct, ...(q.activities || [])],
+        };
+      });
       saveQuotes(next);
       clearSelectedQuotes();
       showToast(`Updated ${ids.length} quotation(s) to status ${status}`);
@@ -144,6 +182,14 @@ export function useSalesStore() {
 
   const batchExtendValidity = useCallback(
     (ids: string[], daysToAdd: number = 7) => {
+      const now = new Date().toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+
       const next = quotes.map((q) => {
         if (!ids.includes(q.id)) return q;
         const current = new Date(q.validUntil);
@@ -154,10 +200,18 @@ export function useSalesStore() {
           year: 'numeric',
         });
         const resetStatus = q.status === 'Expired' ? ('Draft' as const) : q.status;
+        const newAct: QuoteActivity = {
+          id: `act-${Date.now()}-${q.id}`,
+          timestamp: now,
+          type: 'revised',
+          author: 'Sales Operations',
+          message: `Validity extended by +${daysToAdd} days to ${newValid}.`,
+        };
         return {
           ...q,
           validUntil: newValid,
           status: resetStatus,
+          activities: [newAct, ...(q.activities || [])],
         };
       });
       saveQuotes(next);
@@ -170,10 +224,27 @@ export function useSalesStore() {
   // Single Quote operations
   const addQuote = useCallback(
     (newQuote: Quote) => {
+      const now = new Date().toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+
+      const initialActivity: QuoteActivity = {
+        id: `act-${Date.now()}`,
+        timestamp: now,
+        type: 'created',
+        author: 'Current User',
+        message: `Commercial proposal ${newQuote.id} created for ${newQuote.customer} (${formatCurrency(newQuote.amount, currency)}).`,
+      };
+
       const quoteWithMetadata: Quote = {
         ...newQuote,
         version: newQuote.version || 1,
         winProbability: newQuote.winProbability ?? Math.floor(70 + Math.random() * 25),
+        activities: newQuote.activities?.length ? newQuote.activities : [initialActivity],
         revisions: newQuote.revisions || [
           {
             version: 1,
@@ -189,12 +260,61 @@ export function useSalesStore() {
       saveQuotes(next);
       showToast(`Quotation ${newQuote.id} created successfully for ${newQuote.customer}`);
     },
-    [quotes, saveQuotes, showToast]
+    [quotes, currency, saveQuotes, showToast]
+  );
+
+  const updateQuote = useCallback(
+    (updatedQuote: Quote) => {
+      const now = new Date().toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+      const updateActivity: QuoteActivity = {
+        id: `act-${Date.now()}`,
+        timestamp: now,
+        type: 'revised',
+        author: 'Current User',
+        message: `Quotation updated (Amount: ${formatCurrency(updatedQuote.amount, currency)}, Lines: ${updatedQuote.itemsCount}).`,
+      };
+      const quoteWithActivity: Quote = {
+        ...updatedQuote,
+        activities: [updateActivity, ...(updatedQuote.activities || [])],
+      };
+      const next = quotes.map((q) => (q.id === updatedQuote.id ? quoteWithActivity : q));
+      saveQuotes(next);
+      showToast(`Quotation ${updatedQuote.id} updated successfully`);
+    },
+    [quotes, currency, saveQuotes, showToast]
   );
 
   const updateQuoteStatus = useCallback(
     (quoteId: string, status: Quote['status']) => {
-      const next = quotes.map((q) => (q.id === quoteId ? { ...q, status } : q));
+      const now = new Date().toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+
+      const next = quotes.map((q) => {
+        if (q.id !== quoteId) return q;
+        const newAct: QuoteActivity = {
+          id: `act-${Date.now()}`,
+          timestamp: now,
+          type: status === 'Approved' ? 'approved' : status === 'Sent' ? 'sent' : 'revised',
+          author: 'Current User',
+          message: `Status moved to ${status}.`,
+        };
+        return {
+          ...q,
+          status,
+          activities: [newAct, ...(q.activities || [])],
+        };
+      });
       saveQuotes(next);
       showToast(`Quotation ${quoteId} updated to ${status}`);
     },
@@ -203,6 +323,14 @@ export function useSalesStore() {
 
   const extendQuoteValidity = useCallback(
     (quoteId: string, daysToAdd: number = 7) => {
+      const now = new Date().toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+
       const next = quotes.map((q) => {
         if (q.id !== quoteId) return q;
         const current = new Date(q.validUntil);
@@ -213,14 +341,22 @@ export function useSalesStore() {
           year: 'numeric',
         });
         const nextStatus = q.status === 'Expired' ? ('Draft' as const) : q.status;
+        const newAct: QuoteActivity = {
+          id: `act-${Date.now()}`,
+          timestamp: now,
+          type: 'revised',
+          author: 'Current User',
+          message: `Validity extended +${daysToAdd} days (due ${newValid}).`,
+        };
         return {
           ...q,
           validUntil: newValid,
           status: nextStatus,
+          activities: [newAct, ...(q.activities || [])],
         };
       });
       saveQuotes(next);
-      showToast(`Extended ${quoteId} validity by +${daysToAdd} days (New due date: ${next.find(q => q.id === quoteId)?.validUntil})`);
+      showToast(`Extended ${quoteId} validity by +${daysToAdd} days`);
     },
     [quotes, saveQuotes, showToast]
   );
@@ -237,6 +373,13 @@ export function useSalesStore() {
         day: 'numeric',
         year: 'numeric',
       });
+      const now = new Date().toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
 
       const updatedDiscount = newDiscount !== undefined ? newDiscount : target.discountPercent;
       const subtotal = target.subtotal;
@@ -252,6 +395,14 @@ export function useSalesStore() {
         notes: newNotes || `Revision v${nextVer} generated with adjusted pricing terms.`,
       };
 
+      const newAct: QuoteActivity = {
+        id: `act-${Date.now()}`,
+        timestamp: now,
+        type: 'revised',
+        author: 'Account Executive',
+        message: `Generated Revision v${nextVer} with ${updatedDiscount}% discount (${formatCurrency(newAmount, currency)}).`,
+      };
+
       const next = quotes.map((q) => {
         if (q.id !== quoteId) return q;
         return {
@@ -261,14 +412,15 @@ export function useSalesStore() {
           discountPercent: updatedDiscount,
           status: 'Draft' as const,
           revisions: [...(q.revisions || []), newRev],
+          activities: [newAct, ...(q.activities || [])],
           notes: newNotes ? `${q.notes ? q.notes + ' • ' : ''}${newNotes}` : q.notes,
         };
       });
 
       saveQuotes(next);
-      showToast(`Created Revision v${nextVer} for Quote ${quoteId} ($${newAmount.toFixed(2)})`);
+      showToast(`Created Revision v${nextVer} for Quote ${quoteId} (${formatCurrency(newAmount, currency)})`);
     },
-    [quotes, saveQuotes, showToast]
+    [quotes, currency, saveQuotes, showToast]
   );
 
   const duplicateQuote = useCallback(
@@ -299,7 +451,17 @@ export function useSalesStore() {
             notes: `Cloned from quotation ${original.id}.`,
           },
         ],
+        activities: [
+          {
+            id: `act-${Date.now()}`,
+            timestamp: today.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+            type: 'created',
+            author: 'Current User',
+            message: `Proposal duplicated from ${original.id}.`,
+          },
+        ],
         signature: undefined,
+        portalViewedAt: undefined,
       };
 
       const next = [duplicated, ...quotes];
@@ -309,12 +471,143 @@ export function useSalesStore() {
     [quotes, saveQuotes, showToast]
   );
 
+  const sendQuoteEmail = useCallback(
+    (quoteId: string, emailData: { to: string; cc?: string; subject: string; body: string; templateId: string }) => {
+      const now = new Date().toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+
+      const next = quotes.map((q) => {
+        if (q.id !== quoteId) return q;
+        const newActivity: QuoteActivity = {
+          id: `act-${Date.now()}`,
+          timestamp: now,
+          type: 'sent',
+          author: 'Sales Operations',
+          message: `Emailed proposal to ${emailData.to} (Subject: "${emailData.subject}").`,
+          metadata: { to: emailData.to, subject: emailData.subject, templateId: emailData.templateId },
+        };
+        const nextStatus = q.status === 'Draft' || q.status === 'Expired' ? ('Sent' as const) : q.status;
+        return {
+          ...q,
+          status: nextStatus,
+          activities: [newActivity, ...(q.activities || [])],
+        };
+      });
+
+      saveQuotes(next);
+      showToast(`✓ Quotation proposal dispatched to ${emailData.to}`);
+    },
+    [quotes, saveQuotes, showToast]
+  );
+
+  const addQuoteInternalNote = useCallback(
+    (quoteId: string, noteText: string, author: string = 'Commercial Rep') => {
+      const now = new Date().toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+
+      const newActivity: QuoteActivity = {
+        id: `act-${Date.now()}`,
+        timestamp: now,
+        type: 'note',
+        author,
+        message: noteText,
+      };
+
+      const next = quotes.map((q) => {
+        if (q.id !== quoteId) return q;
+        return {
+          ...q,
+          activities: [newActivity, ...(q.activities || [])],
+        };
+      });
+
+      saveQuotes(next);
+      showToast('Internal note saved to proposal timeline.');
+    },
+    [quotes, saveQuotes, showToast]
+  );
+
+  const simulateClientView = useCallback(
+    (quoteId: string) => {
+      const now = new Date().toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+
+      const next = quotes.map((q) => {
+        if (q.id !== quoteId) return q;
+        if (q.portalViewedAt) return q;
+        const newActivity: QuoteActivity = {
+          id: `act-${Date.now()}`,
+          timestamp: now,
+          type: 'viewed',
+          author: 'Client Portal',
+          message: 'Client viewed the digital proposal via client portal.',
+        };
+        return {
+          ...q,
+          portalViewedAt: now,
+          activities: [newActivity, ...(q.activities || [])],
+        };
+      });
+
+      saveQuotes(next);
+    },
+    [quotes, saveQuotes]
+  );
+
+  const convertQuoteToInvoice = useCallback(
+    (quote: Quote) => {
+      const invId = `INV-2026-${Math.floor(100 + Math.random() * 900)}`;
+      const now = new Date().toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+
+      const newActivity: QuoteActivity = {
+        id: `act-${Date.now()}`,
+        timestamp: now,
+        type: 'invoiced',
+        author: 'Accounting Automation',
+        message: `Generated Proforma Invoice ${invId} for ${quote.customer} (${formatCurrency(quote.amount, currency)}).`,
+      };
+
+      const next = quotes.map((q) => {
+        if (q.id !== quote.id) return q;
+        return {
+          ...q,
+          status: q.status === 'Converted' ? q.status : ('Converted' as const),
+          activities: [newActivity, ...(q.activities || [])],
+        };
+      });
+
+      saveQuotes(next);
+      showToast(`✓ Generated Proforma Invoice ${invId} for ${quote.customer}`);
+    },
+    [quotes, currency, saveQuotes, showToast]
+  );
+
   const signAndAcceptQuote = useCallback(
     (quoteId: string, signature: QuoteSignature) => {
       const target = quotes.find((q) => q.id === quoteId);
       if (!target) return;
 
-      // Update quote with signature
       const today = new Date();
       const delivery = new Date();
       delivery.setDate(today.getDate() + 5);
@@ -343,12 +636,37 @@ export function useSalesStore() {
         })),
       };
 
+      const now = today.toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+
+      const signAct: QuoteActivity = {
+        id: `act-${Date.now()}-sign`,
+        timestamp: now,
+        type: 'signed',
+        author: signature.signedBy,
+        message: `Digitally signed & authorized by ${signature.signedBy} (${signature.title}).`,
+      };
+
+      const convertAct: QuoteActivity = {
+        id: `act-${Date.now()}-conv`,
+        timestamp: now,
+        type: 'converted',
+        author: 'System Automation',
+        message: `Proposal converted to booked Sales Order ${newOrder.id}.`,
+      };
+
       const nextQuotes = quotes.map((q) =>
         q.id === target.id
           ? {
               ...q,
               status: 'Converted' as const,
               signature,
+              activities: [convertAct, signAct, ...(q.activities || [])],
             }
           : q
       );
@@ -390,8 +708,30 @@ export function useSalesStore() {
         })),
       };
 
+      const now = today.toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+
+      const convertAct: QuoteActivity = {
+        id: `act-${Date.now()}`,
+        timestamp: now,
+        type: 'converted',
+        author: 'Sales Operations',
+        message: `Converted proposal into Sales Order ${newOrder.id}.`,
+      };
+
       const nextQuotes = quotes.map((q) =>
-        q.id === quote.id ? { ...q, status: 'Converted' as const } : q
+        q.id === quote.id
+          ? {
+              ...q,
+              status: 'Converted' as const,
+              activities: [convertAct, ...(q.activities || [])],
+            }
+          : q
       );
       saveQuotes(nextQuotes);
       saveOrders([newOrder, ...orders]);
@@ -483,8 +823,13 @@ export function useSalesStore() {
     toastMessage,
     isLoaded,
     addQuote,
+    updateQuote,
     updateQuoteStatus,
     convertQuoteToOrder,
+    convertQuoteToInvoice,
+    sendQuoteEmail,
+    addQuoteInternalNote,
+    simulateClientView,
     addOrder,
     updateOrderStatus,
     toggleDiscountRule,

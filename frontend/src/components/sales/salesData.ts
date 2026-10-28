@@ -88,9 +88,13 @@ export interface QuoteLine {
   productId: string;
   productName: string;
   sku: string;
+  description?: string;
+  isCustom?: boolean;
   quantity: number;
   unitPrice: number;
+  unitCost?: number; // estimated cost per unit for margin calculation
   discountPercent: number;
+  taxPercent?: number;
   total: number;
 }
 
@@ -111,6 +115,35 @@ export interface QuoteSignature {
   ipAddress?: string;
 }
 
+export interface QuoteActivity {
+  id: string;
+  timestamp: string;
+  type: 'created' | 'sent' | 'viewed' | 'revised' | 'approved' | 'signed' | 'converted' | 'invoiced' | 'note';
+  author: string;
+  message: string;
+  metadata?: Record<string, any>;
+}
+
+export interface EmailTemplate {
+  id: string;
+  name: string;
+  badge: string;
+  subject: string;
+  body: string;
+}
+
+export interface CrmCustomerPreset {
+  id: string;
+  customer: string;
+  contact: string;
+  email: string;
+  phone: string;
+  address: string;
+  tier: 'Standard' | 'Silver Partner' | 'Gold VIP';
+  defaultDiscount: number;
+  paymentTerms: string;
+}
+
 export interface Quote {
   id: string;
   customer: string;
@@ -122,6 +155,8 @@ export interface Quote {
   amount: number;
   subtotal: number;
   tax: number;
+  taxRate?: number; // percentage, e.g. 5, 8.5, 10
+  shippingFee?: number;
   discountPercent: number;
   itemsCount: number;
   paymentTerms: string;
@@ -133,6 +168,8 @@ export interface Quote {
   winProbability?: number; // 0 - 100%
   tags?: string[];
   signature?: QuoteSignature;
+  activities?: QuoteActivity[];
+  portalViewedAt?: string;
 }
 
 export interface SalesOrderLine {
@@ -174,14 +211,227 @@ export interface DiscountRule {
   description: string;
 }
 
-export const catalogProducts = [
-  { id: 'PROD-01', name: 'Cloud ERP Core Tenant License', sku: 'ERP-CORE-01', unitPrice: 450.00, category: 'Software' },
-  { id: 'PROD-02', name: 'Warehouse IoT Barcode Scanner Terminal', sku: 'HW-SCAN-80', unitPrice: 280.00, category: 'Hardware' },
-  { id: 'PROD-03', name: 'Technician Field Dispatch App Add-On', sku: 'SVC-DISP-03', unitPrice: 120.00, category: 'Services' },
-  { id: 'PROD-04', name: 'High-Speed Thermal Receipt Printer', sku: 'HW-PRN-04', unitPrice: 195.00, category: 'Hardware' },
-  { id: 'PROD-05', name: 'Dedicated Database Replica Migration', sku: 'SVC-MIG-05', unitPrice: 850.00, category: 'Services' },
-  { id: 'PROD-06', name: 'Multi-Tenant Security & Compliance Audit', sku: 'SEC-AUD-06', unitPrice: 1200.00, category: 'Services' },
+export interface CatalogProduct {
+  id: string;
+  name: string;
+  sku: string;
+  unitPrice: number;
+  unitCost: number;
+  category: string;
+  description: string;
+}
+
+export const catalogProducts: CatalogProduct[] = [
+  { id: 'PROD-01', name: 'Cloud ERP Core Tenant License', sku: 'ERP-CORE-01', unitPrice: 450.00, unitCost: 180.00, category: 'Software', description: 'Enterprise multitenant platform license with continuous compliance updates.' },
+  { id: 'PROD-02', name: 'Warehouse IoT Barcode Scanner Terminal', sku: 'HW-SCAN-80', unitPrice: 280.00, unitCost: 155.00, category: 'Hardware', description: 'Ruggedized Android industrial handheld terminal with 2D imager.' },
+  { id: 'PROD-03', name: 'Technician Field Dispatch App Add-On', sku: 'SVC-DISP-03', unitPrice: 120.00, unitCost: 45.00, category: 'Services', description: 'Mobile technician routing, digital signatures, and offline task sync.' },
+  { id: 'PROD-04', name: 'High-Speed Thermal Receipt Printer', sku: 'HW-PRN-04', unitPrice: 195.00, unitCost: 110.00, category: 'Hardware', description: 'Fast 250mm/sec direct thermal network receipt printer with auto-cutter.' },
+  { id: 'PROD-05', name: 'Dedicated Database Replica Migration', sku: 'SVC-MIG-05', unitPrice: 850.00, unitCost: 320.00, category: 'Services', description: 'Turnkey database sync, ETL pipeline migration, and cutover testing.' },
+  { id: 'PROD-06', name: 'Multi-Tenant Security & Compliance Audit', sku: 'SEC-AUD-06', unitPrice: 1200.00, unitCost: 450.00, category: 'Services', description: 'SOC2 and ISO 27001 vulnerability inspection, pen-test report, and signoff.' },
 ];
+
+export const crmCustomerPresets: CrmCustomerPreset[] = [
+  {
+    id: 'CRM-CUST-01',
+    customer: 'Apex Logistics Hub',
+    contact: 'Devon Vance',
+    email: 'devon@apexlogistics.com',
+    phone: '+1 (555) 819-2041',
+    address: 'Dock 12, Pacific Container Terminal, Seattle, WA',
+    tier: 'Gold VIP',
+    defaultDiscount: 10,
+    paymentTerms: 'Net 15',
+  },
+  {
+    id: 'CRM-CUST-02',
+    customer: 'Green Garden Cafe',
+    contact: 'Maya Lin',
+    email: 'maya@greengarden.com',
+    phone: '+1 (555) 234-5678',
+    address: '14 Elm Street, Downtown Square, Portland, OR',
+    tier: 'Silver Partner',
+    defaultDiscount: 5,
+    paymentTerms: 'Net 30',
+  },
+  {
+    id: 'CRM-CUST-03',
+    customer: 'Nordic Warehouses',
+    contact: 'Erik Solberg',
+    email: 'erik@nordicwh.no',
+    phone: '+47 982 12 345',
+    address: 'Strandgata 14, Oslo Distribution Yard, Norway',
+    tier: 'Gold VIP',
+    defaultDiscount: 8,
+    paymentTerms: 'Net 30',
+  },
+  {
+    id: 'CRM-CUST-04',
+    customer: 'Summit Medical Clinic',
+    contact: 'Dr. Sarah Chen',
+    email: 'sarah.chen@summitmed.org',
+    phone: '+1 (555) 732-9012',
+    address: '420 Health Sciences Blvd, Boston, MA',
+    tier: 'Standard',
+    defaultDiscount: 0,
+    paymentTerms: 'Due on Receipt',
+  },
+  {
+    id: 'CRM-CUST-05',
+    customer: 'Highland Residency Club',
+    contact: 'Carlos Mendez',
+    email: 'carlos@highlandresidency.com',
+    phone: '+1 (555) 329-8471',
+    address: '88 Pinnacle Way, Aspen, CO',
+    tier: 'Silver Partner',
+    defaultDiscount: 7,
+    paymentTerms: 'Net 30',
+  },
+  {
+    id: 'CRM-CUST-06',
+    customer: 'Vortex Global Accounting',
+    contact: 'Alicia Patel',
+    email: 'alicia@vortexglobal.com',
+    phone: '+1 (555) 443-8812',
+    address: '100 Financial Plaza, Floor 18, Chicago, IL',
+    tier: 'Gold VIP',
+    defaultDiscount: 12,
+    paymentTerms: 'Net 60',
+  },
+];
+
+export const emailTemplates: EmailTemplate[] = [
+  {
+    id: 'initial_quote',
+    name: 'Initial Proposal Delivery',
+    badge: 'Recommended for Drafts',
+    subject: 'Commercial Quotation {{quoteId}} from Bahi Solutions for {{customer}}',
+    body: `Dear {{contact}},
+
+Thank you for your interest in partnering with Bahi Solutions.
+
+We are pleased to present quotation {{quoteId}} for {{customer}}, detailing the software licenses, hardware devices, and deployment services discussed during our commercial discovery session.
+
+• Quotation ID: {{quoteId}}
+• Total Amount: {{amount}}
+• Validity: {{validUntil}}
+• Payment Terms: {{paymentTerms}}
+
+You can review the full formal proposal document and complete secure digital acceptance via our client portal at:
+https://bahi.app/portal/quotes/{{quoteId}}
+
+Please do not hesitate to contact our team if you need any adjustments or technical clarifications.
+
+Best regards,
+Commercial Sales & Accounts
+Bahi Enterprise Systems`,
+  },
+  {
+    id: 'followup',
+    name: 'Follow-up on Open Proposal',
+    badge: 'Gentle Reminder',
+    subject: 'Follow-up regarding Quotation {{quoteId}} for {{customer}}',
+    body: `Hi {{contact}},
+
+I hope you're having a productive week!
+
+I'm following up regarding quotation {{quoteId}} (Amount: {{amount}}) sent to {{customer}}. Our engineering team has reserved the deployment schedule and implementation slots for your organization.
+
+Proposal link: https://bahi.app/portal/quotes/{{quoteId}}
+
+Are there any questions from your finance or legal review team that we can address to help move this forward?
+
+Looking forward to your thoughts.
+
+Warm regards,
+Commercial Sales & Accounts
+Bahi Enterprise Systems`,
+  },
+  {
+    id: 'revised',
+    name: 'Revised Terms with Special Pricing',
+    badge: 'Updated Revision',
+    subject: 'Updated Quotation {{quoteId}} (v{{version}}) for {{customer}} - Revised Terms',
+    body: `Dear {{contact}},
+
+Following our recent conversation, we have updated quotation {{quoteId}} to reflect our agreed pricing terms and promotional discounts.
+
+• Updated Total: {{amount}} (Inclusive of all agreed line-item discounts)
+• Proposal Version: v{{version}}
+• Valid Through: {{validUntil}}
+
+Please review the revised proposal at your convenience:
+https://bahi.app/portal/quotes/{{quoteId}}
+
+We look forward to partnering with {{customer}} on this initiative.
+
+Best regards,
+Commercial Sales & Accounts
+Bahi Enterprise Systems`,
+  },
+  {
+    id: 'urgency',
+    name: 'Proposal Expiration Alert',
+    badge: 'Expires Soon',
+    subject: 'Action Required: Quotation {{quoteId}} is expiring soon ({{validUntil}})',
+    body: `Dear {{contact}},
+
+This is a friendly reminder that quotation {{quoteId}} for {{customer}} is scheduled to expire on {{validUntil}}.
+
+Current lock-in price: {{amount}}
+
+To ensure that the promotional pricing and hardware allocations remain locked without price adjustments, please review and approve the proposal via our digital portal before the validity period ends:
+https://bahi.app/portal/quotes/{{quoteId}}
+
+If you require an extension, please reply directly to this message.
+
+Sincerely,
+Commercial Sales & Accounts
+Bahi Enterprise Systems`,
+  },
+];
+
+export function calculateQuoteMargin(
+  lines: QuoteLine[],
+  _shippingFee: number = 0
+): {
+  subtotal: number;
+  totalCost: number;
+  grossProfit: number;
+  marginPercent: number;
+  status: 'healthy' | 'moderate' | 'warning';
+} {
+  let subtotal = 0;
+  let totalCost = 0;
+
+  lines.forEach((line) => {
+    subtotal += line.total;
+    const unitCost =
+      line.unitCost !== undefined
+        ? line.unitCost
+        : catalogProducts.find((p) => p.id === line.productId)?.unitCost ?? line.unitPrice * 0.55;
+    totalCost += unitCost * line.quantity;
+  });
+
+  const grossProfit = Math.round((subtotal - totalCost) * 100) / 100;
+  const marginPercent = subtotal > 0 ? Math.round((grossProfit / subtotal) * 1000) / 10 : 0;
+
+  let status: 'healthy' | 'moderate' | 'warning' = 'healthy';
+  if (marginPercent < 20) {
+    status = 'warning';
+  } else if (marginPercent < 35) {
+    status = 'moderate';
+  }
+
+  return {
+    subtotal: Math.round(subtotal * 100) / 100,
+    totalCost: Math.round(totalCost * 100) / 100,
+    grossProfit,
+    marginPercent,
+    status,
+  };
+}
+
+export const catalogProductsOld = catalogProducts;
 
 export const initialQuotes: Quote[] = [
   {
@@ -194,6 +444,8 @@ export const initialQuotes: Quote[] = [
     validUntil: 'Nov 06, 2026',
     subtotal: 1350.00,
     tax: 100.00,
+    taxRate: 7.5,
+    shippingFee: 0,
     amount: 1450.00,
     discountPercent: 5,
     itemsCount: 4,
@@ -203,13 +455,22 @@ export const initialQuotes: Quote[] = [
     version: 2,
     winProbability: 95,
     tags: ['Retail POS', 'Seasonal Promo'],
+    portalViewedAt: 'Oct 23, 2026 14:10',
+    activities: [
+      { id: 'act-91-1', timestamp: 'Oct 20, 2026 09:30 AM', type: 'created', author: 'Alex Morgan', message: 'Initial quotation generated with 2 licenses and 3 thermal receipt printers.' },
+      { id: 'act-91-2', timestamp: 'Oct 20, 2026 11:15 AM', type: 'sent', author: 'Alex Morgan', message: 'Emailed official proposal to maya@greengarden.com.' },
+      { id: 'act-91-3', timestamp: 'Oct 21, 2026 03:45 PM', type: 'viewed', author: 'Client Portal', message: 'Maya Lin viewed the interactive digital proposal via client link.' },
+      { id: 'act-91-4', timestamp: 'Oct 23, 2026 09:00 AM', type: 'revised', author: 'Alex Morgan', message: 'Applied 5% seasonal discount and regenerated Revision v2.' },
+      { id: 'act-91-5', timestamp: 'Oct 23, 2026 02:20 PM', type: 'approved', author: 'Maya Lin', message: 'Client approved proposal terms and accepted commercial conditions.' },
+      { id: 'act-91-6', timestamp: 'Oct 23, 2026 04:00 PM', type: 'note', author: 'Alex Morgan', message: 'Called Maya: Hardware dispatch scheduled for early November installation.' },
+    ],
     revisions: [
       { version: 1, date: 'Oct 20, 2026', author: 'Alex Morgan', amount: 1520.00, discountPercent: 0, notes: 'Initial proposal generated.' },
       { version: 2, date: 'Oct 23, 2026', author: 'Alex Morgan', amount: 1450.00, discountPercent: 5, notes: 'Applied 5% seasonal discount after client pricing review.' }
     ],
     lines: [
-      { id: 'QL-1', productId: 'PROD-01', productName: 'Cloud ERP Core Tenant License', sku: 'ERP-CORE-01', quantity: 2, unitPrice: 450.00, discountPercent: 5, total: 855.00 },
-      { id: 'QL-2', productId: 'PROD-04', productName: 'High-Speed Thermal Receipt Printer', sku: 'HW-PRN-04', quantity: 3, unitPrice: 195.00, discountPercent: 0, total: 585.00 },
+      { id: 'QL-1', productId: 'PROD-01', productName: 'Cloud ERP Core Tenant License', sku: 'ERP-CORE-01', quantity: 2, unitPrice: 450.00, unitCost: 180.00, discountPercent: 5, total: 855.00 },
+      { id: 'QL-2', productId: 'PROD-04', productName: 'High-Speed Thermal Receipt Printer', sku: 'HW-PRN-04', quantity: 3, unitPrice: 195.00, unitCost: 110.00, discountPercent: 0, total: 585.00 },
     ],
   },
   {
@@ -222,6 +483,8 @@ export const initialQuotes: Quote[] = [
     validUntil: 'Nov 12, 2026',
     subtotal: 3500.00,
     tax: 320.00,
+    taxRate: 9.0,
+    shippingFee: 50.00,
     amount: 3820.00,
     discountPercent: 10,
     itemsCount: 8,
@@ -231,12 +494,19 @@ export const initialQuotes: Quote[] = [
     version: 1,
     winProbability: 78,
     tags: ['Logistics', 'Enterprise Hardware'],
+    portalViewedAt: 'Oct 22, 2026 16:30',
+    activities: [
+      { id: 'act-92-1', timestamp: 'Oct 22, 2026 02:15 PM', type: 'created', author: 'Devon Miller', message: 'Created draft proposal with 10 barcode scanners & DB migration package.' },
+      { id: 'act-92-2', timestamp: 'Oct 22, 2026 03:00 PM', type: 'sent', author: 'Devon Miller', message: 'Proposal dispatched to devon@apexlogistics.com with Net 15 terms.' },
+      { id: 'act-92-3', timestamp: 'Oct 22, 2026 04:30 PM', type: 'viewed', author: 'Client Portal', message: 'Proposal viewed from Seattle, WA IP address.' },
+      { id: 'act-92-4', timestamp: 'Oct 24, 2026 11:10 AM', type: 'note', author: 'Devon Miller', message: 'Spoke with IT operations manager: scanning accuracy benchmark approved.' },
+    ],
     revisions: [
       { version: 1, date: 'Oct 22, 2026', author: 'Devon Miller', amount: 3820.00, discountPercent: 10, notes: 'Volume tier discount applied.' }
     ],
     lines: [
-      { id: 'QL-3', productId: 'PROD-02', productName: 'Warehouse IoT Barcode Scanner Terminal', sku: 'HW-SCAN-80', quantity: 10, unitPrice: 280.00, discountPercent: 10, total: 2520.00 },
-      { id: 'QL-4', productId: 'PROD-05', productName: 'Dedicated Database Replica Migration', sku: 'SVC-MIG-05', quantity: 1, unitPrice: 850.00, discountPercent: 0, total: 850.00 },
+      { id: 'QL-3', productId: 'PROD-02', productName: 'Warehouse IoT Barcode Scanner Terminal', sku: 'HW-SCAN-80', quantity: 10, unitPrice: 280.00, unitCost: 155.00, discountPercent: 10, total: 2520.00 },
+      { id: 'QL-4', productId: 'PROD-05', productName: 'Dedicated Database Replica Migration', sku: 'SVC-MIG-05', quantity: 1, unitPrice: 850.00, unitCost: 320.00, discountPercent: 0, total: 850.00 },
     ],
   },
   {
@@ -249,6 +519,8 @@ export const initialQuotes: Quote[] = [
     validUntil: 'Nov 04, 2026',
     subtotal: 5100.00,
     tax: 500.00,
+    taxRate: 10.0,
+    shippingFee: 120.00,
     amount: 5600.00,
     discountPercent: 8,
     itemsCount: 12,
@@ -258,14 +530,21 @@ export const initialQuotes: Quote[] = [
     version: 1,
     winProbability: 100,
     tags: ['Global', 'Warehouse'],
+    portalViewedAt: 'Oct 21, 2026 13:00',
+    activities: [
+      { id: 'act-93-1', timestamp: 'Oct 21, 2026 11:00 AM', type: 'created', author: 'Current User', message: 'Proposal created for Scandinavian hub deployment.' },
+      { id: 'act-93-2', timestamp: 'Oct 21, 2026 11:30 AM', type: 'sent', author: 'Current User', message: 'Proposal sent to erik@nordicwh.no.' },
+      { id: 'act-93-3', timestamp: 'Oct 22, 2026 02:15 PM', type: 'signed', author: 'Erik Solberg', message: 'Digitally signed by Erik Solberg (VP Operations).' },
+      { id: 'act-93-4', timestamp: 'Oct 22, 2026 02:16 PM', type: 'converted', author: 'System Automation', message: 'Automatically converted to confirmed Sales Order SO-2026-103.' },
+    ],
     signature: {
       signedBy: 'Erik Solberg',
       title: 'VP Operations',
       signedAt: 'Oct 22, 2026 14:15 CET',
     },
     lines: [
-      { id: 'QL-5', productId: 'PROD-01', productName: 'Cloud ERP Core Tenant License', sku: 'ERP-CORE-01', quantity: 6, unitPrice: 450.00, discountPercent: 8, total: 2484.00 },
-      { id: 'QL-6', productId: 'PROD-02', productName: 'Warehouse IoT Barcode Scanner Terminal', sku: 'HW-SCAN-80', quantity: 10, unitPrice: 280.00, discountPercent: 5, total: 2660.00 },
+      { id: 'QL-5', productId: 'PROD-01', productName: 'Cloud ERP Core Tenant License', sku: 'ERP-CORE-01', quantity: 6, unitPrice: 450.00, unitCost: 180.00, discountPercent: 8, total: 2484.00 },
+      { id: 'QL-6', productId: 'PROD-02', productName: 'Warehouse IoT Barcode Scanner Terminal', sku: 'HW-SCAN-80', quantity: 10, unitPrice: 280.00, unitCost: 155.00, discountPercent: 5, total: 2660.00 },
     ],
   },
   {
@@ -278,6 +557,8 @@ export const initialQuotes: Quote[] = [
     validUntil: 'Oct 29, 2026', // within 2 days to trigger urgency radar!
     subtotal: 850.00,
     tax: 70.00,
+    taxRate: 8.2,
+    shippingFee: 0,
     amount: 920.00,
     discountPercent: 0,
     itemsCount: 2,
@@ -287,9 +568,13 @@ export const initialQuotes: Quote[] = [
     version: 1,
     winProbability: 62,
     tags: ['Healthcare', 'Clinical Add-on'],
+    activities: [
+      { id: 'act-94-1', timestamp: 'Oct 20, 2026 10:00 AM', type: 'created', author: 'Sarah Lin', message: 'Generated draft quotation for clinic outpatient department.' },
+      { id: 'act-94-2', timestamp: 'Oct 22, 2026 03:10 PM', type: 'note', author: 'Sarah Lin', message: 'Internal review: Clinic requested technician field dispatch module demonstration.' },
+    ],
     lines: [
-      { id: 'QL-7', productId: 'PROD-01', productName: 'Cloud ERP Core Tenant License', sku: 'ERP-CORE-01', quantity: 1, unitPrice: 450.00, discountPercent: 0, total: 450.00 },
-      { id: 'QL-8', productId: 'PROD-03', productName: 'Technician Field Dispatch App Add-On', sku: 'SVC-DISP-03', quantity: 3, unitPrice: 120.00, discountPercent: 0, total: 360.00 },
+      { id: 'QL-7', productId: 'PROD-01', productName: 'Cloud ERP Core Tenant License', sku: 'ERP-CORE-01', quantity: 1, unitPrice: 450.00, unitCost: 180.00, discountPercent: 0, total: 450.00 },
+      { id: 'QL-8', productId: 'PROD-03', productName: 'Technician Field Dispatch App Add-On', sku: 'SVC-DISP-03', quantity: 3, unitPrice: 120.00, unitCost: 45.00, discountPercent: 0, total: 360.00 },
     ],
   },
   {
@@ -302,6 +587,8 @@ export const initialQuotes: Quote[] = [
     validUntil: 'Nov 02, 2026',
     subtotal: 1980.00,
     tax: 170.00,
+    taxRate: 8.5,
+    shippingFee: 0,
     amount: 2150.00,
     discountPercent: 7,
     itemsCount: 5,
@@ -311,13 +598,20 @@ export const initialQuotes: Quote[] = [
     version: 2,
     winProbability: 91,
     tags: ['Hospitality', 'Audit Verified'],
+    portalViewedAt: 'Oct 19, 2026 15:30',
+    activities: [
+      { id: 'act-95-1', timestamp: 'Oct 15, 2026 09:15 AM', type: 'created', author: 'Sarah Lin', message: 'Quotation v1 generated.' },
+      { id: 'act-95-2', timestamp: 'Oct 15, 2026 10:30 AM', type: 'sent', author: 'Sarah Lin', message: 'Sent proposal to carlos@highlandresidency.com.' },
+      { id: 'act-95-3', timestamp: 'Oct 19, 2026 02:00 PM', type: 'revised', author: 'Sarah Lin', message: 'Board approved multi-year agreement discount. Revision v2 created.' },
+      { id: 'act-95-4', timestamp: 'Oct 19, 2026 04:45 PM', type: 'approved', author: 'Carlos Mendez', message: 'Carlos Mendez approved commercial quotation.' },
+    ],
     revisions: [
       { version: 1, date: 'Oct 15, 2026', author: 'Sarah Lin', amount: 2310.00, discountPercent: 0, notes: 'Standard quote.' },
       { version: 2, date: 'Oct 19, 2026', author: 'Sarah Lin', amount: 2150.00, discountPercent: 7, notes: 'Board approved multi-year agreement discount.' }
     ],
     lines: [
-      { id: 'QL-9', productId: 'PROD-01', productName: 'Cloud ERP Core Tenant License', sku: 'ERP-CORE-01', quantity: 3, unitPrice: 450.00, discountPercent: 7, total: 1255.50 },
-      { id: 'QL-10', productId: 'PROD-06', productName: 'Multi-Tenant Security & Compliance Audit', sku: 'SEC-AUD-06', quantity: 1, unitPrice: 1200.00, discountPercent: 10, total: 1080.00 },
+      { id: 'QL-9', productId: 'PROD-01', productName: 'Cloud ERP Core Tenant License', sku: 'ERP-CORE-01', quantity: 3, unitPrice: 450.00, unitCost: 180.00, discountPercent: 7, total: 1255.50 },
+      { id: 'QL-10', productId: 'PROD-06', productName: 'Multi-Tenant Security & Compliance Audit', sku: 'SEC-AUD-06', quantity: 1, unitPrice: 1200.00, unitCost: 450.00, discountPercent: 10, total: 1080.00 },
     ],
   },
   {
@@ -330,6 +624,8 @@ export const initialQuotes: Quote[] = [
     validUntil: 'Oct 25, 2026',
     subtotal: 7800.00,
     tax: 650.00,
+    taxRate: 8.3,
+    shippingFee: 0,
     amount: 8450.00,
     discountPercent: 12,
     itemsCount: 15,
@@ -339,9 +635,14 @@ export const initialQuotes: Quote[] = [
     version: 1,
     winProbability: 38,
     tags: ['Finance Enterprise', 'Re-quote Target'],
+    activities: [
+      { id: 'act-96-1', timestamp: 'Oct 18, 2026 11:30 AM', type: 'created', author: 'Devon Miller', message: 'Initial enterprise quotation drafted.' },
+      { id: 'act-96-2', timestamp: 'Oct 18, 2026 12:15 PM', type: 'sent', author: 'Devon Miller', message: 'Dispatched to alicia@vortexglobal.com with Net 60 terms.' },
+      { id: 'act-96-3', timestamp: 'Oct 26, 2026 09:00 AM', type: 'note', author: 'System Automation', message: 'Quote lapsed past validity expiration date (Oct 25, 2026).' },
+    ],
     lines: [
-      { id: 'QL-11', productId: 'PROD-01', productName: 'Cloud ERP Core Tenant License', sku: 'ERP-CORE-01', quantity: 10, unitPrice: 450.00, discountPercent: 12, total: 3960.00 },
-      { id: 'QL-12', productId: 'PROD-06', productName: 'Multi-Tenant Security & Compliance Audit', sku: 'SEC-AUD-06', quantity: 3, unitPrice: 1200.00, discountPercent: 10, total: 3240.00 },
+      { id: 'QL-11', productId: 'PROD-01', productName: 'Cloud ERP Core Tenant License', sku: 'ERP-CORE-01', quantity: 10, unitPrice: 450.00, unitCost: 180.00, discountPercent: 12, total: 3960.00 },
+      { id: 'QL-12', productId: 'PROD-06', productName: 'Multi-Tenant Security & Compliance Audit', sku: 'SEC-AUD-06', quantity: 3, unitPrice: 1200.00, unitCost: 450.00, discountPercent: 10, total: 3240.00 },
     ],
   },
 ];

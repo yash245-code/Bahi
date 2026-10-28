@@ -19,6 +19,7 @@ import { useSalesStore } from '@/components/sales/useSalesStore';
 import { NewQuoteModal } from '@/components/sales/NewQuoteModal';
 import { NewOrderModal } from '@/components/sales/NewOrderModal';
 import { QuoteDetailsModal } from '@/components/sales/QuoteDetailsModal';
+import { SendQuoteEmailModal } from '@/components/sales/SendQuoteEmailModal';
 import { OrderDetailsModal } from '@/components/sales/OrderDetailsModal';
 import { Quote, SalesOrder, formatCurrency, getExpiryStatus } from '@/components/sales/salesData';
 
@@ -33,8 +34,13 @@ export default function SalesOverviewPage() {
     ordersBookedValue,
     winRate,
     addQuote,
+    updateQuote,
     updateQuoteStatus,
     convertQuoteToOrder,
+    convertQuoteToInvoice,
+    sendQuoteEmail,
+    addQuoteInternalNote,
+    simulateClientView,
     addOrder,
     updateOrderStatus,
     extendQuoteValidity,
@@ -44,9 +50,13 @@ export default function SalesOverviewPage() {
   } = useSalesStore();
 
   const [quoteModalOpen, setQuoteModalOpen] = useState(false);
+  const [quoteToEdit, setQuoteToEdit] = useState<Quote | null>(null);
   const [orderModalOpen, setOrderModalOpen] = useState(false);
-  const [selectedQuote, setSelectedQuote] = useState<Quote | null>(null);
+  const [selectedQuoteId, setSelectedQuoteId] = useState<string | null>(null);
+  const [emailModalQuote, setEmailModalQuote] = useState<Quote | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<SalesOrder | null>(null);
+
+  const selectedQuote = quotes.find((q) => q.id === selectedQuoteId) || null;
 
   // Stats calculation
   const draftQuotesCount = quotes.filter((q) => q.status === 'Draft').length;
@@ -295,7 +305,7 @@ export default function SalesOverviewPage() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => setSelectedQuote(uq)}
+                    onClick={() => setSelectedQuoteId(uq.id)}
                     className="text-xs font-bold text-accent hover:underline cursor-pointer"
                   >
                     Review →
@@ -376,7 +386,7 @@ export default function SalesOverviewPage() {
               return (
                 <div
                   key={q.id}
-                  onClick={() => setSelectedQuote(q)}
+                  onClick={() => setSelectedQuoteId(q.id)}
                   className="p-4 hover:bg-[#FAF9F5] dark:hover:bg-[#141513] transition-colors cursor-pointer group flex items-center justify-between gap-3"
                 >
                   <div className="min-w-0">
@@ -497,8 +507,21 @@ export default function SalesOverviewPage() {
       <NewQuoteModal
         isOpen={quoteModalOpen}
         currency={currency}
-        onClose={() => setQuoteModalOpen(false)}
+        quoteToEdit={quoteToEdit}
+        onClose={() => {
+          setQuoteModalOpen(false);
+          setQuoteToEdit(null);
+        }}
         onCreateQuote={addQuote}
+        onUpdateQuote={updateQuote}
+      />
+
+      <SendQuoteEmailModal
+        isOpen={Boolean(emailModalQuote)}
+        quote={emailModalQuote}
+        currency={currency}
+        onClose={() => setEmailModalQuote(null)}
+        onSendEmail={sendQuoteEmail}
       />
 
       <NewOrderModal
@@ -511,13 +534,21 @@ export default function SalesOverviewPage() {
         quote={selectedQuote}
         currency={currency}
         isOpen={Boolean(selectedQuote)}
-        onClose={() => setSelectedQuote(null)}
+        onClose={() => setSelectedQuoteId(null)}
         onConvertToOrder={convertQuoteToOrder}
+        onConvertToInvoice={convertQuoteToInvoice}
         onStatusChange={updateQuoteStatus}
         onExtendValidity={extendQuoteValidity}
         onCreateRevision={createQuoteRevision}
         onDuplicateQuote={duplicateQuote}
         onSignAndAccept={signAndAcceptQuote}
+        onOpenEmailModal={(q) => setEmailModalQuote(q)}
+        onEditQuote={(q) => {
+          setQuoteToEdit(q);
+          setQuoteModalOpen(true);
+        }}
+        onAddInternalNote={addQuoteInternalNote}
+        onSimulateClientView={simulateClientView}
       />
 
       <OrderDetailsModal

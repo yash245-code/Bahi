@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
   FileSpreadsheet,
   Search,
@@ -16,14 +16,35 @@ import {
   Download,
   X,
   AlertCircle,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+  Mail,
+  Edit,
+  Sparkles,
+  Clock,
+  DollarSign,
 } from 'lucide-react';
 import { SalesNav } from '@/components/sales/SalesNav';
 import { useSalesStore } from '@/components/sales/useSalesStore';
 import { NewQuoteModal } from '@/components/sales/NewQuoteModal';
 import { NewOrderModal } from '@/components/sales/NewOrderModal';
+import { SendQuoteEmailModal } from '@/components/sales/SendQuoteEmailModal';
 import { QuoteDetailsModal } from '@/components/sales/QuoteDetailsModal';
 import { QuoteKanbanBoard } from '@/components/sales/QuoteKanbanBoard';
 import { Quote, formatCurrency, getExpiryStatus } from '@/components/sales/salesData';
+
+type SortColumn =
+  | 'id'
+  | 'customer'
+  | 'date'
+  | 'validUntil'
+  | 'itemsCount'
+  | 'winProbability'
+  | 'status'
+  | 'amount';
+
+type QuickChip = 'all' | 'urgent' | 'high_value' | 'followup' | 'high_odds';
 
 export default function QuotationsPage() {
   const {
@@ -46,26 +67,100 @@ export default function QuotationsPage() {
     toastMessage,
     pipelineValue,
     addQuote,
+    updateQuote,
     updateQuoteStatus,
     convertQuoteToOrder,
+    convertQuoteToInvoice,
+    sendQuoteEmail,
+    addQuoteInternalNote,
+    simulateClientView,
     addOrder,
   } = useSalesStore();
 
   const [filter, setFilter] = useState<string>('all');
+  const [quickChip, setQuickChip] = useState<QuickChip>('all');
   const [search, setSearch] = useState('');
-  const [quoteModalOpen, setQuoteModalOpen] = useState(false);
-  const [orderModalOpen, setOrderModalOpen] = useState(false);
-  const [selectedQuote, setSelectedQuote] = useState<Quote | null>(null);
+  const [sortColumn, setSortColumn] = useState<SortColumn>('date');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
-  const filteredQuotes = quotes.filter((q) => {
-    const matchesFilter =
-      filter === 'all' || q.status.toLowerCase() === filter.toLowerCase();
-    const matchesSearch =
-      q.customer.toLowerCase().includes(search.toLowerCase()) ||
-      q.id.toLowerCase().includes(search.toLowerCase()) ||
-      q.contact.toLowerCase().includes(search.toLowerCase());
-    return matchesFilter && matchesSearch;
-  });
+  // Modals state
+  const [quoteModalOpen, setQuoteModalOpen] = useState(false);
+  const [quoteToEdit, setQuoteToEdit] = useState<Quote | null>(null);
+  const [orderModalOpen, setOrderModalOpen] = useState(false);
+  const [selectedQuoteId, setSelectedQuoteId] = useState<string | null>(null);
+  const [emailModalQuote, setEmailModalQuote] = useState<Quote | null>(null);
+
+  // Keep selectedQuote reactive to store updates
+  const selectedQuote = useMemo(
+    () => quotes.find((q) => q.id === selectedQuoteId) || null,
+    [quotes, selectedQuoteId]
+  );
+
+  // Sorting Handler
+  const handleSort = (col: SortColumn) => {
+    if (sortColumn === col) {
+      setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortColumn(col);
+      setSortDirection('desc');
+    }
+  };
+
+  // Filter & Search Logic
+  const filteredQuotes = useMemo(() => {
+    return quotes.filter((q) => {
+      // Status Tab filter
+      const matchesStatusTab =
+        filter === 'all' || q.status.toLowerCase() === filter.toLowerCase();
+
+      // Quick Chip filter
+      let matchesChip = true;
+      if (quickChip === 'urgent') {
+        const exp = getExpiryStatus(q.validUntil);
+        matchesChip = (exp.isUrgent || exp.isExpired) && q.status !== 'Converted';
+      } else if (quickChip === 'high_value') {
+        matchesChip = q.amount >= 3000;
+      } else if (quickChip === 'followup') {
+        matchesChip = q.status === 'Sent';
+      } else if (quickChip === 'high_odds') {
+        matchesChip = (q.winProbability ?? 0) >= 80;
+      }
+
+      // Search match
+      const matchesSearch =
+        q.customer.toLowerCase().includes(search.toLowerCase()) ||
+        q.id.toLowerCase().includes(search.toLowerCase()) ||
+        q.contact.toLowerCase().includes(search.toLowerCase()) ||
+        (q.notes && q.notes.toLowerCase().includes(search.toLowerCase()));
+
+      return matchesStatusTab && matchesChip && matchesSearch;
+    });
+  }, [quotes, filter, quickChip, search]);
+
+  // Sorted Quotes
+  const sortedQuotes = useMemo(() => {
+    return [...filteredQuotes].sort((a, b) => {
+      let result = 0;
+      if (sortColumn === 'id') {
+        result = a.id.localeCompare(b.id);
+      } else if (sortColumn === 'customer') {
+        result = a.customer.localeCompare(b.customer);
+      } else if (sortColumn === 'date') {
+        result = new Date(a.date).getTime() - new Date(b.date).getTime();
+      } else if (sortColumn === 'validUntil') {
+        result = new Date(a.validUntil).getTime() - new Date(b.validUntil).getTime();
+      } else if (sortColumn === 'itemsCount') {
+        result = a.itemsCount - b.itemsCount;
+      } else if (sortColumn === 'winProbability') {
+        result = (a.winProbability ?? 0) - (b.winProbability ?? 0);
+      } else if (sortColumn === 'status') {
+        result = a.status.localeCompare(b.status);
+      } else if (sortColumn === 'amount') {
+        result = a.amount - b.amount;
+      }
+      return sortDirection === 'asc' ? result : -result;
+    });
+  }, [filteredQuotes, sortColumn, sortDirection]);
 
   const filterTabs = [
     { id: 'all', label: 'All Quotes', count: quotes.length },
@@ -76,16 +171,25 @@ export default function QuotationsPage() {
     { id: 'expired', label: 'Expired', count: quotes.filter((q) => q.status === 'Expired').length },
   ];
 
+  // Quick Chips Counts
+  const urgentCount = quotes.filter((q) => {
+    const exp = getExpiryStatus(q.validUntil);
+    return (exp.isUrgent || exp.isExpired) && q.status !== 'Converted';
+  }).length;
+  const highValCount = quotes.filter((q) => q.amount >= 3000).length;
+  const followupCount = quotes.filter((q) => q.status === 'Sent').length;
+  const highOddsCount = quotes.filter((q) => (q.winProbability ?? 0) >= 80).length;
+
   // Batch selection calculations
   const allFilteredSelected =
-    filteredQuotes.length > 0 &&
-    filteredQuotes.every((q) => selectedQuoteIds.includes(q.id));
+    sortedQuotes.length > 0 &&
+    sortedQuotes.every((q) => selectedQuoteIds.includes(q.id));
 
   const handleToggleSelectAll = () => {
     if (allFilteredSelected) {
       clearSelectedQuotes();
     } else {
-      selectAllQuotes(filteredQuotes.map((q) => q.id));
+      selectAllQuotes(sortedQuotes.map((q) => q.id));
     }
   };
 
@@ -96,8 +200,16 @@ export default function QuotationsPage() {
   const handleExportCSV = () => {
     const selected = quotes.filter((q) => selectedQuoteIds.includes(q.id));
     const rows = [
-      ['Quote ID', 'Customer', 'Contact', 'Amount (USD)', 'Status', 'Valid Until'],
-      ...selected.map((q) => [q.id, q.customer, q.contact, q.amount.toString(), q.status, q.validUntil]),
+      ['Quote ID', 'Customer', 'Contact', 'Amount (USD)', 'Status', 'Valid Until', 'Win Odds %'],
+      ...selected.map((q) => [
+        q.id,
+        q.customer,
+        q.contact,
+        q.amount.toString(),
+        q.status,
+        q.validUntil,
+        (q.winProbability ?? 70).toString(),
+      ]),
     ];
     const csvContent = 'data:text/csv;charset=utf-8,' + rows.map((e) => e.join(',')).join('\n');
     const encodedUri = encodeURI(csvContent);
@@ -109,11 +221,25 @@ export default function QuotationsPage() {
     document.body.removeChild(link);
   };
 
-  // Urgent quotes calculation
-  const urgentQuotesCount = quotes.filter((q) => {
-    const exp = getExpiryStatus(q.validUntil);
-    return (exp.isUrgent || exp.isExpired) && q.status !== 'Converted';
-  }).length;
+  const handleEditQuote = (q: Quote) => {
+    setQuoteToEdit(q);
+    setQuoteModalOpen(true);
+  };
+
+  const handleOpenEmailModal = (q: Quote) => {
+    setEmailModalQuote(q);
+  };
+
+  const renderSortIndicator = (col: SortColumn) => {
+    if (sortColumn !== col) {
+      return <ArrowUpDown className="w-3 h-3 text-ink-muted/40 inline ml-1" />;
+    }
+    return sortDirection === 'asc' ? (
+      <ArrowUp className="w-3 h-3 text-accent inline ml-1" />
+    ) : (
+      <ArrowDown className="w-3 h-3 text-accent inline ml-1" />
+    );
+  };
 
   return (
     <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-6 animate-fade-in relative pb-28">
@@ -132,7 +258,10 @@ export default function QuotationsPage() {
         pipelineTotal={formatCurrency(pipelineValue, currency)}
         currency={currency}
         onCurrencyChange={setCurrency}
-        onNewQuote={() => setQuoteModalOpen(true)}
+        onNewQuote={() => {
+          setQuoteToEdit(null);
+          setQuoteModalOpen(true);
+        }}
         onNewOrder={() => setOrderModalOpen(true)}
       />
 
@@ -142,12 +271,12 @@ export default function QuotationsPage() {
           <div className="flex items-center gap-2 mb-1 flex-wrap">
             <h2 className="text-lg font-extrabold text-ink dark:text-neutral-100 tracking-tight flex items-center gap-2">
               <FileSpreadsheet className="w-5 h-5 text-accent" />
-              <span>Commercial Quotations &amp; Price Proposals</span>
+              <span>Commercial Quotations &amp; Proposals</span>
             </h2>
-            {urgentQuotesCount > 0 && (
+            {urgentCount > 0 && (
               <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/30 flex items-center gap-1">
                 <AlertCircle className="w-3 h-3 text-amber-500" />
-                <span>{urgentQuotesCount} Action Required</span>
+                <span>{urgentCount} Expiring Soon</span>
               </span>
             )}
           </div>
@@ -190,7 +319,10 @@ export default function QuotationsPage() {
 
           <button
             type="button"
-            onClick={() => setQuoteModalOpen(true)}
+            onClick={() => {
+              setQuoteToEdit(null);
+              setQuoteModalOpen(true);
+            }}
             className="px-4 py-2 text-xs font-bold rounded-xl bg-accent text-white hover:bg-accent-hover transition-colors shadow-xs flex items-center gap-1.5 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
@@ -202,9 +334,9 @@ export default function QuotationsPage() {
       {/* ─── KANBAN VIEW ─── */}
       {activeView === 'kanban' ? (
         <QuoteKanbanBoard
-          quotes={filteredQuotes}
+          quotes={sortedQuotes}
           currency={currency}
-          onSelectQuote={(q) => setSelectedQuote(q)}
+          onSelectQuote={(q) => setSelectedQuoteId(q.id)}
           onUpdateStatus={updateQuoteStatus}
           onConvertToOrder={convertQuoteToOrder}
           onExtendValidity={extendQuoteValidity}
@@ -247,7 +379,7 @@ export default function QuotationsPage() {
               <Search className="w-4 h-4 text-ink-muted dark:text-neutral-500 absolute left-3 top-2.5" />
               <input
                 type="text"
-                placeholder="Search by client, ID, or contact..."
+                placeholder="Search by client, ID, or notes..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full text-xs pl-9 pr-3 py-2 rounded-xl border border-border dark:border-[#2A2B27] bg-white dark:bg-[#141513] text-ink dark:text-white placeholder:text-ink-muted/60 focus:outline-hidden focus:border-accent shadow-2xs"
@@ -255,9 +387,80 @@ export default function QuotationsPage() {
             </div>
           </div>
 
+          {/* Quick Filter Chips Sub-bar */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs no-scrollbar">
+            <span className="text-[11px] font-bold text-ink-muted dark:text-neutral-500 uppercase tracking-wider shrink-0 mr-1">
+              Quick Filter:
+            </span>
+
+            <button
+              type="button"
+              onClick={() => setQuickChip('all')}
+              className={`px-2.5 py-1 rounded-lg border transition-all cursor-pointer whitespace-nowrap ${
+                quickChip === 'all'
+                  ? 'border-accent bg-accent/10 text-accent font-bold'
+                  : 'border-border dark:border-[#2A2B27] text-ink-muted hover:text-ink dark:hover:text-white'
+              }`}
+            >
+              All Items ({quotes.length})
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setQuickChip('urgent')}
+              className={`px-2.5 py-1 rounded-lg border transition-all cursor-pointer whitespace-nowrap flex items-center gap-1 ${
+                quickChip === 'urgent'
+                  ? 'border-amber-500 bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold'
+                  : 'border-border dark:border-[#2A2B27] text-ink-muted hover:text-ink dark:hover:text-white'
+              }`}
+            >
+              <Clock className="w-3 h-3 text-amber-500" />
+              <span>Expiring Soon ({urgentCount})</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setQuickChip('high_value')}
+              className={`px-2.5 py-1 rounded-lg border transition-all cursor-pointer whitespace-nowrap flex items-center gap-1 ${
+                quickChip === 'high_value'
+                  ? 'border-emerald-500 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold'
+                  : 'border-border dark:border-[#2A2B27] text-ink-muted hover:text-ink dark:hover:text-white'
+              }`}
+            >
+              <DollarSign className="w-3 h-3 text-emerald-500" />
+              <span>High Value &gt; $3k ({highValCount})</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setQuickChip('followup')}
+              className={`px-2.5 py-1 rounded-lg border transition-all cursor-pointer whitespace-nowrap flex items-center gap-1 ${
+                quickChip === 'followup'
+                  ? 'border-blue-500 bg-blue-500/10 text-blue-600 dark:text-blue-400 font-bold'
+                  : 'border-border dark:border-[#2A2B27] text-ink-muted hover:text-ink dark:hover:text-white'
+              }`}
+            >
+              <Mail className="w-3 h-3 text-blue-500" />
+              <span>Needs Follow-up ({followupCount})</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setQuickChip('high_odds')}
+              className={`px-2.5 py-1 rounded-lg border transition-all cursor-pointer whitespace-nowrap flex items-center gap-1 ${
+                quickChip === 'high_odds'
+                  ? 'border-purple-500 bg-purple-500/10 text-purple-600 dark:text-purple-400 font-bold'
+                  : 'border-border dark:border-[#2A2B27] text-ink-muted hover:text-ink dark:hover:text-white'
+              }`}
+            >
+              <Sparkles className="w-3 h-3 text-purple-500" />
+              <span>High Win Odds &ge; 80% ({highOddsCount})</span>
+            </button>
+          </div>
+
           {/* Quotes Data Table */}
           <div className="border border-border/80 dark:border-[#2A2B27] rounded-xl overflow-x-auto">
-            <table className="w-full text-left text-xs min-w-[850px]">
+            <table className="w-full text-left text-xs min-w-[920px]">
               <thead className="bg-[#FAF9F5] dark:bg-[#141513] text-ink-muted dark:text-neutral-400 font-bold uppercase tracking-wider border-b border-border dark:border-[#2A2B27]">
                 <tr>
                   <th className="py-3 px-3 text-center w-10">
@@ -269,26 +472,74 @@ export default function QuotationsPage() {
                       title="Select All Quotes"
                     />
                   </th>
-                  <th className="py-3 px-4">Quote Ref</th>
-                  <th className="py-3 px-4">Client / Company</th>
-                  <th className="py-3 px-4">Issue Date</th>
-                  <th className="py-3 px-4">Validity / Expiry</th>
-                  <th className="py-3 px-4 text-center">Items</th>
-                  <th className="py-3 px-4">Win Odds</th>
-                  <th className="py-3 px-4">Status</th>
-                  <th className="py-3 px-4 text-right">Amount ({currency})</th>
-                  <th className="py-3 px-4 text-right">Actions</th>
+                  <th
+                    className="py-3 px-4 cursor-pointer hover:text-accent select-none"
+                    onClick={() => handleSort('id')}
+                  >
+                    <span>Quote Ref</span>
+                    {renderSortIndicator('id')}
+                  </th>
+                  <th
+                    className="py-3 px-4 cursor-pointer hover:text-accent select-none"
+                    onClick={() => handleSort('customer')}
+                  >
+                    <span>Client / Company</span>
+                    {renderSortIndicator('customer')}
+                  </th>
+                  <th
+                    className="py-3 px-4 cursor-pointer hover:text-accent select-none"
+                    onClick={() => handleSort('date')}
+                  >
+                    <span>Issue Date</span>
+                    {renderSortIndicator('date')}
+                  </th>
+                  <th
+                    className="py-3 px-4 cursor-pointer hover:text-accent select-none"
+                    onClick={() => handleSort('validUntil')}
+                  >
+                    <span>Validity / Expiry</span>
+                    {renderSortIndicator('validUntil')}
+                  </th>
+                  <th
+                    className="py-3 px-4 text-center cursor-pointer hover:text-accent select-none"
+                    onClick={() => handleSort('itemsCount')}
+                  >
+                    <span>Items</span>
+                    {renderSortIndicator('itemsCount')}
+                  </th>
+                  <th
+                    className="py-3 px-4 cursor-pointer hover:text-accent select-none"
+                    onClick={() => handleSort('winProbability')}
+                  >
+                    <span>Win Odds</span>
+                    {renderSortIndicator('winProbability')}
+                  </th>
+                  <th
+                    className="py-3 px-4 cursor-pointer hover:text-accent select-none"
+                    onClick={() => handleSort('status')}
+                  >
+                    <span>Status</span>
+                    {renderSortIndicator('status')}
+                  </th>
+                  <th
+                    className="py-3 px-4 text-right cursor-pointer hover:text-accent select-none"
+                    onClick={() => handleSort('amount')}
+                  >
+                    <span>Amount ({currency})</span>
+                    {renderSortIndicator('amount')}
+                  </th>
+                  <th className="py-3 px-4 text-right">Quick Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border/60 dark:divide-[#2A2B27]">
-                {filteredQuotes.length === 0 ? (
+                {sortedQuotes.length === 0 ? (
                   <tr>
                     <td colSpan={10} className="py-10 text-center text-ink-muted dark:text-neutral-500">
                       No quotations match the active filter or search criteria.
                     </td>
                   </tr>
                 ) : (
-                  filteredQuotes.map((q) => {
+                  sortedQuotes.map((q) => {
                     const isSelected = selectedQuoteIds.includes(q.id);
                     const expiry = getExpiryStatus(q.validUntil);
                     const winOdds = q.winProbability ?? 72;
@@ -301,7 +552,7 @@ export default function QuotationsPage() {
                             ? 'bg-accent/5 dark:bg-accent/10'
                             : 'hover:bg-neutral-50 dark:hover:bg-neutral-800/40'
                         }`}
-                        onClick={() => setSelectedQuote(q)}
+                        onClick={() => setSelectedQuoteId(q.id)}
                       >
                         <td
                           className="py-3.5 px-3 text-center"
@@ -399,9 +650,32 @@ export default function QuotationsPage() {
                         </td>
                         <td className="py-3.5 px-4 text-right">
                           <div
-                            className="flex items-center justify-end gap-1.5"
+                            className="flex items-center justify-end gap-1"
                             onClick={(e) => e.stopPropagation()}
                           >
+                            {/* Fast Email Button */}
+                            <button
+                              type="button"
+                              onClick={() => handleOpenEmailModal(q)}
+                              className="p-1.5 rounded-lg text-ink-muted hover:text-accent hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
+                              title="Email Proposal to Client"
+                            >
+                              <Mail className="w-3.5 h-3.5" />
+                            </button>
+
+                            {/* Fast Edit Button */}
+                            {q.status !== 'Converted' && (
+                              <button
+                                type="button"
+                                onClick={() => handleEditQuote(q)}
+                                className="p-1.5 rounded-lg text-ink-muted hover:text-accent hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
+                                title="Edit Quotation"
+                              >
+                                <Edit className="w-3.5 h-3.5" />
+                              </button>
+                            )}
+
+                            {/* Fast Duplicate Button */}
                             <button
                               type="button"
                               onClick={() => duplicateQuote(q.id)}
@@ -411,15 +685,17 @@ export default function QuotationsPage() {
                               <Copy className="w-3.5 h-3.5" />
                             </button>
 
+                            {/* View Details Button */}
                             <button
                               type="button"
-                              onClick={() => setSelectedQuote(q)}
+                              onClick={() => setSelectedQuoteId(q.id)}
                               className="p-1.5 rounded-lg text-ink-muted hover:text-ink hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
                               title="View Details"
                             >
                               <Eye className="w-3.5 h-3.5" />
                             </button>
 
+                            {/* Book Order Button */}
                             {q.status !== 'Converted' ? (
                               <button
                                 type="button"
@@ -511,8 +787,21 @@ export default function QuotationsPage() {
       <NewQuoteModal
         isOpen={quoteModalOpen}
         currency={currency}
-        onClose={() => setQuoteModalOpen(false)}
+        quoteToEdit={quoteToEdit}
+        onClose={() => {
+          setQuoteModalOpen(false);
+          setQuoteToEdit(null);
+        }}
         onCreateQuote={addQuote}
+        onUpdateQuote={updateQuote}
+      />
+
+      <SendQuoteEmailModal
+        isOpen={Boolean(emailModalQuote)}
+        quote={emailModalQuote}
+        currency={currency}
+        onClose={() => setEmailModalQuote(null)}
+        onSendEmail={sendQuoteEmail}
       />
 
       <NewOrderModal
@@ -525,13 +814,18 @@ export default function QuotationsPage() {
         quote={selectedQuote}
         isOpen={Boolean(selectedQuote)}
         currency={currency}
-        onClose={() => setSelectedQuote(null)}
+        onClose={() => setSelectedQuoteId(null)}
         onConvertToOrder={convertQuoteToOrder}
+        onConvertToInvoice={convertQuoteToInvoice}
         onStatusChange={updateQuoteStatus}
         onExtendValidity={extendQuoteValidity}
         onCreateRevision={createQuoteRevision}
         onDuplicateQuote={duplicateQuote}
         onSignAndAccept={signAndAcceptQuote}
+        onOpenEmailModal={handleOpenEmailModal}
+        onEditQuote={handleEditQuote}
+        onAddInternalNote={addQuoteInternalNote}
+        onSimulateClientView={simulateClientView}
       />
     </div>
   );

@@ -181,6 +181,13 @@ export interface SalesOrderLine {
   total: number;
 }
 
+export interface SalesOrderNote {
+  id: string;
+  timestamp: string;
+  author: string;
+  text: string;
+}
+
 export interface SalesOrder {
   id: string;
   quoteRef?: string;
@@ -194,6 +201,10 @@ export interface SalesOrder {
   status: 'Confirmed' | 'Processing' | 'Fulfilled' | 'Invoiced' | 'Cancelled';
   paymentStatus: 'Paid' | 'Pending' | 'Overdue';
   shippingAddress: string;
+  carrier?: string;
+  trackingNumber?: string;
+  notes?: string;
+  orderNotes?: SalesOrderNote[];
   itemsCount: number;
   lines: SalesOrderLine[];
 }
@@ -661,6 +672,8 @@ export const initialOrders: SalesOrder[] = [
     status: 'Processing',
     paymentStatus: 'Paid',
     shippingAddress: '742 Evergreen Terrace, Medical Park, WA',
+    carrier: 'FedEx Express Freight',
+    trackingNumber: 'FDX-9941-8823',
     itemsCount: 6,
     lines: [
       { id: 'SOL-1', productName: 'Cloud ERP Core Tenant License', sku: 'ERP-CORE-01', quantity: 5, unitPrice: 450.00, total: 2250.00 },
@@ -680,6 +693,8 @@ export const initialOrders: SalesOrder[] = [
     status: 'Confirmed',
     paymentStatus: 'Pending',
     shippingAddress: 'Dock 12, Pacific Container Terminal, CA',
+    carrier: 'DHL Global Logistics',
+    trackingNumber: 'DHL-8820-1120',
     itemsCount: 14,
     lines: [
       { id: 'SOL-3', productName: 'Warehouse IoT Barcode Scanner Terminal', sku: 'HW-SCAN-80', quantity: 20, unitPrice: 280.00, total: 5600.00 },

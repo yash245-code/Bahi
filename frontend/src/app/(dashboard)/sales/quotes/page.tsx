@@ -24,6 +24,7 @@ import {
   Sparkles,
   Clock,
   DollarSign,
+  Layers,
 } from 'lucide-react';
 import { SalesNav } from '@/components/sales/SalesNav';
 import { useSalesStore } from '@/components/sales/useSalesStore';
@@ -32,6 +33,7 @@ import { NewOrderModal } from '@/components/sales/NewOrderModal';
 import { SendQuoteEmailModal } from '@/components/sales/SendQuoteEmailModal';
 import { QuoteDetailsModal } from '@/components/sales/QuoteDetailsModal';
 import { QuoteKanbanBoard } from '@/components/sales/QuoteKanbanBoard';
+import { QuoteComparisonModal } from '@/components/sales/QuoteComparisonModal';
 import { Quote, formatCurrency, getExpiryStatus } from '@/components/sales/salesData';
 
 type SortColumn =
@@ -50,6 +52,7 @@ export default function QuotationsPage() {
   const {
     quotes,
     orders,
+    discountRules,
     currency,
     setCurrency,
     activeView,
@@ -89,6 +92,8 @@ export default function QuotationsPage() {
   const [orderModalOpen, setOrderModalOpen] = useState(false);
   const [selectedQuoteId, setSelectedQuoteId] = useState<string | null>(null);
   const [emailModalQuote, setEmailModalQuote] = useState<Quote | null>(null);
+  const [comparisonModalOpen, setComparisonModalOpen] = useState(false);
+  const [comparisonQuotes, setComparisonQuotes] = useState<[Quote | null, Quote | null]>([null, null]);
 
   // Keep selectedQuote reactive to store updates
   const selectedQuote = useMemo(
@@ -320,6 +325,19 @@ export default function QuotationsPage() {
           <button
             type="button"
             onClick={() => {
+              setComparisonQuotes([quotes[0] || null, quotes[1] || null]);
+              setComparisonModalOpen(true);
+            }}
+            className="px-3.5 py-2 text-xs font-semibold rounded-xl border border-border dark:border-[#2A2B27] bg-white dark:bg-[#1A1B18] text-ink dark:text-neutral-200 hover:border-accent hover:text-accent transition-colors flex items-center gap-1.5 cursor-pointer"
+            title="Compare quotes side-by-side"
+          >
+            <Layers className="w-3.5 h-3.5 text-accent" />
+            <span className="hidden sm:inline">Compare Quotes</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
               setQuoteToEdit(null);
               setQuoteModalOpen(true);
             }}
@@ -341,6 +359,11 @@ export default function QuotationsPage() {
           onConvertToOrder={convertQuoteToOrder}
           onExtendValidity={extendQuoteValidity}
           onDuplicateQuote={duplicateQuote}
+          onOpenEmailModal={(q) => setEmailModalQuote(q)}
+          onEditQuote={(q) => {
+            setQuoteToEdit(q);
+            setQuoteModalOpen(true);
+          }}
         />
       ) : (
         /* ─── TABLE VIEW ─── */
@@ -762,6 +785,23 @@ export default function QuotationsPage() {
               <span>+7d Validity</span>
             </button>
 
+            {selectedQuoteIds.length === 2 && (
+              <button
+                type="button"
+                onClick={() => {
+                  setComparisonQuotes([
+                    quotes.find((q) => q.id === selectedQuoteIds[0]) || null,
+                    quotes.find((q) => q.id === selectedQuoteIds[1]) || null,
+                  ]);
+                  setComparisonModalOpen(true);
+                }}
+                className="px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
+              >
+                <Layers className="w-3.5 h-3.5" />
+                <span>Compare (2)</span>
+              </button>
+            )}
+
             <button
               type="button"
               onClick={handleExportCSV}
@@ -788,12 +828,24 @@ export default function QuotationsPage() {
         isOpen={quoteModalOpen}
         currency={currency}
         quoteToEdit={quoteToEdit}
+        discountRules={discountRules}
         onClose={() => {
           setQuoteModalOpen(false);
           setQuoteToEdit(null);
         }}
         onCreateQuote={addQuote}
         onUpdateQuote={updateQuote}
+      />
+
+      <QuoteComparisonModal
+        quoteA={comparisonQuotes[0]}
+        quoteB={comparisonQuotes[1]}
+        allQuotes={quotes}
+        currency={currency}
+        isOpen={comparisonModalOpen}
+        onClose={() => setComparisonModalOpen(false)}
+        onConvertToOrder={convertQuoteToOrder}
+        onSelectQuote={(q) => setSelectedQuoteId(q.id)}
       />
 
       <SendQuoteEmailModal

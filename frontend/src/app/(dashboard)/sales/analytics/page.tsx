@@ -1,9 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
   BarChart3,
   Layers,
+  Download,
+  Sparkles,
+  TrendingUp,
+  Eye,
+  CheckCircle2,
+  ShoppingBag,
+  Send,
 } from 'lucide-react';
 import { SalesNav } from '@/components/sales/SalesNav';
 import { useSalesStore } from '@/components/sales/useSalesStore';
@@ -11,10 +18,13 @@ import { NewQuoteModal } from '@/components/sales/NewQuoteModal';
 import { NewOrderModal } from '@/components/sales/NewOrderModal';
 import { formatCurrency } from '@/components/sales/salesData';
 
+type TimeRange = '30d' | '90d' | 'ytd';
+
 export default function SalesAnalyticsPage() {
   const {
     quotes,
     orders,
+    discountRules,
     currency,
     setCurrency,
     toastMessage,
@@ -22,21 +32,28 @@ export default function SalesAnalyticsPage() {
     ordersBookedValue,
     winRate,
     addQuote,
+    updateQuote,
     addOrder,
   } = useSalesStore();
 
+  const [timeRange, setTimeRange] = useState<TimeRange>('90d');
   const [quoteModalOpen, setQuoteModalOpen] = useState(false);
   const [orderModalOpen, setOrderModalOpen] = useState(false);
 
-  const monthlyData = [
-    { month: 'Jun 2026', quoted: 18400, booked: 12200 },
-    { month: 'Jul 2026', quoted: 21500, booked: 14800 },
-    { month: 'Aug 2026', quoted: 24200, booked: 16900 },
-    { month: 'Sep 2026', quoted: 28900, booked: 19400 },
-    { month: 'Oct 2026 (MTD)', quoted: Math.round(pipelineValue), booked: Math.round(ordersBookedValue) },
-  ];
+  // Time-range scaling multiplier for demo telemetry
+  const timeMultiplier = timeRange === '30d' ? 0.45 : timeRange === '90d' ? 1.0 : 2.2;
 
-  const maxVal = Math.max(...monthlyData.map((d) => d.quoted));
+  const monthlyData = useMemo(() => {
+    return [
+      { month: 'Jun 2026', quoted: Math.round(18400 * timeMultiplier), booked: Math.round(12200 * timeMultiplier) },
+      { month: 'Jul 2026', quoted: Math.round(21500 * timeMultiplier), booked: Math.round(14800 * timeMultiplier) },
+      { month: 'Aug 2026', quoted: Math.round(24200 * timeMultiplier), booked: Math.round(16900 * timeMultiplier) },
+      { month: 'Sep 2026', quoted: Math.round(28900 * timeMultiplier), booked: Math.round(19400 * timeMultiplier) },
+      { month: 'Oct 2026 (MTD)', quoted: Math.round(pipelineValue), booked: Math.round(ordersBookedValue) },
+    ];
+  }, [timeMultiplier, pipelineValue, ordersBookedValue]);
+
+  const maxVal = Math.max(...monthlyData.map((d) => d.quoted), 1);
 
   const topProducts = [
     { name: 'Cloud ERP Core Tenant License', sku: 'ERP-CORE-01', revenue: 16890, units: 38, share: '46%' },
@@ -45,6 +62,87 @@ export default function SalesAnalyticsPage() {
     { name: 'High-Speed Thermal Receipt Printer', sku: 'HW-PRN-04', revenue: 2340, units: 12, share: '7%' },
     { name: 'Dedicated Database Replica Migration', sku: 'SVC-MIG-05', revenue: 1700, units: 2, share: '5%' },
   ];
+
+  // Dynamic Commercial Conversion Funnel
+  const funnel = useMemo(() => {
+    const totalQuotes = quotes.length;
+    const sentQuotes = quotes.filter(
+      (q) => q.status === 'Sent' || q.status === 'Approved' || q.status === 'Converted'
+    ).length;
+    const viewedQuotes = quotes.filter(
+      (q) => Boolean(q.portalViewedAt) || q.status === 'Approved' || q.status === 'Converted'
+    ).length;
+    const approvedQuotes = quotes.filter(
+      (q) => q.status === 'Approved' || q.status === 'Converted'
+    ).length;
+    const bookedOrders = orders.length;
+
+    return [
+      {
+        stage: 'Proposals Drafted',
+        count: totalQuotes,
+        pct: 100,
+        sub: 'Total pipeline drafted',
+        icon: Sparkles,
+        color: 'text-neutral-500 bg-neutral-100 dark:bg-neutral-800',
+      },
+      {
+        stage: 'Dispatched to Clients',
+        count: sentQuotes,
+        pct: totalQuotes > 0 ? Math.round((sentQuotes / totalQuotes) * 100) : 0,
+        sub: 'Emailed proposals',
+        icon: Send,
+        color: 'text-blue-600 bg-blue-500/10',
+      },
+      {
+        stage: 'Client Portal Viewed',
+        count: viewedQuotes,
+        pct: totalQuotes > 0 ? Math.round((viewedQuotes / totalQuotes) * 100) : 0,
+        sub: 'Digital access confirmed',
+        icon: Eye,
+        color: 'text-purple-600 bg-purple-500/10',
+      },
+      {
+        stage: 'Commercial Approval',
+        count: approvedQuotes,
+        pct: totalQuotes > 0 ? Math.round((approvedQuotes / totalQuotes) * 100) : 0,
+        sub: 'Terms authorized',
+        icon: CheckCircle2,
+        color: 'text-emerald-600 bg-emerald-500/10',
+      },
+      {
+        stage: 'Orders Booked & Active',
+        count: bookedOrders,
+        pct: totalQuotes > 0 ? Math.round((bookedOrders / totalQuotes) * 100) : 0,
+        sub: 'Confirmed fulfillment',
+        icon: ShoppingBag,
+        color: 'text-accent bg-accent/15',
+      },
+    ];
+  }, [quotes, orders]);
+
+  // Export Summary CSV
+  const handleExportAnalytics = () => {
+    const rows = [
+      ['Metric', 'Value'],
+      ['Pipeline Total Quoted', formatCurrency(pipelineValue, currency)],
+      ['Revenue Booked', formatCurrency(ordersBookedValue, currency)],
+      ['Win Conversion Rate', `${winRate}%`],
+      ['Total Quotes Evaluated', quotes.length],
+      ['Confirmed Orders Count', orders.length],
+      ['Currency Code', currency],
+    ];
+
+    const csvContent =
+      'data:text/csv;charset=utf-8,' + rows.map((e) => e.join(',')).join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `bahi_sales_analytics_${timeRange}_${Date.now()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   return (
     <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-7 animate-fade-in">
@@ -79,10 +177,52 @@ export default function SalesAnalyticsPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-mono font-bold px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-            Telemetry Live • Mongo Atlas Sync
-          </span>
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* Time range selector */}
+          <div className="p-1 rounded-xl bg-neutral-100 dark:bg-[#141513] border border-border/80 dark:border-[#2A2B27] flex items-center gap-1 text-xs">
+            <button
+              type="button"
+              onClick={() => setTimeRange('30d')}
+              className={`px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+                timeRange === '30d'
+                  ? 'bg-white dark:bg-[#1A1B18] text-ink dark:text-white shadow-2xs'
+                  : 'text-ink-muted hover:text-ink'
+              }`}
+            >
+              30 Days
+            </button>
+            <button
+              type="button"
+              onClick={() => setTimeRange('90d')}
+              className={`px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+                timeRange === '90d'
+                  ? 'bg-white dark:bg-[#1A1B18] text-ink dark:text-white shadow-2xs'
+                  : 'text-ink-muted hover:text-ink'
+              }`}
+            >
+              90 Days
+            </button>
+            <button
+              type="button"
+              onClick={() => setTimeRange('ytd')}
+              className={`px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+                timeRange === 'ytd'
+                  ? 'bg-white dark:bg-[#1A1B18] text-ink dark:text-white shadow-2xs'
+                  : 'text-ink-muted hover:text-ink'
+              }`}
+            >
+              YTD 2026
+            </button>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleExportAnalytics}
+            className="px-3.5 py-1.5 text-xs font-semibold rounded-xl border border-border dark:border-[#2A2B27] bg-white dark:bg-[#1A1B18] text-ink dark:text-neutral-200 hover:border-accent hover:text-accent transition-colors flex items-center gap-1.5 cursor-pointer"
+          >
+            <Download className="w-3.5 h-3.5" />
+            <span>Export Analytics</span>
+          </button>
         </div>
       </div>
 
@@ -103,7 +243,7 @@ export default function SalesAnalyticsPage() {
         <div className="p-5 rounded-2xl bg-white dark:bg-[#1A1B18] border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
           <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted">Avg Order Value (AOV)</span>
           <div className="text-3xl font-black text-accent font-mono tracking-tight">
-            ${Math.round(ordersBookedValue / Math.max(1, orders.length)).toLocaleString()}
+            {formatCurrency(Math.round(ordersBookedValue / Math.max(1, orders.length)), currency)}
           </div>
           <p className="text-xs text-ink-muted">Across {orders.length} confirmed orders</p>
         </div>
@@ -115,16 +255,69 @@ export default function SalesAnalyticsPage() {
         </div>
       </div>
 
+      {/* ─── LIVE COMMERCIAL CONVERSION FUNNEL ────────── */}
+      <div className="p-6 rounded-2xl bg-white dark:bg-[#1A1B18] border border-border dark:border-[#2A2B27] shadow-xs space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-sm font-bold text-ink dark:text-white flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-accent" />
+              <span>Commercial Pipeline Conversion Funnel</span>
+            </h3>
+            <p className="text-xs text-ink-muted dark:text-neutral-400 mt-0.5">
+              Live funnel performance tracking quotes through drafting, email delivery, client portal views, and final order booking.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3 pt-2">
+          {funnel.map((item, idx) => {
+            const Icon = item.icon;
+            return (
+              <div
+                key={item.stage}
+                className="p-4 rounded-xl border border-border dark:border-[#2A2B27] bg-[#FAF9F5] dark:bg-[#141513] space-y-2 relative"
+              >
+                <div className="flex items-center justify-between">
+                  <div className={`p-1.5 rounded-lg ${item.color}`}>
+                    <Icon className="w-3.5 h-3.5" />
+                  </div>
+                  <span className="text-[10px] font-mono font-bold text-ink-muted">
+                    Step {idx + 1}
+                  </span>
+                </div>
+
+                <div>
+                  <div className="text-2xl font-black font-mono text-ink dark:text-white">
+                    {item.count}
+                  </div>
+                  <div className="text-xs font-bold text-ink dark:text-neutral-200 mt-0.5">
+                    {item.stage}
+                  </div>
+                  <div className="text-[10px] text-ink-muted dark:text-neutral-400">
+                    {item.sub}
+                  </div>
+                </div>
+
+                <div className="pt-2 border-t border-border/60 dark:border-[#2A2B27] flex items-center justify-between text-[10px]">
+                  <span className="text-ink-muted">Conversion:</span>
+                  <span className="font-mono font-bold text-accent">{item.pct}%</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
       {/* ─── Monthly Quoted vs Booked Chart ──────────── */}
       <div className="p-6 rounded-2xl bg-white dark:bg-[#1A1B18] border border-border dark:border-[#2A2B27] shadow-xs space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
             <h3 className="text-sm font-bold text-ink dark:text-white flex items-center gap-2">
               <span>Monthly Commercial Volume Pacing</span>
-              <span className="text-xs font-mono text-ink-muted font-normal">(Last 5 Months)</span>
+              <span className="text-xs font-mono text-ink-muted font-normal">(Trend Pacing)</span>
             </h3>
             <p className="text-xs text-ink-muted dark:text-neutral-400 mt-0.5">
-              Comparison between total proposals quoted and revenue confirmed into sales orders.
+              Comparison between total proposals quoted and revenue confirmed into sales orders in {currency}.
             </p>
           </div>
 
@@ -151,8 +344,8 @@ export default function SalesAnalyticsPage() {
                 <div className="flex justify-between font-mono">
                   <span className="font-bold text-ink dark:text-white font-sans">{d.month}</span>
                   <div className="space-x-3 text-[11px]">
-                    <span className="text-accent font-bold">${d.quoted.toLocaleString()} Quoted</span>
-                    <span className="text-emerald-600 font-bold">${d.booked.toLocaleString()} Booked</span>
+                    <span className="text-accent font-bold">{formatCurrency(d.quoted, currency)} Quoted</span>
+                    <span className="text-emerald-600 font-bold">{formatCurrency(d.booked, currency)} Booked</span>
                   </div>
                 </div>
 
@@ -208,7 +401,7 @@ export default function SalesAnalyticsPage() {
                     {p.units}
                   </td>
                   <td className="py-3 px-4 text-right font-mono font-bold text-ink dark:text-white">
-                    ${p.revenue.toLocaleString()}
+                    {formatCurrency(p.revenue, currency)}
                   </td>
                   <td className="py-3 px-4 text-right">
                     <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold font-mono bg-accent/10 text-accent">
@@ -226,12 +419,16 @@ export default function SalesAnalyticsPage() {
       <NewQuoteModal
         isOpen={quoteModalOpen}
         currency={currency}
+        discountRules={discountRules}
         onClose={() => setQuoteModalOpen(false)}
         onCreateQuote={addQuote}
+        onUpdateQuote={updateQuote}
       />
 
       <NewOrderModal
         isOpen={orderModalOpen}
+        quotes={quotes}
+        currency={currency}
         onClose={() => setOrderModalOpen(false)}
         onCreateOrder={addOrder}
       />

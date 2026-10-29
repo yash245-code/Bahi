@@ -758,6 +758,84 @@ export function useSalesStore() {
     [orders, saveOrders, showToast]
   );
 
+  const updateOrderPaymentStatus = useCallback(
+    (orderId: string, paymentStatus: SalesOrder['paymentStatus']) => {
+      const next = orders.map((o) => (o.id === orderId ? { ...o, paymentStatus } : o));
+      saveOrders(next);
+      showToast(`Order ${orderId} payment status set to ${paymentStatus}`);
+    },
+    [orders, saveOrders, showToast]
+  );
+
+  const updateOrderTracking = useCallback(
+    (orderId: string, carrier: string, trackingNumber: string) => {
+      const next = orders.map((o) => (o.id === orderId ? { ...o, carrier, trackingNumber } : o));
+      saveOrders(next);
+      showToast(`Updated dispatch logistics for Order ${orderId}`);
+    },
+    [orders, saveOrders, showToast]
+  );
+
+  const addOrderInternalNote = useCallback(
+    (orderId: string, noteText: string, author: string = 'Fulfillment Team') => {
+      if (!noteText.trim()) return;
+      const now = new Date().toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+      const next = orders.map((o) => {
+        if (o.id !== orderId) return o;
+        const newNote = {
+          id: `onote-${Date.now()}`,
+          timestamp: now,
+          author,
+          text: noteText.trim(),
+        };
+        return {
+          ...o,
+          orderNotes: [newNote, ...(o.orderNotes || [])],
+        };
+      });
+      saveOrders(next);
+      showToast(`Logistics note added to Order ${orderId}`);
+    },
+    [orders, saveOrders, showToast]
+  );
+
+  const batchUpdateOrderStatus = useCallback(
+    (orderIds: string[], status: SalesOrder['status']) => {
+      if (orderIds.length === 0) return;
+      const set = new Set(orderIds);
+      const next = orders.map((o) => (set.has(o.id) ? { ...o, status } : o));
+      saveOrders(next);
+      showToast(`Updated ${orderIds.length} order(s) to stage ${status}`);
+    },
+    [orders, saveOrders, showToast]
+  );
+
+  const batchUpdateOrderPaymentStatus = useCallback(
+    (orderIds: string[], paymentStatus: SalesOrder['paymentStatus']) => {
+      if (orderIds.length === 0) return;
+      const set = new Set(orderIds);
+      const next = orders.map((o) => (set.has(o.id) ? { ...o, paymentStatus } : o));
+      saveOrders(next);
+      showToast(`Marked ${orderIds.length} order(s) as ${paymentStatus}`);
+    },
+    [orders, saveOrders, showToast]
+  );
+
+  const deleteOrder = useCallback(
+    (orderId: string) => {
+      const next = orders.filter((o) => o.id !== orderId);
+      saveOrders(next);
+      showToast(`Order ${orderId} removed from registry`);
+    },
+    [orders, saveOrders, showToast]
+  );
+
   const toggleDiscountRule = useCallback(
     (ruleId: string) => {
       const next = discountRules.map((r) =>
@@ -832,6 +910,12 @@ export function useSalesStore() {
     simulateClientView,
     addOrder,
     updateOrderStatus,
+    updateOrderPaymentStatus,
+    updateOrderTracking,
+    addOrderInternalNote,
+    batchUpdateOrderStatus,
+    batchUpdateOrderPaymentStatus,
+    deleteOrder,
     toggleDiscountRule,
     addDiscountRule,
     showToast,

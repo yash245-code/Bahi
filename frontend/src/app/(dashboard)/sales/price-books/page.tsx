@@ -28,6 +28,7 @@ export default function PriceBooksPage() {
     toggleDiscountRule,
     addDiscountRule,
     addQuote,
+    updateQuote,
     addOrder,
   } = useSalesStore();
 
@@ -450,12 +451,16 @@ export default function PriceBooksPage() {
       <NewQuoteModal
         isOpen={quoteModalOpen}
         currency={currency}
+        discountRules={discountRules}
         onClose={() => setQuoteModalOpen(false)}
         onCreateQuote={addQuote}
+        onUpdateQuote={updateQuote}
       />
 
       <NewOrderModal
         isOpen={orderModalOpen}
+        quotes={quotes}
+        currency={currency}
         onClose={() => setOrderModalOpen(false)}
         onCreateOrder={addOrder}
       />

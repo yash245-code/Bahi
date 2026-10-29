@@ -20,12 +20,16 @@ import {
   CurrencyCode,
   formatCurrency,
   CrmCustomerPreset,
+  DiscountRule,
+  initialDiscountRules,
 } from './salesData';
+import { Tag } from 'lucide-react';
 
 interface NewQuoteModalProps {
   isOpen: boolean;
   currency?: CurrencyCode;
   quoteToEdit?: Quote | null;
+  discountRules?: DiscountRule[];
   onClose: () => void;
   onCreateQuote: (quote: Quote) => void;
   onUpdateQuote?: (quote: Quote) => void;
@@ -35,6 +39,7 @@ export function NewQuoteModal({
   isOpen,
   currency = 'USD',
   quoteToEdit = null,
+  discountRules = initialDiscountRules,
   onClose,
   onCreateQuote,
   onUpdateQuote,
@@ -50,6 +55,7 @@ export function NewQuoteModal({
   const [notes, setNotes] = useState('');
   const [taxRate, setTaxRate] = useState<number>(8.0);
   const [shippingFee, setShippingFee] = useState<number>(0);
+  const [appliedRuleId, setAppliedRuleId] = useState<string | null>(null);
   const [lines, setLines] = useState<QuoteLine[]>([]);
 
   const firstProd = catalogProducts[0] || {
@@ -251,6 +257,7 @@ export function NewQuoteModal({
   };
 
   const handleApplyGlobalDiscount = (percent: number) => {
+    setAppliedRuleId(null);
     setLines((prev) =>
       prev.map((l) => {
         const total = l.quantity * l.unitPrice * (1 - percent / 100);
@@ -259,6 +266,31 @@ export function NewQuoteModal({
           discountPercent: percent,
           total: Math.round(total * 100) / 100,
         };
+      })
+    );
+  };
+
+  const handleApplyPriceRule = (rule: DiscountRule) => {
+    const rateNum = parseFloat(rule.discountRate.replace('%', '')) || 0;
+    setAppliedRuleId(rule.id);
+    setLines((prev) =>
+      prev.map((l) => {
+        const prod = catalogProducts.find((p) => p.id === l.productId);
+        const matchesCategory =
+          rule.targetCategory === 'All Categories' ||
+          (prod && prod.category.toLowerCase().includes(rule.targetCategory.toLowerCase())) ||
+          rule.targetCategory.toLowerCase().includes('enterprise') ||
+          rule.targetCategory.toLowerCase().includes('partner');
+
+        if (matchesCategory || !prod) {
+          const total = l.quantity * l.unitPrice * (1 - rateNum / 100);
+          return {
+            ...l,
+            discountPercent: rateNum,
+            total: Math.round(total * 100) / 100,
+          };
+        }
+        return l;
       })
     );
   };
@@ -428,7 +460,12 @@ export function NewQuoteModal({
       status,
       version: 1,
       winProbability: estimatedWinOdds,
-      tags: ['New Opportunity', ...(lines.length > 2 ? ['Multi-Line Bundle'] : [])],
+      tags: [
+        appliedRuleId
+          ? discountRules.find((r) => r.id === appliedRuleId)?.name || 'Price Matrix'
+          : 'New Opportunity',
+        ...(lines.length > 2 ? ['Multi-Line Bundle'] : []),
+      ],
       notes: notes.trim() || undefined,
       lines,
     };
@@ -510,6 +547,60 @@ export function NewQuoteModal({
             </div>
           </div>
         )}
+
+        {/* Commercial Price Book & Discount Matrix Bar */}
+        <div className="p-3 rounded-2xl bg-neutral-100/70 dark:bg-[#141513] border border-border/80 dark:border-[#2A2B27] space-y-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-ink dark:text-white">
+              <Tag className="w-3.5 h-3.5 text-accent" />
+              <span>Commercial Price Book &amp; Discount Matrix:</span>
+            </div>
+            {lines.reduce((acc, l) => acc + l.quantity, 0) >= 10 && !appliedRuleId && (
+              <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold animate-pulse">
+                💡 Volume Qualification ({lines.reduce((acc, l) => acc + l.quantity, 0)} units): Eligible for Volume Discount
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+            <button
+              type="button"
+              onClick={() => {
+                setAppliedRuleId(null);
+                handleApplyGlobalDiscount(0);
+              }}
+              className={`px-2.5 py-1 rounded-xl border text-xs font-semibold whitespace-nowrap transition-all cursor-pointer flex items-center gap-1 shrink-0 ${
+                !appliedRuleId
+                  ? 'border-neutral-400 bg-neutral-200/60 dark:bg-neutral-800 text-ink dark:text-white font-bold'
+                  : 'border-border dark:border-[#2A2B27] bg-white dark:bg-[#1A1B18] text-ink-muted hover:border-accent/40'
+              }`}
+            >
+              <span>Standard Pricing (0%)</span>
+            </button>
+
+            {discountRules
+              .filter((r) => r.isActive)
+              .map((rule) => {
+                const isSelected = appliedRuleId === rule.id;
+                return (
+                  <button
+                    key={rule.id}
+                    type="button"
+                    onClick={() => handleApplyPriceRule(rule)}
+                    className={`px-2.5 py-1 rounded-xl border text-xs font-semibold whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 shrink-0 ${
+                      isSelected
+                        ? 'border-accent bg-accent/15 text-accent font-bold shadow-2xs'
+                        : 'border-border dark:border-[#2A2B27] bg-white dark:bg-[#1A1B18] text-ink-muted dark:text-neutral-300 hover:border-accent/40'
+                    }`}
+                  >
+                    <span>{rule.name}</span>
+                    <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-md bg-accent/10 text-accent font-bold">
+                      {rule.discountRate}
+                    </span>
+                  </button>
+                );
+              })}
+          </div>
+        </div>
 
         {/* AI Quote Copilot Bar */}
         <div className="p-3.5 rounded-2xl bg-gradient-to-r from-accent/10 via-purple-500/10 to-blue-500/10 border border-accent/25 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">

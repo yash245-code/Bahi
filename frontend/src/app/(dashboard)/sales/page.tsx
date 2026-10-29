@@ -27,6 +27,7 @@ export default function SalesOverviewPage() {
   const {
     quotes,
     orders,
+    discountRules,
     currency,
     setCurrency,
     toastMessage,
@@ -43,6 +44,9 @@ export default function SalesOverviewPage() {
     simulateClientView,
     addOrder,
     updateOrderStatus,
+    updateOrderPaymentStatus,
+    updateOrderTracking,
+    addOrderInternalNote,
     extendQuoteValidity,
     createQuoteRevision,
     duplicateQuote,
@@ -508,6 +512,7 @@ export default function SalesOverviewPage() {
         isOpen={quoteModalOpen}
         currency={currency}
         quoteToEdit={quoteToEdit}
+        discountRules={discountRules}
         onClose={() => {
           setQuoteModalOpen(false);
           setQuoteToEdit(null);
@@ -526,6 +531,8 @@ export default function SalesOverviewPage() {
 
       <NewOrderModal
         isOpen={orderModalOpen}
+        quotes={quotes}
+        currency={currency}
         onClose={() => setOrderModalOpen(false)}
         onCreateOrder={addOrder}
       />
@@ -554,8 +561,12 @@ export default function SalesOverviewPage() {
       <OrderDetailsModal
         order={selectedOrder}
         isOpen={Boolean(selectedOrder)}
+        currency={currency}
         onClose={() => setSelectedOrder(null)}
         onStatusChange={updateOrderStatus}
+        onUpdatePaymentStatus={updateOrderPaymentStatus}
+        onUpdateTracking={updateOrderTracking}
+        onAddNote={addOrderInternalNote}
       />
     </div>
   );

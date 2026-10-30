@@ -35,17 +35,17 @@ export default function ProcurementPage() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#0284C7]/15 text-[#0284C7] border border-[#0284C7]/30 font-mono">
-              Procurement &amp; Purchasing
+              Purchases &amp; Suppliers
             </span>
             <span className="text-[10px] font-mono text-ink-muted bg-neutral-100 dark:bg-neutral-800 border border-border px-1.5 py-0.5 rounded">
-              Active Module
+              Ready to Use
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-ink dark:text-white tracking-tight">
-            Vendor Purchasing &amp; POs
+            Purchases &amp; Suppliers
           </h1>
           <p className="text-xs sm:text-sm text-ink-muted dark:text-neutral-400 mt-0.5">
-            Manage vendor purchase orders, quotation requests, supplier evaluations, and 3-way matching.
+            Order items from suppliers, track incoming shipments, and make sure you get what you paid for.
           </p>
         </div>
 
@@ -54,29 +54,29 @@ export default function ProcurementPage() {
             href="/applications"
             className="px-3 py-2 text-xs font-semibold rounded-xl border border-border dark:border-[#2A2B27] bg-white dark:bg-[#1A1B18] text-ink dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
           >
-            ← Apps Suite
+            ← All Apps
           </Link>
         </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Total Purchase Spend</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Total Spent on Supplies</span>
           <div className="text-2xl font-black text-ink dark:text-white font-mono">$13,130.00</div>
-          <p className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold">Under budgeted spend</p>
+          <p className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold">Under monthly budget</p>
         </div>
         <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Open Purchase Orders</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Open Orders</span>
           <div className="text-2xl font-black text-ink dark:text-white font-mono">2</div>
-          <p className="text-xs text-ink-muted dark:text-neutral-400">Pending supplier fulfillment</p>
+          <p className="text-xs text-ink-muted dark:text-neutral-400">Waiting on suppliers</p>
         </div>
         <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
           <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Active Suppliers</span>
           <div className="text-2xl font-black text-ink dark:text-white font-mono">14</div>
-          <p className="text-xs text-ink-muted dark:text-neutral-400">Verified vendor agreements</p>
+          <p className="text-xs text-ink-muted dark:text-neutral-400">Trusted vendor list</p>
         </div>
         <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Goods In Transit</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Items On the Way</span>
           <div className="text-2xl font-black text-blue-600 dark:text-blue-400 font-mono">1,450</div>
           <p className="text-xs text-ink-muted dark:text-neutral-400">Units arriving this week</p>
         </div>

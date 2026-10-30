@@ -1,8 +1,8 @@
 import { CrmPipelineView } from '@bahi/app-crm/web';
 
 export const metadata = {
-  title: 'Deals Pipeline | Bahi CRM',
-  description: 'Visual deal Kanban funnel, rotting velocity indicators, and pipeline forecasting.',
+  title: 'Deals Board | Bahi CRM',
+  description: 'Visual board of sales deals, deals needing attention, and upcoming expected revenue.',
 };
 
 export default function DealsPage() {

@@ -28,7 +28,7 @@ const navTabs = [
     ),
   },
   {
-    name: 'Deals Pipeline',
+    name: 'Deals Board',
     href: '/crm/deals',
     badge: '11',
     icon: (
@@ -38,7 +38,7 @@ const navTabs = [
     ),
   },
   {
-    name: 'Leads & Intake',
+    name: 'Leads & Inquiries',
     href: '/crm/leads',
     badge: '4 New',
     icon: (
@@ -78,7 +78,7 @@ const navTabs = [
     ),
   },
   {
-    name: 'Quotes',
+    name: 'Price Quotes',
     href: '/crm/quotes',
     badge: null,
     icon: (
@@ -88,7 +88,7 @@ const navTabs = [
     ),
   },
   {
-    name: 'Sequences',
+    name: 'Email Campaigns',
     href: '/crm/sequences',
     badge: null,
     icon: (
@@ -98,7 +98,7 @@ const navTabs = [
     ),
   },
   {
-    name: 'Products',
+    name: 'Products & Prices',
     href: '/crm/products',
     badge: null,
     icon: (
@@ -108,7 +108,7 @@ const navTabs = [
     ),
   },
   {
-    name: 'Reports',
+    name: 'Sales Reports',
     href: '/crm/analytics',
     badge: null,
     icon: (
@@ -343,20 +343,20 @@ export function CrmNav({
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#FAF4F2] dark:bg-[#2A1B16] text-accent border border-[#EBD2CB] dark:border-[#5A2E22] font-mono">
-              CRM &amp; Revenue Ops
+              Customers &amp; Sales
             </span>
             <span className="text-[10px] font-mono text-ink-muted bg-[#FAF9F5] dark:bg-neutral-800 border border-border dark:border-[#2E302A] px-1.5 py-0.5 rounded">
               v1.5.0
             </span>
             <span className="text-xs font-semibold text-[#1F7A4D] bg-[#1F7A4D]/10 px-2 py-0.5 rounded-full border border-[#1F7A4D]/20">
-              {totalPipelineValue} Pipeline ({activeDealsCount} Deals)
+              {totalPipelineValue} Potential Deals ({activeDealsCount} Deals)
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-ink dark:text-white tracking-tight">
-            Revenue &amp; Deal Management
+            Customers &amp; Deals
           </h1>
           <p className="text-xs sm:text-sm text-ink-muted mt-0.5">
-            Command center for deal pipelines, lead scoring, corporate accounts, sequence cadences, and revenue operations.
+            Keep track of your sales deals, follow up with leads, manage customer contacts, and grow your business.
           </p>
         </div>
 
@@ -371,7 +371,7 @@ export function CrmNav({
             <svg className="w-3.5 h-3.5 text-ink-muted" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
             </svg>
-            <span className="hidden md:inline">Omnibar</span>
+            <span className="hidden md:inline">Quick Search</span>
             <kbd className="font-mono text-[10px] text-ink-muted bg-white dark:bg-neutral-800 border border-border dark:border-[#2E302A] px-1.5 py-0.5 rounded shadow-2xs">
               ⌘K
             </kbd>

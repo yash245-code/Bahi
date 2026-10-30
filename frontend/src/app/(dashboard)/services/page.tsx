@@ -137,17 +137,17 @@ export default function ServicesPage() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#2DD4BF]/15 text-[#2DD4BF] border border-[#2DD4BF]/30 font-mono">
-              Field Services &amp; Dispatch
+              Service Visits &amp; Jobs
             </span>
             <span className="text-[10px] font-mono text-ink-muted bg-neutral-100 dark:bg-neutral-800 border border-border px-1.5 py-0.5 rounded">
-              v1.0.0
+              Ready to Use
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-ink tracking-tight">
-            Field Operations &amp; Job Dispatch
+            Service Visits &amp; Jobs
           </h1>
           <p className="text-xs sm:text-sm text-ink-muted mt-0.5">
-            Real-time technician scheduling, on-site work orders, GPS dispatch, and client maintenance contracts.
+            Schedule service visits, assign team members to jobs, and track customer appointments.
           </p>
         </div>
 
@@ -156,7 +156,7 @@ export default function ServicesPage() {
             href="/applications"
             className="btn-secondary text-xs py-2 px-3 flex items-center gap-1.5"
           >
-            <span>← Apps Suite</span>
+            <span>← All Apps</span>
           </Link>
           <button
             type="button"
@@ -166,7 +166,7 @@ export default function ServicesPage() {
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
             </svg>
-            <span>+ Dispatch Work Order</span>
+            <span>+ New Service Job</span>
           </button>
         </div>
       </div>
@@ -174,27 +174,27 @@ export default function ServicesPage() {
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white dark:bg-[#1C1D1A] rounded-2xl p-5 border border-border shadow-2xs space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted">Active Work Orders</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted">Active Jobs</span>
           <div className="text-2xl font-black text-ink font-mono">{orders.length}</div>
-          <p className="text-xs text-[#2DD4BF] font-semibold">3 in field right now</p>
+          <p className="text-xs text-[#2DD4BF] font-semibold">3 jobs underway today</p>
         </div>
 
         <div className="bg-white dark:bg-[#1C1D1A] rounded-2xl p-5 border border-border shadow-2xs space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted">First-Time Fix Rate</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted">Fixed on First Visit</span>
           <div className="text-2xl font-black text-ink font-mono">94.8%</div>
           <p className="text-xs text-[#1F7A4D] font-semibold">+2.4% vs last month</p>
         </div>
 
         <div className="bg-white dark:bg-[#1C1D1A] rounded-2xl p-5 border border-border shadow-2xs space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted">On-Duty Technicians</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted">Available Staff</span>
           <div className="text-2xl font-black text-ink font-mono">4 Active</div>
           <p className="text-xs text-ink-muted">Avg response time: 28 mins</p>
         </div>
 
         <div className="bg-white dark:bg-[#1C1D1A] rounded-2xl p-5 border border-border shadow-2xs space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted">Billed Service Revenue</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted">Service Earnings</span>
           <div className="text-2xl font-black text-ink font-mono">$4,500.00</div>
-          <p className="text-xs text-ink-muted">Direct sync to Invoicing</p>
+          <p className="text-xs text-ink-muted">Added to invoices</p>
         </div>
       </div>
 

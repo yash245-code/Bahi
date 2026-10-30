@@ -6,26 +6,26 @@ import { getAllApplications } from '@bahi/applications';
 import { ThemeToggle } from '@/components/ThemeToggle';
 
 const appRouteTitles: Record<string, string> = {
-  '/applications': 'Applications Suite Hub',
-  '/crm': 'Customer Relationship Management',
-  '/sales': 'Sales & Commercial Operations',
-  '/sales/quotes': 'Commercial Quotations & Proposals',
-  '/sales/orders': 'Sales Orders & Fulfillment',
-  '/sales/price-books': 'Price Books & Discount Matrix',
-  '/sales/analytics': 'Sales Analytics & Conversion',
-  '/subscriptions': 'Subscriptions & Recurring Billing',
-  '/inventory': 'Inventory & Stock Control',
-  '/services': 'Field Services & Dispatch',
-  '/procurement': 'Procurement & Purchasing',
-  '/accounting': 'Accounting & Double-Entry Ledger',
-  '/invoicing': 'Customer Invoicing & Payments',
-  '/expenses': 'Corporate Expenses & Claims',
-  '/hr': 'Human Resources & Workforce',
-  '/attendance': 'Time Tracking & Shift Attendance',
-  '/leave': 'Leave & Vacation Time-Off',
-  '/projects': 'Projects & Sprint Delivery',
-  '/helpdesk': 'Customer Support & Helpdesk',
-  '/documents': 'Digital Contracts & Signatures',
+  '/applications': 'All Applications',
+  '/crm': 'Customers & Leads',
+  '/sales': 'Sales & Quotes',
+  '/sales/quotes': 'Price Quotes & Proposals',
+  '/sales/orders': 'Customer Orders',
+  '/sales/price-books': 'Price Lists & Discounts',
+  '/sales/analytics': 'Sales Reports & Insights',
+  '/subscriptions': 'Subscriptions & Recurring Plans',
+  '/inventory': 'Stock & Inventory',
+  '/services': 'Service Visits & Jobs',
+  '/procurement': 'Purchases & Suppliers',
+  '/accounting': 'Bookkeeping & Finances',
+  '/invoicing': 'Invoices & Customer Bills',
+  '/expenses': 'Expenses & Receipts',
+  '/hr': 'Team & Staff Directory',
+  '/attendance': 'Work Hours & Attendance',
+  '/leave': 'Time Off & Vacations',
+  '/projects': 'Projects & Tasks',
+  '/helpdesk': 'Customer Help & Support',
+  '/documents': 'Documents & Signatures',
 };
 
 const routeNames: Record<string, string> = {
@@ -70,7 +70,7 @@ export function Topbar({
           <span className="font-semibold text-ink-muted dark:text-[#A0A29C] tracking-tight truncate">{currentTitle}</span>
           <span className="hidden xl:inline-flex items-center gap-1.5 ml-3 px-2 py-0.5 rounded-md bg-[#FAF4F2] dark:bg-accent/15 border border-[#EBD2CB] dark:border-accent/30 text-[10px] font-semibold text-accent flex-shrink-0">
             <span className="w-1.5 h-1.5 rounded-full bg-[#1F7A4D] dark:bg-emerald-400 animate-pulse"></span>
-            Mongo Atlas • 99.98% Sync
+            Cloud Synced • All Online
           </span>
         </div>
       </div>
@@ -85,7 +85,7 @@ export function Topbar({
           <svg className="w-3.5 h-3.5 text-ink-muted" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
           </svg>
-          <span className="font-medium">Search applications...</span>
+          <span className="font-medium">Search apps, clients, quotes...</span>
           <kbd className="ml-auto text-[10px] font-mono bg-[#FAF9F5] dark:bg-[#141513] text-ink-muted px-1.5 py-0.5 rounded border border-border dark:border-[#2E302A]">
             ⌘K
           </kbd>

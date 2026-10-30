@@ -51,28 +51,28 @@ export function SalesNav({
       icon: <LayoutDashboard className="w-4 h-4" />,
     },
     {
-      name: 'Quotations',
+      name: 'Price Quotes',
       href: '/sales/quotes',
       exact: false,
       badge: `${quotesCount}`,
       icon: <FileSpreadsheet className="w-4 h-4" />,
     },
     {
-      name: 'Sales Orders',
+      name: 'Orders',
       href: '/sales/orders',
       exact: false,
       badge: `${ordersCount}`,
       icon: <ShoppingBag className="w-4 h-4" />,
     },
     {
-      name: 'Price Books & Discounts',
+      name: 'Price Lists & Discounts',
       href: '/sales/price-books',
       exact: false,
       badge: '4 Rules',
       icon: <Tag className="w-4 h-4" />,
     },
     {
-      name: 'Analytics',
+      name: 'Reports',
       href: '/sales/analytics',
       exact: false,
       badge: 'Live',
@@ -88,28 +88,28 @@ export function SalesNav({
           <div className="flex items-center gap-2 mb-1 flex-wrap">
             <span className="text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#A8462F]/10 dark:bg-[#A8462F]/20 text-[#A8462F] dark:text-[#D16249] border border-[#A8462F]/25 font-mono inline-flex items-center gap-1.5">
               <Sparkles className="w-3 h-3 text-[#A8462F]" />
-              Sales &amp; Quotations Suite
+              Sales &amp; Price Quotes
             </span>
             <span className="text-[10px] font-mono text-ink-muted bg-white dark:bg-[#1A1B18] border border-border dark:border-[#2A2B27] px-2 py-0.5 rounded-md">
-              v1.4.0 Extended
+              Ready to Use
             </span>
             <span className="inline-flex items-center gap-1 bg-[#1F7A4D]/10 dark:bg-[#1F7A4D]/20 text-[#1F7A4D] dark:text-[#38BD7E] border border-[#1F7A4D]/25 px-2 py-0.5 rounded-full text-[10px] font-bold">
               <TrendingUp className="w-2.5 h-2.5" />
-              {pipelineTotal} Active Pipeline
+              {pipelineTotal} Potential Deals
             </span>
 
             {/* Live FX Rates Ticker Badge */}
             <span className="hidden xl:inline-flex items-center gap-1.5 bg-blue-500/10 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300 border border-blue-500/25 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium">
               <Globe2 className="w-3 h-3 text-blue-500 animate-spin-slow" />
-              <span>Live FX: 1 USD = 0.92 EUR • 83.45 INR • 3.67 AED</span>
+              <span>Currency Rates: 1 USD = 0.92 EUR • 83.45 INR • 3.67 AED</span>
             </span>
           </div>
 
           <h1 className="text-2xl sm:text-3xl font-black text-ink dark:text-neutral-100 tracking-tight">
-            Commercial Orders &amp; Price Quotes
+            Sales &amp; Price Quotes
           </h1>
           <p className="text-xs sm:text-sm text-ink-muted dark:text-neutral-400 mt-0.5 max-w-2xl">
-            Streamline quotation generation, multi-currency live pricing, governance discount thresholds, customer order booking, and revenue velocity.
+            Create price quotes for clients, turn accepted quotes into orders, and see what you sell.
           </p>
         </div>
 
@@ -174,10 +174,10 @@ export function SalesNav({
           <Link
             href="/applications"
             className="px-3 py-2 text-xs font-semibold rounded-xl border border-border dark:border-[#2A2B27] bg-white dark:bg-[#1A1B18] text-ink dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors shadow-2xs flex items-center gap-1.5"
-            title="Return to Applications Suite Hub"
+            title="Return to All Apps"
           >
             <ArrowLeft className="w-3.5 h-3.5 text-ink-muted" />
-            <span className="hidden sm:inline">Suite Hub</span>
+            <span className="hidden sm:inline">All Apps</span>
           </Link>
 
           {onNewOrder && (

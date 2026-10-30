@@ -279,10 +279,10 @@ export default function SalesOrdersPage() {
         <div>
           <h2 className="text-lg font-extrabold text-ink dark:text-neutral-100 tracking-tight flex items-center gap-2">
             <ShoppingBag className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-            <span>Commercial Sales Orders &amp; Fulfillment Booking</span>
+            <span>Customer Orders</span>
           </h2>
           <p className="text-xs text-ink-muted dark:text-neutral-400 mt-1 max-w-2xl leading-relaxed">
-            Monitor confirmed client orders booked from approved quotations or direct walk-ins. Coordinate warehouse dispatch, generate packing slips, and track payments.
+            Track customer orders from accepted quotes or direct sales. Coordinate packing, print packing slips, and record payments.
           </p>
         </div>
 
@@ -302,7 +302,7 @@ export default function SalesOrdersPage() {
             className="px-4 py-2 text-xs font-bold rounded-xl bg-accent text-white hover:bg-accent-hover transition-colors shadow-xs flex items-center gap-1.5 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
-            <span>Book New Order</span>
+            <span>Create New Order</span>
           </button>
         </div>
       </div>
@@ -310,31 +310,31 @@ export default function SalesOrdersPage() {
       {/* Summary KPI Mini-Bar */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div className="p-3.5 rounded-xl bg-white dark:bg-[#1A1B18] border border-border dark:border-[#2A2B27] shadow-2xs">
-          <span className="text-[10px] font-bold uppercase text-ink-muted">Confirmed Stage</span>
+          <span className="text-[10px] font-bold uppercase text-ink-muted">Confirmed</span>
           <div className="text-xl font-black text-blue-600 font-mono mt-0.5">
             {orders.filter((o) => o.status === 'Confirmed').length}
           </div>
-          <span className="text-[10px] text-ink-muted">Awaiting picking</span>
+          <span className="text-[10px] text-ink-muted">Ready to pack</span>
         </div>
 
         <div className="p-3.5 rounded-xl bg-white dark:bg-[#1A1B18] border border-border dark:border-[#2A2B27] shadow-2xs">
-          <span className="text-[10px] font-bold uppercase text-ink-muted">In Processing</span>
+          <span className="text-[10px] font-bold uppercase text-ink-muted">Packing</span>
           <div className="text-xl font-black text-amber-600 font-mono mt-0.5">
             {orders.filter((o) => o.status === 'Processing').length}
           </div>
-          <span className="text-[10px] text-ink-muted">Warehouse pack</span>
+          <span className="text-[10px] text-ink-muted">Being prepared</span>
         </div>
 
         <div className="p-3.5 rounded-xl bg-white dark:bg-[#1A1B18] border border-border dark:border-[#2A2B27] shadow-2xs">
-          <span className="text-[10px] font-bold uppercase text-ink-muted">Fulfilled / Shipped</span>
+          <span className="text-[10px] font-bold uppercase text-ink-muted">Shipped</span>
           <div className="text-xl font-black text-emerald-600 font-mono mt-0.5">
             {orders.filter((o) => o.status === 'Fulfilled').length}
           </div>
-          <span className="text-[10px] text-ink-muted">Delivered to site</span>
+          <span className="text-[10px] text-ink-muted">Sent to customer</span>
         </div>
 
         <div className="p-3.5 rounded-xl bg-white dark:bg-[#1A1B18] border border-border dark:border-[#2A2B27] shadow-2xs">
-          <span className="text-[10px] font-bold uppercase text-ink-muted">Total Revenue Booked</span>
+          <span className="text-[10px] font-bold uppercase text-ink-muted">Total Order Sales</span>
           <div className="text-xl font-black text-accent font-mono mt-0.5">
             {formatCurrency(ordersBookedValue, currency)}
           </div>

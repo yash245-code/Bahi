@@ -315,89 +315,84 @@ export const emailTemplates: EmailTemplate[] = [
     id: 'initial_quote',
     name: 'Initial Proposal Delivery',
     badge: 'Recommended for Drafts',
-    subject: 'Commercial Quotation {{quoteId}} from Bahi Solutions for {{customer}}',
-    body: `Dear {{contact}},
+    subject: 'Price quote {{quoteId}} for {{customer}} from Bahi',
+    body: `Hi {{contact}},
 
-Thank you for your interest in partnering with Bahi Solutions.
+Thank you for reaching out to us!
 
-We are pleased to present quotation {{quoteId}} for {{customer}}, detailing the software licenses, hardware devices, and deployment services discussed during our commercial discovery session.
+Here is your price quote {{quoteId}} for {{customer}}, including the items and services we discussed.
 
-• Quotation ID: {{quoteId}}
+• Quote Number: {{quoteId}}
 • Total Amount: {{amount}}
-• Validity: {{validUntil}}
+• Valid Until: {{validUntil}}
 • Payment Terms: {{paymentTerms}}
 
-You can review the full formal proposal document and complete secure digital acceptance via our client portal at:
+You can view the full quote and accept it online here:
 https://bahi.app/portal/quotes/{{quoteId}}
 
-Please do not hesitate to contact our team if you need any adjustments or technical clarifications.
+If you have any questions or want to make any adjustments, feel free to reply directly to this email.
 
-Best regards,
-Commercial Sales & Accounts
-Bahi Enterprise Systems`,
+Warm regards,
+The Bahi Team`,
   },
   {
     id: 'followup',
     name: 'Follow-up on Open Proposal',
     badge: 'Gentle Reminder',
-    subject: 'Follow-up regarding Quotation {{quoteId}} for {{customer}}',
+    subject: 'Checking in on quote {{quoteId}} for {{customer}}',
     body: `Hi {{contact}},
 
-I hope you're having a productive week!
+Hope your week is going great!
 
-I'm following up regarding quotation {{quoteId}} (Amount: {{amount}}) sent to {{customer}}. Our engineering team has reserved the deployment schedule and implementation slots for your organization.
+I wanted to check in and see if you had a chance to review quote {{quoteId}} for {{customer}} (Total: {{amount}}).
 
-Proposal link: https://bahi.app/portal/quotes/{{quoteId}}
+You can see the details and accept it anytime here:
+https://bahi.app/portal/quotes/{{quoteId}}
 
-Are there any questions from your finance or legal review team that we can address to help move this forward?
+Please let me know if you have any questions or if you'd like to adjust anything. Happy to help!
 
-Looking forward to your thoughts.
-
-Warm regards,
-Commercial Sales & Accounts
-Bahi Enterprise Systems`,
+Best regards,
+The Bahi Team`,
   },
   {
     id: 'revised',
     name: 'Revised Terms with Special Pricing',
     badge: 'Updated Revision',
-    subject: 'Updated Quotation {{quoteId}} (v{{version}}) for {{customer}} - Revised Terms',
-    body: `Dear {{contact}},
+    subject: 'Updated price quote {{quoteId}} (v{{version}}) for {{customer}}',
+    body: `Hi {{contact}},
 
-Following our recent conversation, we have updated quotation {{quoteId}} to reflect our agreed pricing terms and promotional discounts.
+Following our conversation, we have updated your price quote {{quoteId}} with the new pricing and discounts we talked about.
 
-• Updated Total: {{amount}} (Inclusive of all agreed line-item discounts)
-• Proposal Version: v{{version}}
-• Valid Through: {{validUntil}}
+• Updated Total: {{amount}}
+• Version: v{{version}}
+• Valid Until: {{validUntil}}
 
-Please review the revised proposal at your convenience:
+You can review the updated quote here:
 https://bahi.app/portal/quotes/{{quoteId}}
 
-We look forward to partnering with {{customer}} on this initiative.
+Looking forward to working together!
 
-Best regards,
-Commercial Sales & Accounts
-Bahi Enterprise Systems`,
+Warm regards,
+The Bahi Team`,
   },
   {
     id: 'urgency',
     name: 'Proposal Expiration Alert',
     badge: 'Expires Soon',
-    subject: 'Action Required: Quotation {{quoteId}} is expiring soon ({{validUntil}})',
-    body: `Dear {{contact}},
+    subject: 'Friendly reminder: Quote {{quoteId}} expires on {{validUntil}}',
+    body: `Hi {{contact}},
 
-This is a friendly reminder that quotation {{quoteId}} for {{customer}} is scheduled to expire on {{validUntil}}.
+Just a quick reminder that quote {{quoteId}} for {{customer}} is set to expire on {{validUntil}}.
 
-Current lock-in price: {{amount}}
+Current price: {{amount}}
 
-To ensure that the promotional pricing and hardware allocations remain locked without price adjustments, please review and approve the proposal via our digital portal before the validity period ends:
+To lock in this price, you can review and accept it online before it expires:
 https://bahi.app/portal/quotes/{{quoteId}}
 
-If you require an extension, please reply directly to this message.
+If you need more time or have any questions, just reply to this email and let us know!
 
-Sincerely,
-Commercial Sales & Accounts
-Bahi Enterprise Systems`,
+Best regards,
+The Bahi Team`,
   },
 ];
 
@@ -771,7 +766,7 @@ export const initialDiscountRules: DiscountRule[] = [
     isActive: true,
     effectiveUntil: 'Dec 31, 2026',
     usageCount: 24,
-    description: 'Automatically applies 15% discount for bulk terminal scanner and printer orders exceeding 10 units.',
+    description: 'Automatically gives a 15% discount when ordering 10 or more hardware items.',
   },
   {
     id: 'RULE-102',
@@ -783,7 +778,7 @@ export const initialDiscountRules: DiscountRule[] = [
     isActive: true,
     effectiveUntil: 'Ongoing',
     usageCount: 42,
-    description: 'Preferred distributor pricing across software licenses and professional onboarding services.',
+    description: 'Special wholesale pricing for certified partners across software and services.',
   },
   {
     id: 'RULE-103',
@@ -795,7 +790,7 @@ export const initialDiscountRules: DiscountRule[] = [
     isActive: true,
     effectiveUntil: 'Nov 30, 2026',
     usageCount: 18,
-    description: 'Year-end commercial incentive for mid-market clients migrating from legacy ERP installations.',
+    description: 'Year-end special discount for clients switching to Bahi software.',
   },
   {
     id: 'RULE-104',
@@ -807,7 +802,7 @@ export const initialDiscountRules: DiscountRule[] = [
     isActive: true,
     effectiveUntil: 'Indefinite',
     usageCount: 89,
-    description: 'Hard governance ceiling. Rejects discretionary sales quote discounts exceeding 25% without VP Finance approval.',
+    description: 'Protects profit margins. Discounts over 25% need manager approval before quotes can be sent.',
   },
   {
     id: 'RULE-105',
@@ -819,6 +814,6 @@ export const initialDiscountRules: DiscountRule[] = [
     isActive: false,
     effectiveUntil: 'Dec 15, 2026',
     usageCount: 6,
-    description: 'Special pricing for seed-stage startups and certified 501(c)(3) registered non-profit organizations.',
+    description: 'Special discount for early-stage startups and registered non-profit charities.',
   },
 ];

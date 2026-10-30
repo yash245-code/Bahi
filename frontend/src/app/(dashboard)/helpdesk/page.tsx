@@ -37,17 +37,17 @@ export default function HelpdeskPage() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#8B5CF6]/15 text-[#8B5CF6] border border-[#8B5CF6]/30 font-mono">
-              Helpdesk &amp; Customer Support
+              Customer Help &amp; Support
             </span>
             <span className="text-[10px] font-mono text-ink-muted bg-neutral-100 dark:bg-neutral-800 border border-border px-1.5 py-0.5 rounded">
-              Active Module
+              Ready to Use
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-ink dark:text-white tracking-tight">
-            Client Support Tickets &amp; SLA
+            Customer Help &amp; Support
           </h1>
           <p className="text-xs sm:text-sm text-ink-muted dark:text-neutral-400 mt-0.5">
-            Resolve incoming support requests, track SLA breach timers, manage ticket escalations, and maintain canned responses.
+            Answer customer questions, solve problems quickly, and keep clients happy.
           </p>
         </div>
 
@@ -56,7 +56,7 @@ export default function HelpdeskPage() {
             href="/applications"
             className="px-3 py-2 text-xs font-semibold rounded-xl border border-border dark:border-[#2A2B27] bg-white dark:bg-[#1A1B18] text-ink dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
           >
-            ← Apps Suite
+            ← All Apps
           </Link>
         </div>
       </div>
@@ -65,22 +65,22 @@ export default function HelpdeskPage() {
         <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
           <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Open Tickets</span>
           <div className="text-2xl font-black text-ink dark:text-white font-mono">2</div>
-          <p className="text-xs text-amber-600 dark:text-amber-400 font-semibold">1 awaiting team reply</p>
+          <p className="text-xs text-amber-600 dark:text-amber-400 font-semibold">1 waiting for our reply</p>
         </div>
         <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
           <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">First Response Time</span>
           <div className="text-2xl font-black text-emerald-600 dark:text-emerald-400 font-mono">14 mins</div>
-          <p className="text-xs text-ink-muted dark:text-neutral-400">Target: &lt; 30 mins</p>
+          <p className="text-xs text-ink-muted dark:text-neutral-400">Average response: under 30 mins</p>
         </div>
         <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">SLA Compliance</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Answered On Time</span>
           <div className="text-2xl font-black text-emerald-600 dark:text-emerald-400 font-mono">98.4%</div>
-          <p className="text-xs text-ink-muted dark:text-neutral-400">Last 30 rolling days</p>
+          <p className="text-xs text-ink-muted dark:text-neutral-400">Over the last 30 days</p>
         </div>
         <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">CSAT Score</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Customer Satisfaction</span>
           <div className="text-2xl font-black text-ink dark:text-white font-mono">4.9 / 5.0</div>
-          <p className="text-xs text-ink-muted dark:text-neutral-400">Verified client ratings</p>
+          <p className="text-xs text-ink-muted dark:text-neutral-400">Happy customer reviews</p>
         </div>
       </div>
 

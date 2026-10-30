@@ -35,17 +35,17 @@ export default function LeavePage() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#F43F5E]/15 text-[#F43F5E] border border-[#F43F5E]/30 font-mono">
-              Leave &amp; Time Off
+              Time Off &amp; Vacations
             </span>
             <span className="text-[10px] font-mono text-ink-muted bg-neutral-100 dark:bg-neutral-800 border border-border px-1.5 py-0.5 rounded">
-              Active Module
+              Ready to Use
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-ink dark:text-white tracking-tight">
-            Vacation Accruals &amp; Time-Off
+            Time Off &amp; Vacations
           </h1>
           <p className="text-xs sm:text-sm text-ink-muted dark:text-neutral-400 mt-0.5">
-            Submit leave applications, track departmental vacation coverage, manage public holidays, and approve time-off.
+            Review vacation requests, approve sick days, and see who is out of the office.
           </p>
         </div>
 
@@ -54,29 +54,29 @@ export default function LeavePage() {
             href="/applications"
             className="px-3 py-2 text-xs font-semibold rounded-xl border border-border dark:border-[#2A2B27] bg-white dark:bg-[#1A1B18] text-ink dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
           >
-            ← Apps Suite
+            ← All Apps
           </Link>
         </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Team Currently on Leave</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Out Today</span>
           <div className="text-2xl font-black text-ink dark:text-white font-mono">1</div>
           <p className="text-xs text-amber-600 dark:text-amber-400 font-semibold">Sarah Chen (returning Mon)</p>
         </div>
         <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Pending Requests</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Awaiting Approval</span>
           <div className="text-2xl font-black text-ink dark:text-white font-mono">1</div>
           <p className="text-xs text-ink-muted dark:text-neutral-400">Needs manager sign-off</p>
         </div>
         <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Avg Vacation Balance</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Average Days Left</span>
           <div className="text-2xl font-black text-emerald-600 dark:text-emerald-400 font-mono">16.4 days</div>
-          <p className="text-xs text-ink-muted dark:text-neutral-400">Per full-time employee</p>
+          <p className="text-xs text-ink-muted dark:text-neutral-400">Per employee</p>
         </div>
         <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Upcoming Holiday</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Next Public Holiday</span>
           <div className="text-2xl font-black text-ink dark:text-white font-mono">Nov 26</div>
           <p className="text-xs text-ink-muted dark:text-neutral-400">Thanksgiving holiday</p>
         </div>

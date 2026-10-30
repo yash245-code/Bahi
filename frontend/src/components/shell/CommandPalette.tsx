@@ -5,23 +5,23 @@ import { getAllApplications } from '@bahi/applications';
 
 const commands = [
   {
-    category: 'Applications Suite',
+    category: 'Applications & Tools',
     items: [
-      { label: 'Go to Applications Hub', shortcut: 'H', action: '/applications' },
+      { label: 'Go to All Apps', shortcut: 'H', action: '/applications' },
       ...getAllApplications().map((app) => ({
-        label: `Launch ${app.name}`,
+        label: `Open ${app.name}`,
         shortcut: app.id.charAt(0).toUpperCase(),
         action: app.routePrefix,
       })),
     ],
   },
   {
-    category: 'Account & Workspace',
+    category: 'Account & Settings',
     items: [
       { label: 'Sign In / Switch Account', shortcut: 'L', action: '/login' },
-      { label: 'Create New Organization', shortcut: 'N', action: '/signup' },
-      { label: 'Go to Landing Website', shortcut: 'W', action: '/' },
-      { label: 'API Documentation (Swagger)', shortcut: 'D', action: 'http://localhost:4000/api/docs' },
+      { label: 'Create New Business Account', shortcut: 'N', action: '/signup' },
+      { label: 'Go to Homepage', shortcut: 'W', action: '/' },
+      { label: 'Developer API Documentation', shortcut: 'D', action: 'http://localhost:4000/api/docs' },
     ],
   },
 ];
@@ -87,7 +87,7 @@ export function CommandPalette({ onClose }: { onClose: () => void }) {
             ref={inputRef}
             type="text"
             className="command-input border-0 py-3.5"
-            placeholder="Search applications, actions, shortcuts..."
+            placeholder="Search apps, actions, or jump anywhere..."
             value={query}
             onChange={(e) => { setQuery(e.target.value); setActiveIndex(0); }}
           />

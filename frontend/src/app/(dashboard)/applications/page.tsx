@@ -53,54 +53,54 @@ interface CategoryGroup {
 const CATEGORIES: CategoryGroup[] = [
   {
     id: 'sales',
-    name: 'Sales & Commercial',
-    description: 'Pipeline management, customer deal velocity, and recurring subscriptions.',
+    name: 'Sales & Customers',
+    description: 'Find new clients, send price quotes, and manage recurring plans.',
     badge: '3 Applications',
     icon: <Sparkles className="w-5 h-5 text-accent" />,
   },
   {
     id: 'operations',
-    name: 'Operations & Supply Chain',
-    description: 'Multi-warehouse stock control, technician field dispatch, and vendor procurement.',
+    name: 'Products & Field Work',
+    description: 'Track items in stock, schedule technician visits, and order from suppliers.',
     badge: '3 Applications',
     icon: <Layers className="w-5 h-5 text-[#3E7FBF]" />,
   },
   {
     id: 'finance',
-    name: 'Finance & Accounting',
-    description: 'Double-entry general ledger, digital invoice links, and corporate expense claims.',
+    name: 'Money & Bookkeeping',
+    description: 'Keep track of cash flow, send invoices to clients, and log business expenses.',
     badge: '3 Applications',
     icon: <Landmark className="w-5 h-5 text-[#2E9169]" />,
   },
   {
     id: 'hr',
-    name: 'Human Resources & People',
-    description: 'Central employee directory, biometric shift attendance, and vacation time-off.',
+    name: 'Team & Staff',
+    description: 'Manage your team directory, record work hours, and approve vacation days.',
     badge: '3 Applications',
     icon: <UserCheck className="w-5 h-5 text-[#C24A6B]" />,
   },
   {
     id: 'productivity',
-    name: 'Productivity & Delivery',
-    description: 'Agile sprint kanbans, customer SLA helpdesk tickets, and digital contract vault.',
+    name: 'Projects & Support',
+    description: 'Organize project tasks, answer customer help questions, and store signed contracts.',
     badge: '3 Applications',
     icon: <FolderKanban className="w-5 h-5 text-[#D1A536]" />,
   },
 ];
 
 const ALL_APPLICATIONS: ApplicationItem[] = [
-  // ─── 1. Sales & Commercial (3 Apps) ──────────────────────
+  // ─── 1. Sales & Customers (3 Apps) ──────────────────────
   {
     id: 'crm',
-    name: 'CRM & Pipelines',
+    name: 'Customers & Leads',
     categoryId: 'sales',
-    categoryLabel: 'Revenue Ops',
-    description: 'Track deals, lead intake scoring, B2B company accounts, and sales pipelines.',
+    categoryLabel: 'Sales',
+    description: 'Keep track of clients, sales leads, and upcoming deals in an easy visual board.',
     route: '/crm',
     colorClass: 'text-[#C2542F] bg-[#C2542F]/10 border-[#C2542F]/20 dark:bg-[#C2542F]/15 dark:border-[#C2542F]/35',
     glowClass: 'group-hover:border-[#C2542F]/40 group-hover:shadow-[0_8px_30px_rgba(194,84,47,0.12)]',
     badgeClass: 'bg-[#C2542F]/10 text-[#C2542F] dark:text-[#E0724F] border-[#C2542F]/20',
-    features: ['Kanban Pipeline', 'Lead Scoring', 'Accounts & Contacts'],
+    features: ['Deal Board', 'New Leads', 'Contact List'],
     icon: <Users className="w-6 h-6" />,
     status: 'ready',
   },
@@ -108,189 +108,189 @@ const ALL_APPLICATIONS: ApplicationItem[] = [
     id: 'sales',
     name: 'Sales & Quotes',
     categoryId: 'sales',
-    categoryLabel: 'Commerce',
-    description: 'Process customer orders, price books, and professional quotation workflows.',
+    categoryLabel: 'Orders',
+    description: 'Create price quotes for customers, confirm orders, and manage price lists.',
     route: '/sales',
     colorClass: 'text-[#A8462F] bg-[#A8462F]/10 border-[#A8462F]/20 dark:bg-[#A8462F]/15 dark:border-[#A8462F]/35',
     glowClass: 'group-hover:border-[#A8462F]/40 group-hover:shadow-[0_8px_30px_rgba(168,70,47,0.12)]',
     badgeClass: 'bg-[#A8462F]/10 text-[#A8462F] dark:text-[#D16249] border-[#A8462F]/20',
-    features: ['Quotations', 'Sales Orders', 'Discount Rules'],
+    features: ['Price Quotes', 'Customer Orders', 'Price Lists'],
     icon: <FileSpreadsheet className="w-6 h-6" />,
     status: 'ready',
   },
   {
     id: 'subscriptions',
-    name: 'Subscriptions & Billing',
+    name: 'Subscriptions & Plans',
     categoryId: 'sales',
-    categoryLabel: 'Recurring Rev',
-    description: 'Automate recurring contracts, SaaS billing cycles, MRR metrics, and dunning.',
+    categoryLabel: 'Billing',
+    description: 'Set up recurring customer subscriptions, monthly billing, and auto renewals.',
     route: '/subscriptions',
     colorClass: 'text-[#E11D48] bg-[#E11D48]/10 border-[#E11D48]/20 dark:bg-[#E11D48]/15 dark:border-[#E11D48]/35',
     glowClass: 'group-hover:border-[#E11D48]/40 group-hover:shadow-[0_8px_30px_rgba(225,29,72,0.12)]',
     badgeClass: 'bg-[#E11D48]/10 text-[#E11D48] dark:text-[#FB7185] border-[#E11D48]/20',
-    features: ['Recurring Plans', 'Dunning Engine', 'MRR Analytics'],
+    features: ['Monthly Plans', 'Payment Reminders', 'Recurring Revenue'],
     icon: <CreditCard className="w-6 h-6" />,
     status: 'not-ready',
   },
 
-  // ─── 2. Operations & Supply Chain (3 Apps) ───────────────
+  // ─── 2. Products & Field Work (3 Apps) ───────────────────
   {
     id: 'inventory',
-    name: 'Inventory & Warehouses',
+    name: 'Stock & Inventory',
     categoryId: 'operations',
-    categoryLabel: 'Supply Chain',
-    description: 'Manage warehouse stock, barcode lots, reorder thresholds, and bin tracking.',
+    categoryLabel: 'Inventory',
+    description: 'Keep count of items on shelves, get low stock warnings, and move items between rooms.',
     route: '/inventory',
     colorClass: 'text-[#3E7FBF] bg-[#3E7FBF]/10 border-[#3E7FBF]/20 dark:bg-[#3E7FBF]/15 dark:border-[#3E7FBF]/35',
     glowClass: 'group-hover:border-[#3E7FBF]/40 group-hover:shadow-[0_8px_30px_rgba(62,127,191,0.12)]',
     badgeClass: 'bg-[#3E7FBF]/10 text-[#3E7FBF] dark:text-[#5B9BD9] border-[#3E7FBF]/20',
-    features: ['Multi-Warehouse', 'Stock Alerts', 'Shipments & Transfers'],
+    features: ['Stock Counts', 'Low Stock Alerts', 'Move Items'],
     icon: <Package className="w-6 h-6" />,
     status: 'ready',
   },
   {
     id: 'services',
-    name: 'Services & Field Ops',
+    name: 'Service Visits & Jobs',
     categoryId: 'operations',
-    categoryLabel: 'Field Dispatch',
-    description: 'Field service orders, technician dispatch, appointments, and repair tickets.',
+    categoryLabel: 'Field Jobs',
+    description: 'Book customer repair jobs, assign field workers, and schedule visits.',
     route: '/services',
     colorClass: 'text-[#2DD4BF] bg-[#2DD4BF]/10 border-[#2DD4BF]/20 dark:bg-[#2DD4BF]/15 dark:border-[#2DD4BF]/35',
     glowClass: 'group-hover:border-[#2DD4BF]/40 group-hover:shadow-[0_8px_30px_rgba(45,212,191,0.12)]',
     badgeClass: 'bg-[#2DD4BF]/10 text-[#0F766E] dark:text-[#2DD4BF] border-[#2DD4BF]/20',
-    features: ['Technician Dispatch', 'On-Site Work Orders', 'GPS Scheduling'],
+    features: ['Job Bookings', 'Assign Technicians', 'Visit Schedules'],
     icon: <Wrench className="w-6 h-6" />,
     status: 'ready',
   },
   {
     id: 'procurement',
-    name: 'Procurement & Purchasing',
+    name: 'Purchases & Suppliers',
     categoryId: 'operations',
-    categoryLabel: 'Vendor POs',
-    description: 'Vendor purchase orders, supplier catalogs, 3-way matching, and goods receipt.',
+    categoryLabel: 'Buying',
+    description: 'Order supplies from vendors, compare prices, and check shipments when they arrive.',
     route: '/procurement',
     colorClass: 'text-[#0284C7] bg-[#0284C7]/10 border-[#0284C7]/20 dark:bg-[#0284C7]/15 dark:border-[#0284C7]/35',
     glowClass: 'group-hover:border-[#0284C7]/40 group-hover:shadow-[0_8px_30px_rgba(2,132,199,0.12)]',
     badgeClass: 'bg-[#0284C7]/10 text-[#0284C7] dark:text-[#38BDF8] border-[#0284C7]/20',
-    features: ['Purchase Orders', 'Supplier RFQs', '3-Way Matching'],
+    features: ['Purchase Orders', 'Supplier List', 'Shipment Check'],
     icon: <Truck className="w-6 h-6" />,
     status: 'not-ready',
   },
 
-  // ─── 3. Finance & Accounting (3 Apps) ────────────────────
+  // ─── 3. Money & Bookkeeping (3 Apps) ─────────────────────
   {
     id: 'accounting',
-    name: 'Accounting & Ledger',
+    name: 'Bookkeeping & Finances',
     categoryId: 'finance',
-    categoryLabel: 'Ledger & Tax',
-    description: 'Double-entry general ledger, customer invoices, payment recording, and P&L.',
+    categoryLabel: 'Accounts',
+    description: 'See all money coming in and going out, balance your accounts, and keep clean books.',
     route: '/accounting',
     colorClass: 'text-[#2E9169] bg-[#2E9169]/10 border-[#2E9169]/20 dark:bg-[#2E9169]/15 dark:border-[#2E9169]/35',
     glowClass: 'group-hover:border-[#2E9169]/40 group-hover:shadow-[0_8px_30px_rgba(46,145,105,0.12)]',
     badgeClass: 'bg-[#2E9169]/10 text-[#2E9169] dark:text-[#42B786] border-[#2E9169]/20',
-    features: ['General Ledger', 'Chart of Accounts', 'Trial Balance'],
+    features: ['Income & Expenses', 'Account Balances', 'Financial Reports'],
     icon: <Landmark className="w-6 h-6" />,
     status: 'ready',
   },
   {
     id: 'invoicing',
-    name: 'Invoicing & Payments',
+    name: 'Invoices & Customer Bills',
     categoryId: 'finance',
-    categoryLabel: 'Billing Links',
-    description: 'Instant PDF invoices, recurring payment links, automated overdue reminders, and tax.',
+    categoryLabel: 'Bills',
+    description: 'Send professional invoices, share payment links, and get paid faster.',
     route: '/invoicing',
     colorClass: 'text-[#10B981] bg-[#10B981]/10 border-[#10B981]/20 dark:bg-[#10B981]/15 dark:border-[#10B981]/35',
     glowClass: 'group-hover:border-[#10B981]/40 group-hover:shadow-[0_8px_30px_rgba(16,185,129,0.12)]',
     badgeClass: 'bg-[#10B981]/10 text-[#059669] dark:text-[#34D399] border-[#10B981]/20',
-    features: ['E-Invoicing', 'Payment Links', 'Automated Reminders'],
+    features: ['Send Invoices', 'Payment Links', 'Payment Reminders'],
     icon: <Receipt className="w-6 h-6" />,
     status: 'not-ready',
   },
   {
     id: 'expenses',
-    name: 'Expense Management',
+    name: 'Expenses & Receipts',
     categoryId: 'finance',
-    categoryLabel: 'Claims & OCR',
-    description: 'Submit expense reports, scan receipts with OCR, track mileage, and per diems.',
+    categoryLabel: 'Receipts',
+    description: 'Snap photos of receipts, track business expenses, and repay employee spending.',
     route: '/expenses',
     colorClass: 'text-[#84CC16] bg-[#84CC16]/10 border-[#84CC16]/20 dark:bg-[#84CC16]/15 dark:border-[#84CC16]/35',
     glowClass: 'group-hover:border-[#84CC16]/40 group-hover:shadow-[0_8px_30px_rgba(132,204,22,0.12)]',
     badgeClass: 'bg-[#84CC16]/10 text-[#65A30D] dark:text-[#A3E635] border-[#84CC16]/20',
-    features: ['Receipt OCR', 'Claim Approvals', 'Per Diem Rates'],
+    features: ['Receipt Photos', 'Expense Approvals', 'Daily Spending'],
     icon: <Wallet className="w-6 h-6" />,
     status: 'not-ready',
   },
 
-  // ─── 4. Human Resources & People (3 Apps) ────────────────
+  // ─── 4. Team & Staff (3 Apps) ────────────────────────────
   {
     id: 'hr',
-    name: 'HR & People Ops',
+    name: 'Team & Staff Directory',
     categoryId: 'hr',
-    categoryLabel: 'Workforce',
-    description: 'Team directory, employee records, org structure, and compliance documents.',
+    categoryLabel: 'Team',
+    description: 'List all employees, their contact info, job roles, and emergency details.',
     route: '/hr',
     colorClass: 'text-[#C24A6B] bg-[#C24A6B]/10 border-[#C24A6B]/20 dark:bg-[#C24A6B]/15 dark:border-[#C24A6B]/35',
     glowClass: 'group-hover:border-[#C24A6B]/40 group-hover:shadow-[0_8px_30px_rgba(194,74,107,0.12)]',
     badgeClass: 'bg-[#C24A6B]/10 text-[#C24A6B] dark:text-[#DE6889] border-[#C24A6B]/20',
-    features: ['Staff Directory', 'Org Hierarchy', 'Compliance Files'],
+    features: ['Staff List', 'Job Roles', 'Team Details'],
     icon: <UserCheck className="w-6 h-6" />,
     status: 'ready',
   },
   {
     id: 'attendance',
-    name: 'Time & Attendance',
+    name: 'Work Hours & Attendance',
     categoryId: 'hr',
-    categoryLabel: 'Timesheets',
-    description: 'Biometric clock-in sync, shift scheduling, daily timesheets, and overtime tracking.',
+    categoryLabel: 'Clock In',
+    description: 'Track clock-in and clock-out times, daily work shifts, and overtime hours.',
     route: '/attendance',
     colorClass: 'text-[#EC4899] bg-[#EC4899]/10 border-[#EC4899]/20 dark:bg-[#EC4899]/15 dark:border-[#EC4899]/35',
     glowClass: 'group-hover:border-[#EC4899]/40 group-hover:shadow-[0_8px_30px_rgba(236,72,153,0.12)]',
     badgeClass: 'bg-[#EC4899]/10 text-[#DB2777] dark:text-[#F472B6] border-[#EC4899]/20',
-    features: ['Shift Rosters', 'Biometric Sync', 'Overtime Logs'],
+    features: ['Clock In / Out', 'Work Shifts', 'Overtime Logs'],
     icon: <Clock className="w-6 h-6" />,
     status: 'not-ready',
   },
   {
     id: 'leave',
-    name: 'Leave & Time Off',
+    name: 'Time Off & Vacations',
     categoryId: 'hr',
-    categoryLabel: 'Vacations',
-    description: 'Vacation requests, sick leave balances, holiday calendars, and manager approvals.',
+    categoryLabel: 'Time Off',
+    description: 'Request days off, approve employee holidays, and see who is working today.',
     route: '/leave',
     colorClass: 'text-[#F43F5E] bg-[#F43F5E]/10 border-[#F43F5E]/20 dark:bg-[#F43F5E]/15 dark:border-[#F43F5E]/35',
     glowClass: 'group-hover:border-[#F43F5E]/40 group-hover:shadow-[0_8px_30px_rgba(244,63,94,0.12)]',
     badgeClass: 'bg-[#F43F5E]/10 text-[#E11D48] dark:text-[#FB7185] border-[#F43F5E]/20',
-    features: ['Time-Off Requests', 'Leave Accruals', 'Holiday Calendars'],
+    features: ['Vacation Requests', 'Sick Days', 'Team Calendar'],
     icon: <Calendar className="w-6 h-6" />,
     status: 'not-ready',
   },
 
-  // ─── 5. Productivity & Delivery (3 Apps) ─────────────────
+  // ─── 5. Projects & Support (3 Apps) ──────────────────────
   {
     id: 'projects',
-    name: 'Projects & Sprints',
+    name: 'Projects & Tasks',
     categoryId: 'productivity',
-    categoryLabel: 'Sprint Delivery',
-    description: 'Collaborative task kanbans, sprint milestones, time logs, and roadmaps.',
+    categoryLabel: 'Tasks',
+    description: 'Organize project tasks on simple boards, assign work, and finish on time.',
     route: '/projects',
     colorClass: 'text-[#D1A536] bg-[#D1A536]/10 border-[#D1A536]/20 dark:bg-[#D1A536]/15 dark:border-[#D1A536]/35',
     glowClass: 'group-hover:border-[#D1A536]/40 group-hover:shadow-[0_8px_30px_rgba(209,165,54,0.12)]',
     badgeClass: 'bg-[#D1A536]/10 text-[#D1A536] dark:text-[#E8BD4D] border-[#D1A536]/20',
-    features: ['Task Kanbans', 'Sprint Burndown', 'Milestones'],
+    features: ['Task Boards', 'Milestones', 'Checklists'],
     icon: <FolderKanban className="w-6 h-6" />,
     status: 'ready',
   },
   {
     id: 'helpdesk',
-    name: 'Helpdesk & Support',
+    name: 'Customer Help & Support',
     categoryId: 'productivity',
-    categoryLabel: 'Customer SLA',
-    description: 'Support tickets, multi-channel intake, SLA escalation policies, and knowledge base.',
+    categoryLabel: 'Support',
+    description: 'Answer customer questions, solve problems quickly, and keep clients happy.',
     route: '/helpdesk',
     colorClass: 'text-[#8B5CF6] bg-[#8B5CF6]/10 border-[#8B5CF6]/20 dark:bg-[#8B5CF6]/15 dark:border-[#8B5CF6]/35',
     glowClass: 'group-hover:border-[#8B5CF6]/40 group-hover:shadow-[0_8px_30px_rgba(139,92,246,0.12)]',
     badgeClass: 'bg-[#8B5CF6]/10 text-[#7C3AED] dark:text-[#A78BFA] border-[#8B5CF6]/20',
-    features: ['Support Tickets', 'SLA Escalation', 'Help Center'],
+    features: ['Support Requests', 'Quick Answers', 'Help Articles'],
     icon: <Headphones className="w-6 h-6" />,
     status: 'not-ready',
   },
@@ -298,13 +298,13 @@ const ALL_APPLICATIONS: ApplicationItem[] = [
     id: 'documents',
     name: 'Documents & Signatures',
     categoryId: 'productivity',
-    categoryLabel: 'Digital Vault',
-    description: 'Legally binding e-signatures, contract templates, digital vault, and audit trails.',
+    categoryLabel: 'Contracts',
+    description: 'Store agreements and forms, collect electronic signatures, and keep files safe.',
     route: '/documents',
     colorClass: 'text-[#6366F1] bg-[#6366F1]/10 border-[#6366F1]/20 dark:bg-[#6366F1]/15 dark:border-[#6366F1]/35',
     glowClass: 'group-hover:border-[#6366F1]/40 group-hover:shadow-[0_8px_30px_rgba(99,102,241,0.12)]',
     badgeClass: 'bg-[#6366F1]/10 text-[#4F46E5] dark:text-[#818CF8] border-[#6366F1]/20',
-    features: ['E-Signatures', 'Contract Vault', 'Audit Trails'],
+    features: ['Online Signatures', 'Saved Templates', 'Safe Storage'],
     icon: <FileText className="w-6 h-6" />,
     status: 'not-ready',
   },
@@ -360,23 +360,23 @@ export default function UserOverviewPage() {
           <div className="flex items-center gap-2 mb-2">
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-accent/10 text-accent border border-accent/20 font-mono">
               <Sparkles className="w-3 h-3 text-accent" />
-              Enterprise Suite
+              Business Hub
             </span>
             <span className="text-xs font-mono text-ink-muted dark:text-neutral-400">
-              Acme Global • 7 Ready Applications • 8 In Development
+              Acme Global • 7 Ready to Use • 8 Coming Soon
             </span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-ink dark:text-neutral-100">
             {greeting}, <span className="text-accent">Yash</span>
           </h1>
           <p className="text-sm text-ink-muted dark:text-neutral-400 mt-1 max-w-2xl leading-relaxed">
-            All-in-one business application suite. Categorized into 5 core business operations with 7 live production-ready workspaces and 8 upcoming roadmap modules.
+            All your daily business tools in one place. 7 applications are fully ready to use, and 8 more are coming soon.
           </p>
         </div>
 
         <div className="flex items-center gap-2 text-xs font-medium text-ink-muted dark:text-neutral-400 bg-white dark:bg-[#1A1B18] px-3.5 py-2 rounded-xl border border-border dark:border-[#2A2B27] shadow-xs">
           <Clock className="w-3.5 h-3.5 text-accent" />
-          <span>Local System Time: <strong className="text-ink dark:text-neutral-200 font-mono">10:25 AM</strong></span>
+          <span>Local Time: <strong className="text-ink dark:text-neutral-200 font-mono">10:25 AM</strong></span>
         </div>
       </header>
 
@@ -386,7 +386,7 @@ export default function UserOverviewPage() {
         <div className="bg-white dark:bg-[#1A1B18] border border-border dark:border-[#2A2B27] p-5 rounded-2xl shadow-xs hover:shadow-card-hover dark:hover:shadow-glass-dark hover:border-[#D5D2CA] dark:hover:border-neutral-700 transition-all group">
           <div className="flex justify-between items-center mb-3">
             <span className="text-xs font-bold text-ink-muted dark:text-neutral-400 uppercase tracking-wider">
-              Revenue (30d)
+              Money In (Last 30 Days)
             </span>
             <span className="inline-flex items-center gap-1 bg-[#1F7A4D]/10 dark:bg-[#1F7A4D]/20 text-[#1F7A4D] dark:text-[#38BD7E] border border-[#1F7A4D]/25 px-2 py-0.5 rounded-md text-[10px] font-bold">
               <TrendingUp className="w-2.5 h-2.5" />
@@ -397,7 +397,7 @@ export default function UserOverviewPage() {
             $12,450.00
           </div>
           <p className="text-xs text-ink-muted dark:text-neutral-400 mt-2">
-            vs $10,920 previous month
+            vs $10,920 last month
           </p>
         </div>
 
@@ -405,7 +405,7 @@ export default function UserOverviewPage() {
         <div className="bg-white dark:bg-[#1A1B18] border border-border dark:border-[#2A2B27] p-5 rounded-2xl shadow-xs hover:shadow-card-hover dark:hover:shadow-glass-dark hover:border-[#D5D2CA] dark:hover:border-neutral-700 transition-all group">
           <div className="flex justify-between items-center mb-3">
             <span className="text-xs font-bold text-ink-muted dark:text-neutral-400 uppercase tracking-wider">
-              New Leads
+              New Inquiries
             </span>
             <span className="inline-flex items-center gap-1 bg-[#C2542F]/10 dark:bg-[#C2542F]/20 text-[#C2542F] dark:text-[#E0724F] border border-[#C2542F]/25 px-2 py-0.5 rounded-md text-[10px] font-bold">
               +5 today
@@ -415,7 +415,7 @@ export default function UserOverviewPage() {
             42
           </div>
           <p className="text-xs text-ink-muted dark:text-neutral-400 mt-2">
-            12 need follow-up today
+            12 people to follow up with today
           </p>
         </div>
 
@@ -433,7 +433,7 @@ export default function UserOverviewPage() {
             8
           </div>
           <p className="text-xs text-ink-muted dark:text-neutral-400 mt-2">
-            3 deliverables due this week
+            3 tasks due this week
           </p>
         </div>
 
@@ -450,10 +450,10 @@ export default function UserOverviewPage() {
           </div>
           <div className="text-lg font-black text-ink dark:text-neutral-100 flex items-center gap-1.5">
             <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
-            <span>Core Engine Nominal</span>
+            <span>Everything Running Smoothly</span>
           </div>
           <p className="text-xs text-ink-muted dark:text-neutral-400 mt-2">
-            7 live apps • 8 in development
+            All data saved and synced
           </p>
         </div>
       </div>
@@ -472,7 +472,7 @@ export default function UserOverviewPage() {
                   : 'text-ink-muted dark:text-neutral-400 hover:text-ink dark:hover:text-white'
               }`}
             >
-              All Categories ({ALL_APPLICATIONS.length})
+              All Apps ({ALL_APPLICATIONS.length})
             </button>
             {CATEGORIES.map((cat) => (
               <button
@@ -495,7 +495,7 @@ export default function UserOverviewPage() {
             <Search className="w-4 h-4 text-ink-muted dark:text-neutral-500 absolute left-3.5 top-3" />
             <input
               type="text"
-              placeholder="Search across all 15 applications..."
+              placeholder="Search apps, tasks, or features..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full text-xs pl-10 pr-4 py-2.5 rounded-2xl border border-border dark:border-[#2A2B27] bg-white dark:bg-[#1A1B18] text-ink dark:text-neutral-100 placeholder:text-ink-muted/60 dark:placeholder:text-neutral-500 focus:outline-hidden focus:border-accent dark:focus:border-accent transition-colors shadow-xs"
@@ -508,7 +508,7 @@ export default function UserOverviewPage() {
           <div className="p-12 text-center bg-white dark:bg-[#1A1B18] border border-border dark:border-[#2A2B27] rounded-2xl shadow-xs">
             <Layers className="w-10 h-10 text-ink-muted mx-auto mb-3 opacity-40" />
             <p className="text-base font-bold text-ink dark:text-neutral-200">
-              No applications match &quot;{searchQuery}&quot;
+              No apps match &quot;{searchQuery}&quot;
             </p>
             <p className="text-xs text-ink-muted dark:text-neutral-400 mt-1">
               Try searching with another keyword or reset the category filters.
@@ -517,7 +517,7 @@ export default function UserOverviewPage() {
               onClick={() => { setSearchQuery(''); setSelectedCategory('all'); }}
               className="mt-4 px-4 py-2 text-xs font-bold rounded-xl bg-accent text-white hover:bg-accent-hover transition-colors shadow-xs cursor-pointer"
             >
-              Reset All Filters
+              Show All Apps
             </button>
           </div>
         ) : (
@@ -571,7 +571,7 @@ export default function UserOverviewPage() {
                             </span>
                             {app.status === 'not-ready' && (
                               <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md uppercase tracking-wider bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/25 font-mono">
-                                In Dev
+                                Coming Soon
                               </span>
                             )}
                             <div className="w-7 h-7 rounded-lg flex items-center justify-center text-ink-muted dark:text-neutral-500 group-hover:text-accent group-hover:bg-accent/10 transition-colors">
@@ -608,23 +608,23 @@ export default function UserOverviewPage() {
                             {app.status === 'ready' ? (
                               <strong className="text-emerald-600 dark:text-emerald-400 font-semibold inline-flex items-center gap-1">
                                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
-                                Ready
+                                Ready to Use
                               </strong>
                             ) : (
                               <strong className="text-amber-600 dark:text-amber-400 font-semibold inline-flex items-center gap-1">
                                 <span className="w-1.5 h-1.5 rounded-full bg-amber-500 inline-block"></span>
-                                Not Ready
+                                Coming Soon
                               </strong>
                             )}
                           </span>
                           <span className={`font-semibold flex items-center gap-1 group-hover:translate-x-0.5 transition-transform ${app.status === 'ready' ? 'text-accent' : 'text-ink-muted dark:text-neutral-400'}`}>
                             {app.status === 'ready' ? (
                               <>
-                                Open Workspace <ArrowRight className="w-3 h-3" />
+                                Open App <ArrowRight className="w-3 h-3" />
                               </>
                             ) : (
                               <>
-                                Preview / WIP <ArrowRight className="w-3 h-3" />
+                                Preview Demo <ArrowRight className="w-3 h-3" />
                               </>
                             )}
                           </span>
@@ -643,10 +643,10 @@ export default function UserOverviewPage() {
       <section className="space-y-3 pt-4 border-t border-border/60 dark:border-[#2A2B27]">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-bold text-ink dark:text-neutral-100 tracking-tight">
-            Cross-Suite Live Activity
+            Recent Business Activity
           </h2>
           <span className="text-xs font-semibold text-ink-muted dark:text-neutral-400">
-            Real-time multi-module feed
+            Live updates across all your apps
           </span>
         </div>
 
@@ -679,7 +679,7 @@ export default function UserOverviewPage() {
                 Annual Subscription renewed for Apex Logistics Hub
               </p>
               <p className="text-xs text-ink-muted dark:text-neutral-400">
-                Subscriptions &amp; Billing • 3 hours ago
+                Subscriptions &amp; Plans • 3 hours ago
               </p>
             </div>
             <span className="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400">
@@ -697,7 +697,7 @@ export default function UserOverviewPage() {
                 Incoming stock received (150 items) into Main Warehouse
               </p>
               <p className="text-xs text-ink-muted dark:text-neutral-400">
-                Inventory &amp; Warehouses • 4 hours ago
+                Stock &amp; Inventory • 4 hours ago
               </p>
             </div>
             <span className="text-xs font-mono font-bold text-ink-muted dark:text-neutral-400">
@@ -715,7 +715,7 @@ export default function UserOverviewPage() {
                 Invoice #084 marked as Paid via Bank Wire Transfer
               </p>
               <p className="text-xs text-ink-muted dark:text-neutral-400">
-                Accounting &amp; Invoicing • Yesterday
+                Bookkeeping &amp; Finances • Yesterday
               </p>
             </div>
             <span className="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400">

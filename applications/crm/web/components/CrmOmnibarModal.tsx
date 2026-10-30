@@ -203,13 +203,13 @@ export function CrmOmnibarModal({ isOpen, onClose }: CrmOmnibarModalProps) {
           {isLoading ? (
             <div className="py-8 text-center text-xs text-ink-muted flex items-center justify-center gap-2">
               <span className="w-2 h-2 rounded-full bg-accent animate-ping" />
-              Searching cross-entity CRM index...
+              Searching across all records...
             </div>
           ) : results.length === 0 ? (
             <div className="py-10 text-center space-y-1">
-              <p className="text-xs font-semibold text-ink dark:text-white">No CRM records found</p>
+              <p className="text-xs font-semibold text-ink dark:text-white">No results found</p>
               <p className="text-[11px] text-ink-muted">
-                Try searching by deal name, stakeholder email, or company name.
+                Try searching by deal title, customer email, or company name.
               </p>
             </div>
           ) : (

@@ -37,17 +37,17 @@ export default function HrPage() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#C24A6B]/15 text-[#C24A6B] border border-[#C24A6B]/30 font-mono">
-              HR &amp; People Operations
+              Team &amp; Staff
             </span>
             <span className="text-[10px] font-mono text-ink-muted bg-neutral-100 dark:bg-neutral-800 border border-border px-1.5 py-0.5 rounded">
-              Active Module
+              Ready to Use
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-ink dark:text-white tracking-tight">
-            Workforce &amp; Team Directory
+            Team Directory
           </h1>
           <p className="text-xs sm:text-sm text-ink-muted dark:text-neutral-400 mt-0.5">
-            Manage employee profiles, leave requests, attendance logs, and internal team assignments.
+            Find contact info for everyone on your team, see their job title, and check who is available.
           </p>
         </div>
 
@@ -56,7 +56,7 @@ export default function HrPage() {
             href="/applications"
             className="px-3 py-2 text-xs font-semibold rounded-xl border border-border dark:border-[#2A2B27] bg-white dark:bg-[#1A1B18] text-ink dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
           >
-            ← Apps Suite
+            ← All Apps
           </Link>
         </div>
       </div>
@@ -64,24 +64,24 @@ export default function HrPage() {
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Total Workforce</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Team Members</span>
           <div className="text-2xl font-black text-ink dark:text-white font-mono">{employees.length}</div>
-          <p className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold">100% role compliance</p>
+          <p className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold">Full staff roster</p>
         </div>
         <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">On Duty Today</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Working Today</span>
           <div className="text-2xl font-black text-ink dark:text-white font-mono">4</div>
-          <p className="text-xs text-ink-muted dark:text-neutral-400">Field &amp; Office</p>
+          <p className="text-xs text-ink-muted dark:text-neutral-400">At work &amp; remote</p>
         </div>
         <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
           <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">On Leave</span>
           <div className="text-2xl font-black text-ink dark:text-white font-mono">1</div>
-          <p className="text-xs text-amber-600 dark:text-amber-400 font-semibold">Scheduled return Mon</p>
+          <p className="text-xs text-amber-600 dark:text-amber-400 font-semibold">Back on Monday</p>
         </div>
         <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
           <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Departments</span>
           <div className="text-2xl font-black text-ink dark:text-white font-mono">5</div>
-          <p className="text-xs text-ink-muted dark:text-neutral-400">Cross-functional units</p>
+          <p className="text-xs text-ink-muted dark:text-neutral-400">Active teams</p>
         </div>
       </div>
 
@@ -105,7 +105,7 @@ export default function HrPage() {
             <thead className="bg-[#FAF9F5] dark:bg-[#141513] text-ink-muted dark:text-neutral-400 font-bold uppercase tracking-wider border-b border-border dark:border-[#2A2B27]">
               <tr>
                 <th className="py-3 px-4">Employee</th>
-                <th className="py-3 px-4">Role Title</th>
+                <th className="py-3 px-4">Job Role</th>
                 <th className="py-3 px-4">Department</th>
                 <th className="py-3 px-4">Status</th>
                 <th className="py-3 px-4">Email</th>

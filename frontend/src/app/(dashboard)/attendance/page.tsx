@@ -36,17 +36,17 @@ export default function AttendancePage() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#EC4899]/15 text-[#EC4899] border border-[#EC4899]/30 font-mono">
-              Workforce Attendance
+              Work Hours &amp; Attendance
             </span>
             <span className="text-[10px] font-mono text-ink-muted bg-neutral-100 dark:bg-neutral-800 border border-border px-1.5 py-0.5 rounded">
-              Active Module
+              Ready to Use
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-ink dark:text-white tracking-tight">
-            Time Tracking &amp; Shift Logs
+            Work Hours &amp; Attendance
           </h1>
           <p className="text-xs sm:text-sm text-ink-muted dark:text-neutral-400 mt-0.5">
-            Biometric clock-in sync, shift scheduling, daily timesheets, and overtime calculation for payroll.
+            See when employees arrive, check hours worked, and track overtime for payday.
           </p>
         </div>
 
@@ -55,7 +55,7 @@ export default function AttendancePage() {
             href="/applications"
             className="px-3 py-2 text-xs font-semibold rounded-xl border border-border dark:border-[#2A2B27] bg-white dark:bg-[#1A1B18] text-ink dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
           >
-            ← Apps Suite
+            ← All Apps
           </Link>
         </div>
       </div>
@@ -64,22 +64,22 @@ export default function AttendancePage() {
         <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
           <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Total Hours Today</span>
           <div className="text-2xl font-black text-ink dark:text-white font-mono">33.75 hrs</div>
-          <p className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold">4 active team members</p>
+          <p className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold">4 team members working</p>
         </div>
         <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
           <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">On Time Rate</span>
           <div className="text-2xl font-black text-ink dark:text-white font-mono">92.5%</div>
-          <p className="text-xs text-ink-muted dark:text-neutral-400">Punctuality average</p>
+          <p className="text-xs text-ink-muted dark:text-neutral-400">Arrived on time</p>
         </div>
         <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
           <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Overtime Logged</span>
           <div className="text-2xl font-black text-amber-600 dark:text-amber-400 font-mono">1.0 hr</div>
-          <p className="text-xs text-ink-muted dark:text-neutral-400">Pre-approved threshold</p>
+          <p className="text-xs text-ink-muted dark:text-neutral-400">Extra hours approved</p>
         </div>
         <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Biometric Sync</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Time Clock Status</span>
           <div className="text-2xl font-black text-emerald-600 dark:text-emerald-400 font-mono">Online</div>
-          <p className="text-xs text-ink-muted dark:text-neutral-400">HQ Terminal active</p>
+          <p className="text-xs text-ink-muted dark:text-neutral-400">Active and syncing</p>
         </div>
       </div>
 

@@ -2,8 +2,8 @@ import { ApplicationManifest } from '@bahi/types';
 
 export const accountingManifest: ApplicationManifest = {
   id: 'accounting',
-  name: 'Accounting & Ledger',
-  description: 'GAAP double-entry general ledger, automated reconciliation, and invoicing.',
+  name: 'Bookkeeping & Finances',
+  description: 'Record customer invoices, check payments, and keep track of your cash flow.',
   icon: 'BanknotesIcon',
   colorToken: 'module-accounting',
   version: '1.8.0',

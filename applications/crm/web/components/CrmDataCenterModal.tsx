@@ -155,7 +155,7 @@ export function CrmDataCenterModal({
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-accent" />
             <h2 id="datacenter-dialog-title" className="text-base font-bold text-ink dark:text-white">
-              Data Management, CSV Import/Export &amp; Deduplication
+              Import, Export &amp; Clean Data
             </h2>
           </div>
           <button
@@ -176,7 +176,7 @@ export function CrmDataCenterModal({
               activeTab === 'export' ? 'bg-[#20211F] text-white dark:bg-white dark:text-[#141513]' : 'text-ink-muted hover:bg-neutral-100 dark:hover:bg-neutral-800'
             }`}
           >
-            📥 CSV Export
+            📥 Export to Spreadsheet
           </button>
           <button
             onClick={() => setActiveTab('import')}
@@ -184,7 +184,7 @@ export function CrmDataCenterModal({
               activeTab === 'import' ? 'bg-[#20211F] text-white dark:bg-white dark:text-[#141513]' : 'text-ink-muted hover:bg-neutral-100 dark:hover:bg-neutral-800'
             }`}
           >
-            📤 CSV Import &amp; Mapping
+            📤 Import from Spreadsheet
           </button>
           <button
             onClick={() => setActiveTab('dedup')}
@@ -192,7 +192,7 @@ export function CrmDataCenterModal({
               activeTab === 'dedup' ? 'bg-[#20211F] text-white dark:bg-white dark:text-[#141513]' : 'text-ink-muted hover:bg-neutral-100 dark:hover:bg-neutral-800'
             }`}
           >
-            🔍 Deduplication Scanner ({duplicatePairs.length})
+            🔍 Find &amp; Merge Duplicates ({duplicatePairs.length})
           </button>
         </div>
 

@@ -1,8 +1,8 @@
 import { CrmContactsView } from '@bahi/app-crm/web';
 
 export const metadata = {
-  title: 'Contacts Directory | Bahi CRM',
-  description: 'Directory of decision-makers, stakeholders, and 360 customer communication profiles.',
+  title: 'Customer Contacts | Bahi CRM',
+  description: 'Directory of people, their contact details, notes, and full conversation history.',
 };
 
 export default function ContactsPage() {

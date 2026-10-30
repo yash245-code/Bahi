@@ -111,7 +111,7 @@ export default function SalesOverviewPage() {
         <div className="bg-white dark:bg-[#1A1B18] border border-border dark:border-[#2A2B27] p-5 rounded-2xl shadow-xs hover:border-[#A8462F]/40 transition-all group">
           <div className="flex justify-between items-center mb-2">
             <span className="text-[11px] font-bold text-ink-muted dark:text-neutral-400 uppercase tracking-wider">
-              Quotation Pipeline ({currency})
+              Active Quotes ({currency})
             </span>
             <span className="inline-flex items-center gap-1 bg-[#A8462F]/10 dark:bg-[#A8462F]/20 text-accent border border-[#A8462F]/20 px-2 py-0.5 rounded-md text-[10px] font-bold font-mono">
               {quotes.length} active
@@ -122,7 +122,7 @@ export default function SalesOverviewPage() {
           </div>
           <p className="text-xs text-ink-muted dark:text-neutral-400 mt-2 flex items-center gap-1">
             <Clock className="w-3.5 h-3.5 text-accent" />
-            <span>Avg validity cycle: 14 days</span>
+            <span>Quotes typically valid for 14 days</span>
           </p>
         </div>
 
@@ -141,7 +141,7 @@ export default function SalesOverviewPage() {
             {formatCurrency(ordersBookedValue, currency)}
           </div>
           <p className="text-xs text-ink-muted dark:text-neutral-400 mt-2">
-            {pendingOrdersCount} orders currently in fulfillment
+            {pendingOrdersCount} orders being prepared or delivered
           </p>
         </div>
 
@@ -149,17 +149,17 @@ export default function SalesOverviewPage() {
         <div className="bg-white dark:bg-[#1A1B18] border border-border dark:border-[#2A2B27] p-5 rounded-2xl shadow-xs hover:border-[#A8462F]/40 transition-all group">
           <div className="flex justify-between items-center mb-2">
             <span className="text-[11px] font-bold text-ink-muted dark:text-neutral-400 uppercase tracking-wider">
-              Proposal Win Rate
+              Accepted Quotes Rate
             </span>
             <span className="inline-flex items-center gap-1 bg-[#1F7A4D]/10 text-[#1F7A4D] dark:text-[#38BD7E] border border-[#1F7A4D]/25 px-2 py-0.5 rounded-md text-[10px] font-bold">
-              +4.8% vs Q3
+              +4.8% vs last quarter
             </span>
           </div>
           <div className="text-2xl font-black text-ink dark:text-white font-mono tracking-tight">
             {winRate}%
           </div>
           <p className="text-xs text-ink-muted dark:text-neutral-400 mt-2">
-            {approvedQuotesCount + convertedQuotesCount} converted or approved of {quotes.length}
+            {approvedQuotesCount + convertedQuotesCount} accepted out of {quotes.length} total quotes
           </p>
         </div>
 
@@ -167,7 +167,7 @@ export default function SalesOverviewPage() {
         <div className="bg-white dark:bg-[#1A1B18] border border-border dark:border-[#2A2B27] p-5 rounded-2xl shadow-xs hover:border-[#A8462F]/40 transition-all group">
           <div className="flex justify-between items-center mb-2">
             <span className="text-[11px] font-bold text-ink-muted dark:text-neutral-400 uppercase tracking-wider">
-              Avg Sales Velocity
+              Average Time to Close
             </span>
             <span className="inline-flex items-center gap-1 bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-500/25 px-2 py-0.5 rounded-md text-[10px] font-bold">
               5.8 Days
@@ -179,7 +179,7 @@ export default function SalesOverviewPage() {
           </div>
           <p className="text-xs text-ink-muted dark:text-neutral-400 mt-2 flex items-center gap-1">
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-            <span>25% Margin Floor Enforced</span>
+            <span>Minimum Profit Margin Protected</span>
           </p>
         </div>
       </div>
@@ -190,13 +190,13 @@ export default function SalesOverviewPage() {
           <div>
             <h2 className="text-sm font-bold uppercase tracking-wider text-ink dark:text-white flex items-center gap-2">
               <Zap className="w-4 h-4 text-accent" />
-              <span>Commercial Pipeline Velocity Funnel</span>
+              <span>How Quotes Turn Into Orders</span>
               <span className="text-[10px] px-2 py-0.5 rounded-full bg-accent/10 text-accent font-mono font-bold">
-                End-to-End Commerce
+                Simple Steps
               </span>
             </h2>
             <p className="text-xs text-ink-muted dark:text-neutral-400 mt-0.5">
-              Live progression from draft proposal generation through customer approval to sales order booking.
+              Track quotes from initial draft, to client review, to acceptance and customer order.
             </p>
           </div>
 
@@ -204,7 +204,7 @@ export default function SalesOverviewPage() {
             href="/sales/quotes"
             className="text-xs font-bold text-accent hover:underline flex items-center gap-1"
           >
-            <span>Manage Quotations Board</span>
+            <span>View All Quotes</span>
             <ArrowRight className="w-3 h-3" />
           </Link>
         </div>
@@ -222,7 +222,7 @@ export default function SalesOverviewPage() {
             <div className="text-xl font-black text-ink dark:text-white font-mono">
               {draftQuotesCount}
             </div>
-            <p className="text-[11px] text-ink-muted">In preparation</p>
+            <p className="text-[11px] text-ink-muted">Being written</p>
           </div>
 
           {/* Step 2 */}
@@ -236,35 +236,35 @@ export default function SalesOverviewPage() {
             <div className="text-xl font-black text-ink dark:text-white font-mono">
               {sentQuotesCount}
             </div>
-            <p className="text-[11px] text-ink-muted">Under client review</p>
+            <p className="text-[11px] text-ink-muted">Waiting for client reply</p>
           </div>
 
           {/* Step 3 */}
           <div className="p-3.5 rounded-xl bg-[#FAF9F5] dark:bg-[#141513] border border-border dark:border-[#2A2B27] space-y-1">
             <div className="flex justify-between items-center">
               <span className="text-[10px] uppercase font-bold text-emerald-600 dark:text-emerald-400">
-                3. Accepted
+                3. Accepted Quotes
               </span>
               <span className="text-[9px] font-mono text-emerald-600">65%</span>
             </div>
             <div className="text-xl font-black text-ink dark:text-white font-mono">
               {approvedQuotesCount}
             </div>
-            <p className="text-[11px] text-ink-muted">Ready to book</p>
+            <p className="text-[11px] text-ink-muted">Client agreed to price</p>
           </div>
 
           {/* Step 4 */}
           <div className="p-3.5 rounded-xl bg-[#FAF9F5] dark:bg-[#141513] border border-border dark:border-[#2A2B27] space-y-1">
             <div className="flex justify-between items-center">
               <span className="text-[10px] uppercase font-bold text-accent">
-                4. Booked Orders
+                4. Confirmed Orders
               </span>
               <span className="text-[9px] font-mono text-accent">50%</span>
             </div>
             <div className="text-xl font-black text-ink dark:text-white font-mono">
               {orders.length}
             </div>
-            <p className="text-[11px] text-ink-muted">Fulfillment live</p>
+            <p className="text-[11px] text-ink-muted">Being prepared or shipped</p>
           </div>
         </div>
       </div>
@@ -286,7 +286,7 @@ export default function SalesOverviewPage() {
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
                       <h3 className="text-xs font-bold text-ink dark:text-white truncate">
-                        Quote Expiry Radar: {uq.customer}
+                        Quote Expiring Soon: {uq.customer}
                       </h3>
                       <span className={`text-[9px] font-mono px-1.5 py-0.2 rounded ${exp.badgeClass}`}>
                         {exp.label}
@@ -322,7 +322,7 @@ export default function SalesOverviewPage() {
           <div className="p-4 rounded-2xl bg-[#FAF9F5] dark:bg-[#1A1B18] border border-emerald-500/30 flex items-center gap-3">
             <CheckCircle2 className="w-5 h-5 text-emerald-600" />
             <span className="text-xs font-semibold text-ink dark:text-white">
-              All commercial quotations have healthy validity windows.
+              All your quotes are active and up to date.
             </span>
           </div>
         )}
@@ -336,10 +336,10 @@ export default function SalesOverviewPage() {
               </div>
               <div className="min-w-0">
                 <h3 className="text-xs font-bold text-ink dark:text-white">
-                  {approvedQuotesCount} Accepted Quotes Ready for Booking
+                  {approvedQuotesCount} Quotes Accepted by Clients
                 </h3>
                 <p className="text-xs text-ink-muted dark:text-neutral-400 mt-0.5">
-                  Proposals formally approved by clients. 1-click booking converts immediately into Sales Orders.
+                  Clients have agreed to these quotes. Click to turn them into confirmed customer orders.
                 </p>
               </div>
             </div>
@@ -355,7 +355,7 @@ export default function SalesOverviewPage() {
         ) : (
           <div className="p-4 rounded-2xl bg-[#FAF9F5] dark:bg-[#1A1B18] border border-blue-500/30 flex items-center justify-between gap-3">
             <span className="text-xs font-semibold text-ink dark:text-white">
-              Pipeline conversion operating at target speed.
+              Your sales quotes are moving along nicely.
             </span>
             <Link href="/sales/quotes" className="text-xs font-bold text-accent hover:underline">
               View All Quotes →
@@ -372,7 +372,7 @@ export default function SalesOverviewPage() {
             <div className="flex items-center gap-2">
               <FileSpreadsheet className="w-4 h-4 text-accent" />
               <h2 className="text-sm font-bold text-ink dark:text-white">
-                Active Commercial Quotations
+                Recent Price Quotes
               </h2>
             </div>
             <Link
@@ -445,7 +445,7 @@ export default function SalesOverviewPage() {
             <div className="flex items-center gap-2">
               <ShoppingBag className="w-4 h-4 text-emerald-600" />
               <h2 className="text-sm font-bold text-ink dark:text-white">
-                Confirmed Sales Orders
+                Recent Customer Orders
               </h2>
             </div>
             <Link

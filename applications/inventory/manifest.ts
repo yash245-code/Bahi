@@ -2,8 +2,8 @@ import { ApplicationManifest } from '@bahi/types';
 
 export const inventoryManifest: ApplicationManifest = {
   id: 'inventory',
-  name: 'Inventory & Stock',
-  description: 'Multi-warehouse stock movements, SKU tracking, batches, and reorder levels.',
+  name: 'Stock & Inventory',
+  description: 'Track items in storage, get low stock alerts, and record shipments.',
   icon: 'CubeIcon',
   colorToken: 'module-inventory',
   version: '2.0.1',
@@ -21,7 +21,7 @@ export const inventoryManifest: ApplicationManifest = {
     'inventory.batchTracking': false,
   },
   navigation: [
-    { label: 'Products & Warehouses', href: '/inventory', icon: 'CubeIcon' },
+    { label: 'Items & Warehouses', href: '/inventory', icon: 'CubeIcon' },
   ],
 };
 

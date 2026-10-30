@@ -1,8 +1,8 @@
 import { CrmQuotesView } from '@bahi/app-crm/web';
 
 export const metadata = {
-  title: 'Quotes & Proposals | Bahi CRM',
-  description: 'Manage commercial quotations, line item pricing, e-signatures, and customer portal approvals.',
+  title: 'Quotes & Estimates | Bahi CRM',
+  description: 'Create price estimates for customers, itemize costs, and get approvals online.',
 };
 
 export default function QuotesPage() {

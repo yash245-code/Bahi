@@ -8,19 +8,19 @@ interface CrmShortcutsModalProps {
 }
 
 const shortcuts = [
-  { key: 'Cmd/Ctrl + K', description: 'Open Global Omnibar Search' },
+  { key: 'Cmd/Ctrl + K', description: 'Quick Search' },
   { key: '?', description: 'Show this keyboard shortcuts guide' },
-  { key: 'D', description: 'Quick-open New Deal Modal' },
-  { key: 'L', description: 'Quick-open New Lead Modal' },
-  { key: 'N', description: 'Quick-log Call, Meeting, or Activity Note' },
+  { key: 'D', description: 'Create a new deal' },
+  { key: 'L', description: 'Create a new lead' },
+  { key: 'N', description: 'Quick-log a call, meeting, or note' },
   { key: 'T', description: 'Toggle Dark / Light Mode' },
-  { key: 'C', description: 'Toggle Table Density (Compact / Normal)' },
-  { key: '1 – 7', description: 'Jump to CRM Tab (1: Deals, 2: Leads, 3: Companies, 4: Contacts, 5: Activities, 6: Quotes, 7: Forecast)' },
-  { key: '→ / ←', description: 'On focused deal card: Advance or move back one stage' },
-  { key: 'W', description: 'On focused deal card: Mark Won' },
-  { key: 'X', description: 'On focused deal card: Mark Lost' },
-  { key: 'Esc', description: 'Close any active modal or search bar' },
-  { key: 'Tab / Shift+Tab', description: 'Accessible focus traversal through controls' },
+  { key: 'C', description: 'Toggle Table Spacing (Compact / Normal)' },
+  { key: '1 – 7', description: 'Jump to section (1: Deals, 2: Leads, 3: Companies, 4: Contacts, 5: Activities, 6: Quotes, 7: Reports)' },
+  { key: '→ / ←', description: 'On selected deal card: Move forward or backward one stage' },
+  { key: 'W', description: 'On selected deal card: Mark as Won' },
+  { key: 'X', description: 'On selected deal card: Mark as Lost' },
+  { key: 'Esc', description: 'Close any open window or search' },
+  { key: 'Tab / Shift+Tab', description: 'Move through buttons and inputs' },
 ];
 
 export function CrmShortcutsModal({ isOpen, onClose }: CrmShortcutsModalProps) {
@@ -64,7 +64,7 @@ export function CrmShortcutsModal({ isOpen, onClose }: CrmShortcutsModalProps) {
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-accent" />
             <h2 id="shortcuts-dialog-title" className="text-base font-bold text-ink dark:text-white">
-              CRM Keyboard Shortcuts &amp; Accessibility
+              Keyboard Shortcuts
             </h2>
           </div>
           <button
@@ -78,7 +78,7 @@ export function CrmShortcutsModal({ isOpen, onClose }: CrmShortcutsModalProps) {
         </div>
 
         <p className="text-xs text-ink-muted">
-          Speed up your sales workflow with quick key combinations. Designed for power reps and WCAG keyboard-only navigation.
+          Speed up your daily work with quick keyboard shortcuts.
         </p>
 
         <div className="space-y-2 max-h-80 overflow-y-auto pr-1">

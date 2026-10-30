@@ -2,8 +2,8 @@ import { ApplicationManifest } from '@bahi/types';
 
 export const servicesManifest: ApplicationManifest = {
   id: 'services',
-  name: 'Services & Field Ops',
-  description: 'Field service calls, technician dispatch, appointments, job work orders, and maintenance contracts.',
+  name: 'Service Visits & Jobs',
+  description: 'Book customer service jobs, schedule visits, and dispatch technicians.',
   icon: 'WrenchScrewdriverIcon',
   colorToken: 'module-services',
   version: '1.0.0',
@@ -27,10 +27,10 @@ export const servicesManifest: ApplicationManifest = {
     'services.technicians': true,
   },
   navigation: [
-    { label: 'Dispatch Board', href: '/services', icon: 'CalendarDaysIcon' },
-    { label: 'Work Orders', href: '/services#orders', icon: 'ClipboardDocumentListIcon' },
-    { label: 'Maintenance Contracts', href: '/services#contracts', icon: 'ShieldCheckIcon' },
-    { label: 'Technicians', href: '/services#technicians', icon: 'UserGroupIcon' },
+    { label: 'Daily Schedule', href: '/services', icon: 'CalendarDaysIcon' },
+    { label: 'Service Jobs', href: '/services#orders', icon: 'ClipboardDocumentListIcon' },
+    { label: 'Service Plans', href: '/services#contracts', icon: 'ShieldCheckIcon' },
+    { label: 'Technicians & Staff', href: '/services#technicians', icon: 'UserGroupIcon' },
   ],
 };
 

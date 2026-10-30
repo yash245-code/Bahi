@@ -276,7 +276,7 @@ export default function QuotationsPage() {
           <div className="flex items-center gap-2 mb-1 flex-wrap">
             <h2 className="text-lg font-extrabold text-ink dark:text-neutral-100 tracking-tight flex items-center gap-2">
               <FileSpreadsheet className="w-5 h-5 text-accent" />
-              <span>Commercial Quotations &amp; Proposals</span>
+              <span>Price Quotes &amp; Estimates</span>
             </h2>
             {urgentCount > 0 && (
               <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/30 flex items-center gap-1">
@@ -286,7 +286,7 @@ export default function QuotationsPage() {
             )}
           </div>
           <p className="text-xs text-ink-muted dark:text-neutral-400 mt-1 max-w-2xl leading-relaxed">
-            Generate formal itemized estimates, track proposal delivery, negotiate multi-currency discounts, and convert accepted quotes into fulfilled orders.
+            Create price quotes for customers, email them directly, and turn accepted quotes into orders with one click.
           </p>
         </div>
 
@@ -477,7 +477,7 @@ export default function QuotationsPage() {
               }`}
             >
               <Sparkles className="w-3 h-3 text-purple-500" />
-              <span>High Win Odds &ge; 80% ({highOddsCount})</span>
+              <span>Likely to Close &ge; 80% ({highOddsCount})</span>
             </button>
           </div>
 

@@ -39,17 +39,17 @@ export default function SubscriptionsPage() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#E11D48]/15 text-[#E11D48] border border-[#E11D48]/30 font-mono">
-              Subscriptions &amp; Recurring Billing
+              Subscriptions &amp; Plans
             </span>
             <span className="text-[10px] font-mono text-ink-muted bg-neutral-100 dark:bg-neutral-800 border border-border px-1.5 py-0.5 rounded">
-              Active Module
+              Ready to Use
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-ink dark:text-white tracking-tight">
-            Recurring Revenue &amp; Contracts
+            Subscriptions &amp; Plans
           </h1>
           <p className="text-xs sm:text-sm text-ink-muted dark:text-neutral-400 mt-0.5">
-            Automate recurring billing schedules, manage subscription tiers, track MRR growth, and handle renewals.
+            Keep track of recurring customer plans, see regular monthly income, and manage renewals.
           </p>
         </div>
 
@@ -58,7 +58,7 @@ export default function SubscriptionsPage() {
             href="/applications"
             className="px-3 py-2 text-xs font-semibold rounded-xl border border-border dark:border-[#2A2B27] bg-white dark:bg-[#1A1B18] text-ink dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
           >
-            ← Apps Suite
+            ← All Apps
           </Link>
         </div>
       </div>
@@ -66,24 +66,24 @@ export default function SubscriptionsPage() {
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Monthly Recurring (MRR)</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Monthly Plan Income</span>
           <div className="text-2xl font-black text-ink dark:text-white font-mono">$2,677.00</div>
           <p className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold">+12.4% vs last month</p>
         </div>
         <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Active Subscriptions</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Active Plans</span>
           <div className="text-2xl font-black text-ink dark:text-white font-mono">3</div>
-          <p className="text-xs text-ink-muted dark:text-neutral-400">0% churn rate</p>
+          <p className="text-xs text-ink-muted dark:text-neutral-400">No cancellations this month</p>
         </div>
         <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Annual Run Rate (ARR)</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Projected Yearly Income</span>
           <div className="text-2xl font-black text-ink dark:text-white font-mono">$32,124.00</div>
-          <p className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold">Contracted renewals</p>
+          <p className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold">Active renewals</p>
         </div>
         <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Past Due</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Overdue Payments</span>
           <div className="text-2xl font-black text-rose-600 dark:text-rose-400 font-mono">1</div>
-          <p className="text-xs text-ink-muted dark:text-neutral-400">Dunning notice triggered</p>
+          <p className="text-xs text-ink-muted dark:text-neutral-400">Friendly reminder sent</p>
         </div>
       </div>
 

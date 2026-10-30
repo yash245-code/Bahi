@@ -99,10 +99,10 @@ export default function PriceBooksPage() {
         <div>
           <h2 className="text-lg font-extrabold text-ink dark:text-neutral-100 tracking-tight flex items-center gap-2">
             <Tag className="w-5 h-5 text-accent" />
-            <span>Price Books &amp; Discount Governance Rules</span>
+            <span>Price Lists &amp; Discount Rules</span>
           </h2>
           <p className="text-xs text-ink-muted dark:text-neutral-400 mt-1 max-w-2xl leading-relaxed">
-            Standardize pricing tiers, multi-tier volume breaks, and strict margin floor guardrails across all quotation proposals and sales contracts.
+            Standardize product prices, bulk discounts, and profit margins across all quotes and orders.
           </p>
         </div>
 
@@ -126,16 +126,16 @@ export default function PriceBooksPage() {
           </div>
           <div>
             <h3 className="text-xs font-bold text-ink dark:text-white">
-              Executive Margin Safeguard Policy (RULE-104 Active)
+              Profit Protection Rule (Active)
             </h3>
             <p className="text-xs text-ink-muted dark:text-neutral-400">
-              Quotation discounts capped at 25% max without secondary management override. Margin floor safeguard actively monitored in {currency}.
+              Discounts over 25% require manager approval to protect healthy profit margins.
             </p>
           </div>
         </div>
 
         <span className="text-[11px] font-mono font-bold px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25">
-          ✓ Guardrail Enforced
+          ✓ Rule Active
         </span>
       </div>
 
@@ -146,10 +146,10 @@ export default function PriceBooksPage() {
             <Calculator className="w-5 h-5 text-accent" />
             <div>
               <h3 className="text-sm font-bold text-ink dark:text-white">
-                Live Pricing, Volume Breaks &amp; Profit Margin Heatmap
+                Price &amp; Profit Calculator
               </h3>
               <p className="text-xs text-ink-muted dark:text-neutral-400">
-                Simulate quantity breaks, rep discount discretion, net gross profit, and margin health before issuing proposals.
+                Test out bulk discounts, see estimated profit, and make sure your prices stay profitable.
               </p>
             </div>
           </div>
@@ -164,7 +164,7 @@ export default function PriceBooksPage() {
           {/* Select Product */}
           <div>
             <label className="block text-xs font-bold text-ink dark:text-neutral-200 mb-1">
-              Select Catalog SKU
+              Select Product
             </label>
             <select
               value={simProduct}
@@ -182,7 +182,7 @@ export default function PriceBooksPage() {
           {/* Volume */}
           <div>
             <label className="block text-xs font-bold text-ink dark:text-neutral-200 mb-1">
-              Order Volume (Units)
+              Quantity (Units)
             </label>
             <input
               type="number"
@@ -197,7 +197,7 @@ export default function PriceBooksPage() {
           <div>
             <div className="flex justify-between items-center mb-1">
               <label className="text-xs font-bold text-ink dark:text-neutral-200">
-                Discretionary Discount (%)
+                Discount (%)
               </label>
               <span
                 className={`text-xs font-mono font-bold px-2 py-0.5 rounded ${
@@ -216,9 +216,9 @@ export default function PriceBooksPage() {
               className="w-full accent-accent cursor-pointer mt-1"
             />
             <div className="flex justify-between text-[10px] text-ink-muted font-mono mt-0.5">
-              <span>0% Full MSRP</span>
+              <span>0% Regular Price</span>
               <span className="text-emerald-600">15% Recommended</span>
-              <span className="text-red-500 font-bold">25% Ceiling</span>
+              <span className="text-red-500 font-bold">25% Max Discount</span>
               <span>40% Max</span>
             </div>
           </div>
@@ -229,10 +229,10 @@ export default function PriceBooksPage() {
           <div className="flex justify-between items-center text-xs">
             <span className="font-bold text-ink dark:text-white flex items-center gap-1.5">
               <TrendingUp className="w-4 h-4 text-accent" />
-              <span>Gross Profit Margin Spectrum</span>
+              <span>Profit Margin Bar</span>
             </span>
             <div className="flex items-center gap-3 font-mono">
-              <span className="text-ink-muted">Net Margin:</span>
+              <span className="text-ink-muted">Profit Margin:</span>
               <strong
                 className={`text-sm ${
                   grossMarginPercent >= 45

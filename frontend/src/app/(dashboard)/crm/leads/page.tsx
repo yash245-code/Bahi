@@ -1,8 +1,8 @@
 import { CrmLeadsView } from '@bahi/app-crm/web';
 
 export const metadata = {
-  title: 'Leads & Intake | Bahi CRM',
-  description: 'Inbound lead qualification, scoring, and 1-click conversion to deals.',
+  title: 'Leads & Inquiries | Bahi CRM',
+  description: 'See new customer inquiries, mark interested leads, and turn them into deals with one click.',
 };
 
 export default function LeadsPage() {

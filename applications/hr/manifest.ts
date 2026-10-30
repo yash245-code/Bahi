@@ -2,8 +2,8 @@ import { ApplicationManifest } from '@bahi/types';
 
 export const hrManifest: ApplicationManifest = {
   id: 'hr',
-  name: 'Human Resources',
-  description: 'Employee directory, leave management, attendance tracking, and department org chart.',
+  name: 'Team & Staff Directory',
+  description: 'Find team contact info, track attendance, and manage vacation requests.',
   icon: 'IdentificationIcon',
   colorToken: 'module-hr',
   version: '1.1.4',
@@ -21,7 +21,7 @@ export const hrManifest: ApplicationManifest = {
     'hr.attendanceGeofence': false,
   },
   navigation: [
-    { label: 'Directory & Leave', href: '/hr', icon: 'IdentificationIcon' },
+    { label: 'Team & Time Off', href: '/hr', icon: 'IdentificationIcon' },
   ],
 };
 

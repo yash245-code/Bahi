@@ -38,17 +38,17 @@ export default function AccountingPage() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#2E9169]/15 text-[#2E9169] border border-[#2E9169]/30 font-mono">
-              Accounting &amp; Ledger
+              Bookkeeping &amp; Finances
             </span>
             <span className="text-[10px] font-mono text-ink-muted bg-neutral-100 dark:bg-neutral-800 border border-border px-1.5 py-0.5 rounded">
-              Active Module
+              Ready to Use
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-ink dark:text-white tracking-tight">
-            Financial Ledger &amp; Invoicing
+            Invoices &amp; Finances
           </h1>
           <p className="text-xs sm:text-sm text-ink-muted dark:text-neutral-400 mt-0.5">
-            Monitor client accounts receivable, double-entry journal entries, and automated bank reconciliation.
+            See money coming in, check which bills are paid, and keep track of your cash flow.
           </p>
         </div>
 
@@ -57,7 +57,7 @@ export default function AccountingPage() {
             href="/applications"
             className="px-3 py-2 text-xs font-semibold rounded-xl border border-border dark:border-[#2A2B27] bg-white dark:bg-[#1A1B18] text-ink dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
           >
-            ← Apps Suite
+            ← All Apps
           </Link>
         </div>
       </div>
@@ -65,24 +65,24 @@ export default function AccountingPage() {
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Total Receivables</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Total Invoiced</span>
           <div className="text-2xl font-black text-ink dark:text-white font-mono">$12,870.00</div>
-          <p className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold">$5,350 collected this week</p>
+          <p className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold">$5,350 received this week</p>
         </div>
         <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
           <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Paid Invoices</span>
           <div className="text-2xl font-black text-ink dark:text-white font-mono">2</div>
-          <p className="text-xs text-ink-muted dark:text-neutral-400">Settled via ACH / Wire</p>
+          <p className="text-xs text-ink-muted dark:text-neutral-400">Paid by customers</p>
         </div>
         <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Pending Due</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Awaiting Payment</span>
           <div className="text-2xl font-black text-ink dark:text-white font-mono">$5,670.00</div>
-          <p className="text-xs text-amber-600 dark:text-amber-400 font-semibold">2 invoices due this month</p>
+          <p className="text-xs text-amber-600 dark:text-amber-400 font-semibold">2 bills due this month</p>
         </div>
         <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
           <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Overdue Invoices</span>
           <div className="text-2xl font-black text-rose-600 dark:text-rose-400 font-mono">1</div>
-          <p className="text-xs text-ink-muted dark:text-neutral-400">Automated reminder sent</p>
+          <p className="text-xs text-ink-muted dark:text-neutral-400">Friendly reminder sent</p>
         </div>
       </div>
 

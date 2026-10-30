@@ -103,7 +103,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                   Suite
                 </span>
               </div>
-              <p className="text-[11px] text-neutral-400 truncate font-medium">Business Applications</p>
+              <p className="text-[11px] text-neutral-400 truncate font-medium">Business Tools</p>
             </div>
           </Link>
 
@@ -148,7 +148,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               <svg className="w-5 h-5 flex-shrink-0 text-accent" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25a2.25 2.25 0 0 1-2.25-2.25v-2.25Z" />
               </svg>
-              <span className="flex-1 font-semibold">Applications Hub</span>
+              <span className="flex-1 font-semibold">All Apps</span>
               <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-accent/20 text-accent border border-accent/30 font-mono">
                 {allApps.length} Apps
               </span>
@@ -158,7 +158,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           {/* ─── Business Applications Section ─── */}
           <div className="px-5 pb-2 pt-4 flex items-center justify-between">
             <span className="text-[10px] uppercase font-bold text-neutral-400 tracking-wider">
-              Installed Applications
+              Your Apps
             </span>
             <span className="text-[9px] text-accent font-mono font-semibold">Live</span>
           </div>
@@ -196,12 +196,12 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               <span className="relative inline-flex rounded-full h-2 w-2 bg-status-success"></span>
             </span>
             <div>
-              <p className="text-[10px] font-bold text-neutral-200 leading-tight">Mongo Atlas Engine</p>
-              <p className="text-[9px] text-neutral-400 font-mono">Sync Nominal • 14ms</p>
+              <p className="text-[10px] font-bold text-neutral-200 leading-tight">Cloud Storage</p>
+              <p className="text-[9px] text-neutral-400 font-mono">Connected & Synced</p>
             </div>
           </div>
           <span className="text-[10px] font-mono text-status-success bg-status-success/15 border border-status-success/25 px-1.5 py-0.5 rounded">
-            99.98%
+            Active
           </span>
         </div>
 
@@ -215,7 +215,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             <svg className="w-5 h-5 flex-shrink-0 text-neutral-400 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" strokeWidth={1.75} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
             </svg>
-            <span className="flex-1">Landing Page</span>
+            <span className="flex-1">Home Website</span>
             <span className="text-[10px] text-neutral-400 group-hover:text-accent transition-colors">↗</span>
           </Link>
 

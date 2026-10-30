@@ -39,14 +39,14 @@ export default function DocumentsPage() {
               Documents &amp; Signatures
             </span>
             <span className="text-[10px] font-mono text-ink-muted bg-neutral-100 dark:bg-neutral-800 border border-border px-1.5 py-0.5 rounded">
-              Active Module
+              Ready to Use
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-ink dark:text-white tracking-tight">
-            Digital Contracts &amp; E-Signatures
+            Documents &amp; Signatures
           </h1>
           <p className="text-xs sm:text-sm text-ink-muted dark:text-neutral-400 mt-0.5">
-            Legally binding electronic signatures, contract template repository, secure document vault, and immutable audit logs.
+            Store contracts and forms, send them to clients to sign online, and keep everything safe.
           </p>
         </div>
 
@@ -55,31 +55,31 @@ export default function DocumentsPage() {
             href="/applications"
             className="px-3 py-2 text-xs font-semibold rounded-xl border border-border dark:border-[#2A2B27] bg-white dark:bg-[#1A1B18] text-ink dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
           >
-            ← Apps Suite
+            ← All Apps
           </Link>
         </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Total Vault Contracts</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Total Documents</span>
           <div className="text-2xl font-black text-ink dark:text-white font-mono">4</div>
-          <p className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold">100% SHA-256 hashed</p>
+          <p className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold">Stored safely</p>
         </div>
         <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Executed &amp; Signed</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Signed Documents</span>
           <div className="text-2xl font-black text-ink dark:text-white font-mono">3</div>
-          <p className="text-xs text-ink-muted dark:text-neutral-400">Certificates of completion stored</p>
+          <p className="text-xs text-ink-muted dark:text-neutral-400">Fully signed and saved</p>
         </div>
         <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
           <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Awaiting Signature</span>
           <div className="text-2xl font-black text-amber-600 dark:text-amber-400 font-mono">1</div>
-          <p className="text-xs text-ink-muted dark:text-neutral-400">Nordic Warehouses signatory</p>
+          <p className="text-xs text-ink-muted dark:text-neutral-400">Waiting on client</p>
         </div>
         <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Compliance Standard</span>
-          <div className="text-2xl font-black text-emerald-600 dark:text-emerald-400 font-mono">eIDAS / ESIGN</div>
-          <p className="text-xs text-ink-muted dark:text-neutral-400">Global legal validity</p>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Legal Signatures</span>
+          <div className="text-2xl font-black text-emerald-600 dark:text-emerald-400 font-mono">Legally Valid</div>
+          <p className="text-xs text-ink-muted dark:text-neutral-400">Accepted everywhere</p>
         </div>
       </div>
 
@@ -101,10 +101,10 @@ export default function DocumentsPage() {
           <table className="w-full text-left text-xs">
             <thead className="bg-[#FAF9F5] dark:bg-[#141513] text-ink-muted dark:text-neutral-400 font-bold uppercase tracking-wider border-b border-border dark:border-[#2A2B27]">
               <tr>
-                <th className="py-3 px-4">Document Ref</th>
+                <th className="py-3 px-4">Document ID</th>
                 <th className="py-3 px-4">Title</th>
-                <th className="py-3 px-4">Classification</th>
-                <th className="py-3 px-4">Signatory / Counterparty</th>
+                <th className="py-3 px-4">Type</th>
+                <th className="py-3 px-4">Client or Signer</th>
                 <th className="py-3 px-4">Status</th>
                 <th className="py-3 px-4 text-right">Signed Date</th>
               </tr>

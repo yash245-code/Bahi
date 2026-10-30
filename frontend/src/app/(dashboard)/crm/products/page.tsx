@@ -1,8 +1,8 @@
 import { CrmProductsView } from '@bahi/app-crm/web';
 
 export const metadata = {
-  title: 'Products & Price Book | Bahi CRM',
-  description: 'Catalog products, pricing tiers, recurring license SKUs, and active proposal attachments.',
+  title: 'Products & Pricing | Bahi CRM',
+  description: 'View your product catalog, standard pricing, recurring plans, and add items directly to quotes.',
 };
 
 export default function ProductsPage() {

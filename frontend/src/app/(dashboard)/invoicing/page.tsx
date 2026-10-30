@@ -35,17 +35,17 @@ export default function InvoicingPage() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#10B981]/15 text-[#10B981] border border-[#10B981]/30 font-mono">
-              Invoicing &amp; Customer Payments
+              Invoices &amp; Payments
             </span>
             <span className="text-[10px] font-mono text-ink-muted bg-neutral-100 dark:bg-neutral-800 border border-border px-1.5 py-0.5 rounded">
-              Active Module
+              Ready to Use
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-ink dark:text-white tracking-tight">
-            Client Invoicing &amp; Payment Links
+            Customer Invoices
           </h1>
           <p className="text-xs sm:text-sm text-ink-muted dark:text-neutral-400 mt-0.5">
-            Instant PDF invoices, recurring payment links, automated overdue reminders, and tax breakdown.
+            Send clean bills to customers, share easy payment links, and see what has been collected.
           </p>
         </div>
 
@@ -54,7 +54,7 @@ export default function InvoicingPage() {
             href="/applications"
             className="px-3 py-2 text-xs font-semibold rounded-xl border border-border dark:border-[#2A2B27] bg-white dark:bg-[#1A1B18] text-ink dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
           >
-            ← Apps Suite
+            ← All Apps
           </Link>
         </div>
       </div>
@@ -63,22 +63,22 @@ export default function InvoicingPage() {
         <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
           <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Total Invoiced</span>
           <div className="text-2xl font-black text-ink dark:text-white font-mono">$9,790.00</div>
-          <p className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold">$7,700 collected</p>
+          <p className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold">$7,700 received</p>
         </div>
         <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Settled Invoices</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Paid Invoices</span>
           <div className="text-2xl font-black text-ink dark:text-white font-mono">2</div>
-          <p className="text-xs text-ink-muted dark:text-neutral-400">Direct deposit confirmed</p>
+          <p className="text-xs text-ink-muted dark:text-neutral-400">Payments received</p>
         </div>
         <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Pending Amount</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Awaiting Payment</span>
           <div className="text-2xl font-black text-amber-600 dark:text-amber-400 font-mono">$890.00</div>
           <p className="text-xs text-ink-muted dark:text-neutral-400">Due within 10 days</p>
         </div>
         <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
           <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Overdue Reminders</span>
           <div className="text-2xl font-black text-rose-600 dark:text-rose-400 font-mono">1</div>
-          <p className="text-xs text-ink-muted dark:text-neutral-400">Automated SMS &amp; email sent</p>
+          <p className="text-xs text-ink-muted dark:text-neutral-400">Friendly reminder sent</p>
         </div>
       </div>
 

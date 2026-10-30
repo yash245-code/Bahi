@@ -1,8 +1,8 @@
 import { CrmSequencesView } from '@bahi/app-crm/web';
 
 export const metadata = {
-  title: 'Outreach Cadences & Sequences | Bahi CRM',
-  description: 'Automated multi-step outreach sequences, email and task cadences, and reply rate telemetry.',
+  title: 'Email Campaigns & Follow-ups | Bahi CRM',
+  description: 'Send automated step-by-step emails to leads, schedule follow-ups, and see who opens and replies.',
 };
 
 export default function SequencesPage() {

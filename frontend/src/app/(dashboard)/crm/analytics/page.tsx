@@ -1,8 +1,8 @@
 import { CrmAnalyticsView } from '@bahi/app-crm/web';
 
 export const metadata = {
-  title: 'Forecasting & Reports | Bahi CRM',
-  description: 'Executive revenue telemetry, weighted pipeline forecast, and sales velocity metrics.',
+  title: 'Sales Reports & Forecasts | Bahi CRM',
+  description: 'Track team sales performance, expected future earnings, and how quickly deals are closing.',
 };
 
 export default function AnalyticsPage() {

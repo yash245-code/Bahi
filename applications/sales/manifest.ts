@@ -2,8 +2,8 @@ import { ApplicationManifest } from '@bahi/types';
 
 export const salesManifest: ApplicationManifest = {
   id: 'sales',
-  name: 'Sales & Quotations',
-  description: 'Dynamic quotation generator, multi-tier discount matrix, and 1-click sales order booking.',
+  name: 'Sales & Quotes',
+  description: 'Create price quotes for customers, confirm orders, and manage price lists.',
   icon: 'DocumentTextIcon',
   colorToken: 'module-billing',
   version: '1.3.8',
@@ -22,10 +22,10 @@ export const salesManifest: ApplicationManifest = {
   },
   navigation: [
     { label: 'Overview', href: '/sales', icon: 'ChartBarIcon' },
-    { label: 'Quotations', href: '/sales/quotes', icon: 'DocumentTextIcon' },
-    { label: 'Sales Orders', href: '/sales/orders', icon: 'ShoppingBagIcon' },
-    { label: 'Price Books', href: '/sales/price-books', icon: 'TagIcon' },
-    { label: 'Analytics', href: '/sales/analytics', icon: 'PresentationChartLineIcon' },
+    { label: 'Price Quotes', href: '/sales/quotes', icon: 'DocumentTextIcon' },
+    { label: 'Customer Orders', href: '/sales/orders', icon: 'ShoppingBagIcon' },
+    { label: 'Price Lists', href: '/sales/price-books', icon: 'TagIcon' },
+    { label: 'Sales Reports', href: '/sales/analytics', icon: 'PresentationChartLineIcon' },
   ],
 };
 

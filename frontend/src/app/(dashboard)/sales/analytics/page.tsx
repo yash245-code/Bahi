@@ -79,42 +79,42 @@ export default function SalesAnalyticsPage() {
 
     return [
       {
-        stage: 'Proposals Drafted',
+        stage: 'Quotes Created',
         count: totalQuotes,
         pct: 100,
-        sub: 'Total pipeline drafted',
+        sub: 'Total quotes written',
         icon: Sparkles,
         color: 'text-neutral-500 bg-neutral-100 dark:bg-neutral-800',
       },
       {
-        stage: 'Dispatched to Clients',
+        stage: 'Sent to Customers',
         count: sentQuotes,
         pct: totalQuotes > 0 ? Math.round((sentQuotes / totalQuotes) * 100) : 0,
-        sub: 'Emailed proposals',
+        sub: 'Quotes emailed',
         icon: Send,
         color: 'text-blue-600 bg-blue-500/10',
       },
       {
-        stage: 'Client Portal Viewed',
+        stage: 'Opened by Customer',
         count: viewedQuotes,
         pct: totalQuotes > 0 ? Math.round((viewedQuotes / totalQuotes) * 100) : 0,
-        sub: 'Digital access confirmed',
+        sub: 'Customer viewed quote',
         icon: Eye,
         color: 'text-purple-600 bg-purple-500/10',
       },
       {
-        stage: 'Commercial Approval',
+        stage: 'Accepted by Customer',
         count: approvedQuotes,
         pct: totalQuotes > 0 ? Math.round((approvedQuotes / totalQuotes) * 100) : 0,
-        sub: 'Terms authorized',
+        sub: 'Price accepted',
         icon: CheckCircle2,
         color: 'text-emerald-600 bg-emerald-500/10',
       },
       {
-        stage: 'Orders Booked & Active',
+        stage: 'Turned into Orders',
         count: bookedOrders,
         pct: totalQuotes > 0 ? Math.round((bookedOrders / totalQuotes) * 100) : 0,
-        sub: 'Confirmed fulfillment',
+        sub: 'Confirmed customer orders',
         icon: ShoppingBag,
         color: 'text-accent bg-accent/15',
       },
@@ -170,10 +170,10 @@ export default function SalesAnalyticsPage() {
         <div>
           <h2 className="text-lg font-extrabold text-ink dark:text-neutral-100 tracking-tight flex items-center gap-2">
             <BarChart3 className="w-5 h-5 text-accent" />
-            <span>Commercial Analytics &amp; Proposal Win Velocity</span>
+            <span>Sales Reports &amp; Insights</span>
           </h2>
           <p className="text-xs text-ink-muted dark:text-neutral-400 mt-1 max-w-2xl leading-relaxed">
-            Data intelligence on quote-to-order conversion rates, average contract size, cycle velocity, and product revenue contributions.
+            See your sales numbers, quote acceptance rates, best-selling products, and how quickly deals close.
           </p>
         </div>
 

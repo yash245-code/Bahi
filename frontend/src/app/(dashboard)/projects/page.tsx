@@ -37,17 +37,17 @@ export default function ProjectsPage() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#D1A536]/15 text-[#D1A536] border border-[#D1A536]/30 font-mono">
-              Projects &amp; Delivery
+              Projects &amp; Tasks
             </span>
             <span className="text-[10px] font-mono text-ink-muted bg-neutral-100 dark:bg-neutral-800 border border-border px-1.5 py-0.5 rounded">
-              Active Module
+              Ready to Use
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-ink dark:text-white tracking-tight">
-            Sprint Projects &amp; Milestones
+            Projects &amp; Tasks
           </h1>
           <p className="text-xs sm:text-sm text-ink-muted dark:text-neutral-400 mt-0.5">
-            Deliver client initiatives, allocate team task kanbans, and inspect sprint burndown velocity.
+            Assign work to your team, see what is in progress, and finish projects on time.
           </p>
         </div>
 
@@ -56,7 +56,7 @@ export default function ProjectsPage() {
             href="/applications"
             className="px-3 py-2 text-xs font-semibold rounded-xl border border-border dark:border-[#2A2B27] bg-white dark:bg-[#1A1B18] text-ink dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
           >
-            ← Apps Suite
+            ← All Apps
           </Link>
         </div>
       </div>
@@ -64,24 +64,24 @@ export default function ProjectsPage() {
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Active Sprints</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Active Projects</span>
           <div className="text-2xl font-black text-ink dark:text-white font-mono">3</div>
-          <p className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold">82% overall velocity</p>
+          <p className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold">82% overall progress</p>
         </div>
         <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
           <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Tasks Completed</span>
           <div className="text-2xl font-black text-ink dark:text-white font-mono">63 / 75</div>
-          <p className="text-xs text-ink-muted dark:text-neutral-400">12 remaining this sprint</p>
+          <p className="text-xs text-ink-muted dark:text-neutral-400">12 tasks left to finish</p>
         </div>
         <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Completed Projects</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Finished Projects</span>
           <div className="text-2xl font-black text-ink dark:text-white font-mono">1</div>
-          <p className="text-xs text-ink-muted dark:text-neutral-400">Delivered on schedule</p>
+          <p className="text-xs text-ink-muted dark:text-neutral-400">Finished on time</p>
         </div>
         <div className="bg-white dark:bg-[#1A1B18] rounded-2xl p-5 border border-border dark:border-[#2A2B27] shadow-xs space-y-1">
           <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted dark:text-neutral-400">Due This Week</span>
           <div className="text-2xl font-black text-amber-600 dark:text-amber-400 font-mono">3</div>
-          <p className="text-xs text-ink-muted dark:text-neutral-400">Milestone reviews set</p>
+          <p className="text-xs text-ink-muted dark:text-neutral-400">Due dates coming up</p>
         </div>
       </div>
 
@@ -138,7 +138,7 @@ export default function ProjectsPage() {
 
               <div className="flex items-center justify-between text-xs pt-2 border-t border-border dark:border-[#2A2B27] text-ink-muted dark:text-neutral-400">
                 <span>Deadline: <strong className="text-ink dark:text-neutral-200">{proj.deadline}</strong></span>
-                <span className="font-semibold text-accent">Sprint View →</span>
+                <span className="font-semibold text-accent">View Details →</span>
               </div>
             </div>
           );

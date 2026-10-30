@@ -346,24 +346,24 @@ export function ServicesCarousel({ activeModuleId, onSelectModule }: ServicesCar
           {/* Auto-play toggle button */}
           <button
             onClick={() => setIsAutoScrolling(!isAutoScrolling)}
-            className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all flex items-center gap-2 ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all flex items-center gap-2 cursor-pointer ${
               isAutoScrolling
-                ? 'bg-accent/20 border-accent/40 text-brand-200'
-                : 'bg-[#0E0F0C] border-white/[0.08] text-neutral-400 hover:text-white hover:border-white/[0.16]'
+                ? 'bg-[#FF5C38]/20 border-[#FF5C38]/40 text-[#FFA085]'
+                : 'bg-white/[0.05] border-white/10 text-slate-300 hover:text-white hover:border-white/20'
             }`}
             title={isAutoScrolling ? 'Pause Auto-Slide' : 'Enable Auto-Slide'}
           >
             {isAutoScrolling ? (
               <>
                 <span className="flex h-2 w-2 relative">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FF5C38] opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#FF5C38]"></span>
                 </span>
                 <span>Auto-Scroll: ON</span>
               </>
             ) : (
               <>
-                <svg className="w-3.5 h-3.5 text-neutral-400" fill="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3.5 h-3.5 text-slate-400" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M8 5v14l11-7z"/>
                 </svg>
                 <span>Auto-Scroll: PAUSED</span>
@@ -375,7 +375,7 @@ export function ServicesCarousel({ activeModuleId, onSelectModule }: ServicesCar
           <button
             onClick={() => handleScroll('left')}
             aria-label="Scroll left or loop to end"
-            className="w-10 h-10 rounded-xl flex items-center justify-center border transition-all bg-[#0E0F0C] border-white/[0.08] text-white hover:bg-accent hover:border-accent hover:border-white/20 shadow-md cursor-pointer active:scale-95"
+            className="w-10 h-10 rounded-xl flex items-center justify-center border transition-all bg-white/[0.05] border-white/10 text-white hover:bg-[#FF5C38] hover:border-[#FF5C38] shadow-md cursor-pointer active:scale-95"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2.2} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
@@ -386,7 +386,7 @@ export function ServicesCarousel({ activeModuleId, onSelectModule }: ServicesCar
           <button
             onClick={() => handleScroll('right')}
             aria-label="Scroll right or loop to start"
-            className="w-10 h-10 rounded-xl flex items-center justify-center border transition-all bg-[#0E0F0C] border-white/[0.08] text-white hover:bg-accent hover:border-accent hover:border-white/20 shadow-md cursor-pointer active:scale-95"
+            className="w-10 h-10 rounded-xl flex items-center justify-center border transition-all bg-white/[0.05] border-white/10 text-white hover:bg-[#FF5C38] hover:border-[#FF5C38] shadow-md cursor-pointer active:scale-95"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2.2} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
@@ -418,8 +418,8 @@ export function ServicesCarousel({ activeModuleId, onSelectModule }: ServicesCar
                 onClick={() => handleCardClick(service)}
                 className={`flex-shrink-0 snap-start aspect-square w-[230px] h-[230px] sm:w-[260px] sm:h-[260px] rounded-2xl p-5 flex flex-col justify-between transition-all duration-300 relative overflow-hidden group cursor-pointer ${
                   isSelected
-                    ? 'bg-gradient-to-b from-[#141512] to-[#080907] border-2 border-accent shadow-2xl ring-2 ring-accent/30 -translate-y-1.5'
-                    : 'bg-[#0E0F0C] hover:bg-[#141512] border border-white/[0.08] hover:border-white/[0.18] hover:shadow-2xl hover:-translate-y-2'
+                    ? 'bg-[#141724] border-2 border-[#FF5C38] shadow-2xl ring-2 ring-[#FF5C38]/30 -translate-y-1.5'
+                    : 'bg-[#111318]/90 hover:bg-[#161924] border border-white/10 hover:border-white/20 hover:shadow-2xl hover:-translate-y-2 backdrop-blur-md'
                 }`}
               >
                 {/* Ambient dynamic radial glow on hover */}
@@ -450,7 +450,7 @@ export function ServicesCarousel({ activeModuleId, onSelectModule }: ServicesCar
                     >
                       {service.code}
                     </span>
-                    <span className="text-[10px] text-neutral-500 font-medium tracking-tight">
+                    <span className="text-[10px] text-slate-400 font-medium tracking-tight">
                       {service.category}
                     </span>
                   </div>
@@ -458,29 +458,29 @@ export function ServicesCarousel({ activeModuleId, onSelectModule }: ServicesCar
 
                 {/* Card Middle: Title & Punchy Description */}
                 <div className="relative z-10 my-auto py-1">
-                  <h3 className="text-base sm:text-lg font-bold text-white tracking-tight group-hover:text-accent transition-colors">
+                  <h3 className="text-base sm:text-lg font-bold text-white tracking-tight group-hover:text-[#FF7A59] transition-colors">
                     {service.name}
                   </h3>
-                  <p className="mt-1 text-xs text-neutral-400 leading-snug line-clamp-2">
+                  <p className="mt-1 text-xs text-slate-300 leading-snug line-clamp-2">
                     {service.description}
                   </p>
                 </div>
 
                 {/* Card Bottom: Metric Pill & Action Arrow */}
-                <div className="flex items-center justify-between pt-2 border-t border-white/[0.06] relative z-10">
+                <div className="flex items-center justify-between pt-2 border-t border-white/10 relative z-10">
                   <div className="flex items-center gap-1.5">
                     <span
                       className="w-2 h-2 rounded-full inline-block shrink-0 animate-pulse"
                       style={{ backgroundColor: service.accentColor }}
                     />
-                    <span className="text-[11px] font-semibold text-neutral-200 tracking-tight">
+                    <span className="text-[11px] font-semibold text-slate-200 tracking-tight">
                       {service.metric}
                     </span>
                   </div>
 
                   {service.moduleId ? (
                     <span
-                      className="text-[11px] font-semibold text-accent flex items-center gap-0.5 group-hover:translate-x-1 transition-transform"
+                      className="text-[11px] font-semibold text-[#FF7A59] flex items-center gap-0.5 group-hover:translate-x-1 transition-transform"
                       title="See details"
                     >
                       See details
@@ -492,7 +492,7 @@ export function ServicesCarousel({ activeModuleId, onSelectModule }: ServicesCar
                     <Link
                       href={service.href}
                       onClick={(e) => e.stopPropagation()}
-                      className="text-[11px] font-semibold text-accent flex items-center gap-0.5 hover:underline group-hover:translate-x-1 transition-transform"
+                      className="text-[11px] font-semibold text-[#FF7A59] flex items-center gap-0.5 hover:underline group-hover:translate-x-1 transition-transform"
                     >
                       Open
                       <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">

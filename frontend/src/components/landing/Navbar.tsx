@@ -281,13 +281,13 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
       {/* ─── Sticky Glassmorphism Header (Zero Layout Shift Fixed Height) ─── */}
       <header
         className={`sticky top-0 z-50 h-16 transition-colors duration-300 ease-in-out border-b ${isScrolled
-            ? 'bg-[#1e1e1e]/95 backdrop-blur-2xl shadow-2xl shadow-black/90 border-white/[0.08]'
-            : 'bg-[#232323]/90 backdrop-blur-xl border-white/[0.06]'
+            ? 'bg-[#090A0D]/95 backdrop-blur-2xl shadow-2xl shadow-black/90 border-white/10'
+            : 'bg-[#090A0D]/80 backdrop-blur-xl border-white/[0.08]'
           }`}
       >
         {/* Subtle luxury accent line under header */}
         <div
-          className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-accent/60 via-white/5 to-transparent pointer-events-none"
+          className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-[#FF5C38]/70 via-white/10 to-transparent pointer-events-none"
           aria-hidden="true"
         />
 
@@ -296,7 +296,7 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
           <div className="flex items-center gap-3 lg:gap-4 flex-shrink-0 flex-nowrap">
             <Link
               href="/"
-              className="flex items-center group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e8623d] rounded-lg flex-shrink-0 whitespace-nowrap py-0.5"
+              className="flex items-center group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF5C38] rounded-lg flex-shrink-0 whitespace-nowrap py-0.5"
               aria-label="Bahi Home"
             >
               <Image
@@ -313,16 +313,16 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
 
             {/* Live-Status Badge (Online & Ready - Strictly 1 line) */}
             <div
-              className="hidden xl:flex items-center gap-2 px-2.5 py-1 rounded-full bg-[#0E0F0C] border border-white/[0.08] text-[11px] shadow-inner select-none whitespace-nowrap flex-shrink-0"
+              className="hidden xl:flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.05] border border-white/10 text-[11px] shadow-sm select-none whitespace-nowrap flex-shrink-0 backdrop-blur-md"
               title={`All systems online (${latency}ms) and running smoothly`}
             >
               <span className="relative flex h-2 w-2 flex-shrink-0">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#1F7A4D] opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#1F7A4D]"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400 shadow-[0_0_8px_#34d399]"></span>
               </span>
-              <span className="font-medium text-[#D8CDC8] whitespace-nowrap">Online &amp; Ready</span>
-              <span className="text-[#55564E]">•</span>
-              <span className="font-semibold text-[#2ECC71] whitespace-nowrap">Super Fast</span>
+              <span className="font-semibold text-slate-200 whitespace-nowrap">Online &amp; Ready</span>
+              <span className="text-white/20">•</span>
+              <span className="font-bold text-emerald-400 whitespace-nowrap">Super Fast</span>
             </div>
           </div>
 
@@ -335,13 +335,13 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
             <a
               href="#hero"
               className={`relative px-2.5 py-1.5 text-xs font-semibold rounded-lg transition-all duration-150 whitespace-nowrap flex-shrink-0 group ${activeSection === 'hero'
-                  ? 'text-white bg-white/[0.05]'
-                  : 'text-[#9A9B93] hover:text-white hover:bg-white/[0.03]'
+                  ? 'text-white bg-white/[0.08]'
+                  : 'text-slate-300 hover:text-white hover:bg-white/[0.04]'
                 }`}
             >
               <span>Overview</span>
               <span
-                className={`absolute bottom-0.5 left-2 right-2 h-[2px] bg-gradient-to-r from-[#e8623d] to-[#ff8c69] rounded-full transition-all duration-200 ease-out ${activeSection === 'hero' ? 'opacity-100' : 'w-0 opacity-0 group-hover:w-[calc(100%-1rem)] group-hover:opacity-100'
+                className={`absolute bottom-0.5 left-2 right-2 h-[2px] bg-gradient-to-r from-[#FF5C38] to-[#FFA07A] rounded-full transition-all duration-200 ease-out ${activeSection === 'hero' ? 'opacity-100' : 'w-0 opacity-0 group-hover:w-[calc(100%-1rem)] group-hover:opacity-100'
                   }`}
               />
             </a>
@@ -356,15 +356,15 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
                 type="button"
                 onClick={() => setIsModulesOpen((prev) => !prev)}
                 className={`relative px-2.5 py-1.5 text-xs font-semibold rounded-lg transition-all duration-150 flex items-center gap-1 whitespace-nowrap flex-shrink-0 group ${isModulesOpen || activeSection === 'modules'
-                    ? 'text-white bg-white/[0.06]'
-                    : 'text-[#9A9B93] hover:text-white hover:bg-white/[0.03]'
+                    ? 'text-white bg-white/[0.08]'
+                    : 'text-slate-300 hover:text-white hover:bg-white/[0.04]'
                   }`}
                 aria-haspopup="true"
                 aria-expanded={isModulesOpen}
               >
                 <span>Apps</span>
                 <svg
-                  className={`w-3.5 h-3.5 transition-transform duration-200 text-[#9A9B93] group-hover:text-white flex-shrink-0 ${isModulesOpen ? 'rotate-180 text-white' : ''
+                  className={`w-3.5 h-3.5 transition-transform duration-200 text-slate-300 group-hover:text-white flex-shrink-0 ${isModulesOpen ? 'rotate-180 text-white' : ''
                     }`}
                   fill="none"
                   viewBox="0 0 24 24"
@@ -374,7 +374,7 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
                   <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                 </svg>
                 <span
-                  className={`absolute bottom-0.5 left-2 right-2 h-[2px] bg-gradient-to-r from-[#e8623d] to-[#ff8c69] rounded-full transition-all duration-200 ease-out ${activeSection === 'modules' || isModulesOpen
+                  className={`absolute bottom-0.5 left-2 right-2 h-[2px] bg-gradient-to-r from-[#FF5C38] to-[#FFA07A] rounded-full transition-all duration-200 ease-out ${activeSection === 'modules' || isModulesOpen
                       ? 'opacity-100'
                       : 'w-0 opacity-0 group-hover:w-[calc(100%-1rem)] group-hover:opacity-100'
                     }`}
@@ -467,12 +467,12 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
               href="#architecture"
               className={`relative px-2.5 py-1.5 text-xs font-semibold rounded-lg transition-all duration-150 whitespace-nowrap flex-shrink-0 group ${activeSection === 'architecture'
                   ? 'text-white bg-white/[0.05]'
-                  : 'text-[#9A9B93] hover:text-white hover:bg-white/[0.03]'
+                  : 'text-slate-300 hover:text-white hover:bg-white/[0.04]'
                 }`}
             >
               <span>Reliability</span>
               <span
-                className={`absolute bottom-0.5 left-2 right-2 h-[2px] bg-gradient-to-r from-[#e8623d] to-[#ff8c69] rounded-full transition-all duration-200 ease-out ${activeSection === 'architecture' ? 'opacity-100' : 'w-0 opacity-0 group-hover:w-[calc(100%-1rem)] group-hover:opacity-100'
+                className={`absolute bottom-0.5 left-2 right-2 h-[2px] bg-gradient-to-r from-[#FF5C38] to-[#FFA07A] rounded-full transition-all duration-200 ease-out ${activeSection === 'architecture' ? 'opacity-100' : 'w-0 opacity-0 group-hover:w-[calc(100%-1rem)] group-hover:opacity-100'
                   }`}
               />
             </a>
@@ -481,13 +481,13 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
             <a
               href="#pricing"
               className={`relative px-2.5 py-1.5 text-xs font-semibold rounded-lg transition-all duration-150 whitespace-nowrap flex-shrink-0 group ${activeSection === 'pricing'
-                  ? 'text-white bg-white/[0.05]'
-                  : 'text-[#9A9B93] hover:text-white hover:bg-white/[0.03]'
+                  ? 'text-white bg-white/[0.08]'
+                  : 'text-slate-300 hover:text-white hover:bg-white/[0.04]'
                 }`}
             >
               <span>Pricing</span>
               <span
-                className={`absolute bottom-0.5 left-2 right-2 h-[2px] bg-gradient-to-r from-[#e8623d] to-[#ff8c69] rounded-full transition-all duration-200 ease-out ${activeSection === 'pricing' ? 'opacity-100' : 'w-0 opacity-0 group-hover:w-[calc(100%-1rem)] group-hover:opacity-100'
+                className={`absolute bottom-0.5 left-2 right-2 h-[2px] bg-gradient-to-r from-[#FF5C38] to-[#FFA07A] rounded-full transition-all duration-200 ease-out ${activeSection === 'pricing' ? 'opacity-100' : 'w-0 opacity-0 group-hover:w-[calc(100%-1rem)] group-hover:opacity-100'
                   }`}
               />
             </a>
@@ -500,13 +500,13 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
             <button
               type="button"
               onClick={() => setIsCommandPaletteOpen(true)}
-              className="hidden sm:flex items-center justify-between gap-3 px-3.5 py-2 w-44 md:w-56 lg:w-64 rounded-xl bg-[#0E0F0C] hover:bg-[#151613] border border-white/[0.08] hover:border-white/[0.16] text-xs transition-all duration-150 whitespace-nowrap flex-shrink-0 group shadow-xs cursor-pointer"
+              className="hidden sm:flex items-center justify-between gap-3 px-3.5 py-2 w-44 md:w-56 lg:w-64 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 hover:border-white/20 text-xs transition-all duration-150 whitespace-nowrap flex-shrink-0 group shadow-xs cursor-pointer backdrop-blur-md"
               aria-label="Search apps, sections, or guides (Press ⌘K or Ctrl+K)"
               title="Search (⌘K / Ctrl+K)"
             >
               <div className="flex items-center gap-2 min-w-0">
                 <svg
-                  className="w-4 h-4 text-[#75766E] group-hover:text-[#e8623d] transition-colors flex-shrink-0"
+                  className="w-4 h-4 text-slate-400 group-hover:text-[#FF7A59] transition-colors flex-shrink-0"
                   fill="none"
                   viewBox="0 0 24 24"
                   strokeWidth={2}
@@ -514,11 +514,11 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
                 </svg>
-                <span className="text-xs text-[#75766E] group-hover:text-[#B8B6AE] font-medium truncate">
+                <span className="text-xs text-slate-300 group-hover:text-white font-medium truncate">
                   Search...
                 </span>
               </div>
-              <kbd className="text-[10px] px-1.5 py-0.5 rounded-md bg-[#000000] border border-white/[0.08] text-[#858780] font-mono group-hover:text-[#FAF4F2] shadow-2xs flex-shrink-0">
+              <kbd className="text-[10px] px-1.5 py-0.5 rounded-md bg-white/[0.08] border border-white/10 text-slate-300 font-mono group-hover:text-white shadow-2xs flex-shrink-0">
                 ⌘K
               </kbd>
             </button>
@@ -526,7 +526,7 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
             {/* Sign In Link (Strictly 1 line) */}
             <Link
               href="/login"
-              className="text-xs font-semibold text-[#9A9B93] hover:text-white px-2.5 py-1.5 rounded-lg hover:bg-white/5 transition-colors whitespace-nowrap flex-shrink-0"
+              className="text-xs font-semibold text-slate-200 hover:text-white px-2.5 py-1.5 rounded-lg hover:bg-white/10 transition-colors whitespace-nowrap flex-shrink-0"
             >
               Sign In
             </Link>
@@ -534,7 +534,7 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
             {/* ─── Primary CTA Button: "Start Free Trial" (Strictly 1 line, never wraps!) ─── */}
             <Link
               href="/signup"
-              className="relative group inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 text-xs font-bold text-white rounded-xl bg-gradient-to-r from-[#e8623d] via-[#B7624C] to-[#853526] hover:from-[#f06e4a] hover:to-[#913B26] border border-white/20 shadow-md animate-pulse-glow hover:scale-[1.02] active:scale-[0.98] transition-all duration-150 whitespace-nowrap flex-shrink-0"
+              className="relative group inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 text-xs font-bold text-white rounded-xl bg-gradient-to-r from-[#FF5C38] via-[#FF6E4A] to-[#FF8C68] hover:from-[#FF4D24] hover:to-[#FF7A52] border border-white/25 shadow-md shadow-[#FF5C38]/25 hover:scale-[1.02] active:scale-[0.98] transition-all duration-150 whitespace-nowrap flex-shrink-0 cursor-pointer"
               aria-label="Start Free 14-Day Trial"
             >
               <span className="whitespace-nowrap">Start Free Trial</span>

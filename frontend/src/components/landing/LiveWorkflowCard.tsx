@@ -106,12 +106,12 @@ export function LiveWorkflowCard() {
     <div className="relative w-full max-w-xl mx-auto lg:mx-0">
       {/* Ambient Backlight Glow */}
       <div
-        className="absolute -inset-2 bg-gradient-to-r from-accent/30 to-brand-700/20 rounded-2xl blur-xl -z-10 opacity-70 pointer-events-none"
+        className="absolute -inset-2 bg-gradient-to-r from-[#FF5C38]/30 via-[#FF8A65]/20 to-amber-500/15 rounded-2xl blur-xl -z-10 opacity-80 pointer-events-none"
         aria-hidden="true"
       />
 
       <div
-        className="rounded-2xl bg-[#050505] border border-white/[0.08] shadow-2xl overflow-hidden"
+        className="rounded-2xl bg-[#0D0E14]/95 border border-white/12 shadow-2xl backdrop-blur-xl overflow-hidden ring-1 ring-white/10"
         role="img"
         aria-label="Animated demo showing one order flowing through Bahi's modules"
       >
@@ -120,52 +120,58 @@ export function LiveWorkflowCard() {
         </span>
 
         {/* ─── 1. Header Bar ────────────────────────────────────────── */}
-        <div className="px-4 py-3 bg-[#050505] border-b border-white/[0.06] flex items-center justify-between">
+        <div className="px-4 py-3 bg-[#11131A] border-b border-white/10 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-status-danger/80 inline-block" aria-hidden="true" />
-            <span className="w-3 h-3 rounded-full bg-status-warning/80 inline-block" aria-hidden="true" />
-            <span className="w-3 h-3 rounded-full bg-status-success/80 inline-block" aria-hidden="true" />
-            <span className="text-[11px] font-mono text-neutral-400 ml-2">Live Demo · How an Order Works</span>
+            <span className="w-3 h-3 rounded-full bg-[#FF5F56] border border-[#E0443E] inline-block shadow-2xs" aria-hidden="true" />
+            <span className="w-3 h-3 rounded-full bg-[#FFBD2E] border border-[#DEA123] inline-block shadow-2xs" aria-hidden="true" />
+            <span className="w-3 h-3 rounded-full bg-[#27C93F] border border-[#1AAB29] inline-block shadow-2xs" aria-hidden="true" />
+            <span className="text-[11px] font-mono text-slate-300 ml-2 font-medium">Live Demo · How an Order Works</span>
           </div>
 
           <div className="flex items-center gap-1.5" aria-hidden="true">
             <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-success opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-status-success"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400 shadow-[0_0_8px_#34d399]"></span>
             </span>
-            <span className="text-[10px] font-mono text-status-success font-bold uppercase tracking-wider">
+            <span className="text-[10px] font-mono text-emerald-400 font-bold uppercase tracking-wider">
               Live
             </span>
           </div>
         </div>
 
         {/* ─── 2. Progress Bar ──────────────────────────────────────── */}
-        <div className="h-[2px] w-full bg-white/[0.06] overflow-hidden" aria-hidden="true">
+        <div className="h-[2px] w-full bg-white/[0.08] overflow-hidden" aria-hidden="true">
           <div
-            className="h-full bg-gradient-to-r from-accent to-brand-500 transition-all duration-500 ease-out"
+            className="h-full bg-gradient-to-r from-[#FF5C38] via-[#FF8A65] to-emerald-400 transition-all duration-500 ease-out shadow-[0_0_8px_#FF5C38]"
             style={{ width: `${progressPercentage}%` }}
           />
         </div>
 
         {/* ─── 3. Steps List ────────────────────────────────────────── */}
-        <div className="p-3.5 sm:p-4 bg-[#050505]">
+        <div className="p-3.5 sm:p-4 bg-[#0D0E14]">
           <ul className="space-y-2">
             {WORKFLOW_STEPS.map((step, idx) => {
               const Icon = step.icon;
               const isComplete = idx < done;
               const isActive = idx === done && done < 7;
 
-              let rowStyle = 'border-transparent opacity-40 bg-transparent';
-              let iconTileStyle = 'bg-[#101010] text-neutral-400 border border-white/[0.06]';
+              let rowStyle = 'border-white/[0.06] bg-white/[0.02] opacity-80 hover:opacity-100';
+              let iconTileStyle = 'bg-white/[0.06] text-slate-300 border border-white/10';
+              let labelStyle = 'text-slate-400';
+              let textStyle = 'text-slate-200';
               let badgeStyle = 'opacity-0 scale-75 bg-transparent border-transparent text-transparent';
 
               if (isComplete) {
-                rowStyle = 'border-accent/40 bg-accent/[0.08] opacity-100 shadow-xs';
-                iconTileStyle = 'bg-accent text-white border border-accent/60 shadow-xs';
-                badgeStyle = 'opacity-100 scale-100 bg-status-success/20 text-status-success border border-status-success/40';
+                rowStyle = 'border-[#FF5C38]/40 bg-[#FF5C38]/[0.12] opacity-100 shadow-sm';
+                iconTileStyle = 'bg-gradient-to-br from-[#FF5C38] to-[#E04724] text-white border border-[#FF5C38] shadow-sm';
+                labelStyle = 'text-[#FFA085]';
+                textStyle = 'text-white font-medium';
+                badgeStyle = 'opacity-100 scale-100 bg-emerald-500/25 text-emerald-400 border border-emerald-500/40 shadow-[0_0_8px_rgba(16,185,129,0.3)]';
               } else if (isActive) {
-                rowStyle = 'border-white/[0.1] bg-white/[0.03] opacity-100';
-                iconTileStyle = 'bg-[#141512] text-neutral-100 border border-white/[0.1]';
+                rowStyle = 'border-amber-400/50 bg-amber-400/[0.1] opacity-100 shadow-sm ring-1 ring-amber-400/20';
+                iconTileStyle = 'bg-amber-500 text-white border border-amber-400 shadow-sm';
+                labelStyle = 'text-amber-300';
+                textStyle = 'text-white font-medium';
                 badgeStyle = 'opacity-0 scale-75 bg-transparent border-transparent text-transparent';
               }
 
@@ -185,10 +191,10 @@ export function LiveWorkflowCard() {
 
                     {/* Step Content */}
                     <div className="min-w-0 flex-1">
-                      <div className="text-[10px] uppercase font-bold tracking-wider text-neutral-400 font-mono leading-none mb-1">
+                      <div className={`text-[10px] uppercase font-bold tracking-wider font-mono leading-none mb-1 ${labelStyle}`}>
                         {step.module}
                       </div>
-                      <p className="text-xs font-medium text-neutral-200 truncate leading-snug">
+                      <p className={`text-xs font-medium truncate leading-snug ${textStyle}`}>
                         {step.text}
                       </p>
                     </div>
@@ -208,13 +214,13 @@ export function LiveWorkflowCard() {
         </div>
 
         {/* ─── 4. Footer ────────────────────────────────────────────── */}
-        <div className="px-4 py-3 bg-[#000000] border-t border-white/[0.06] flex items-center justify-between text-xs">
-          <span className="text-neutral-400 text-[11px] sm:text-xs">
+        <div className="px-4 py-3 bg-[#090A0D] border-t border-white/10 flex items-center justify-between text-xs">
+          <span className="text-slate-300 text-[11px] sm:text-xs">
             Everything talks to each other. You only type things once.
           </span>
           <Link
             href="/applications"
-            className="text-accent hover:text-brand-400 font-semibold text-[11px] sm:text-xs flex items-center gap-1 transition-colors"
+            className="text-[#FF7A59] hover:text-[#FFA085] font-bold text-[11px] sm:text-xs flex items-center gap-1 transition-colors"
           >
             <span>See All Apps</span>
             <span aria-hidden="true">↗</span>

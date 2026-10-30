@@ -281,8 +281,8 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
       {/* ─── Sticky Glassmorphism Header (Zero Layout Shift Fixed Height) ─── */}
       <header
         className={`sticky top-0 z-50 h-16 transition-colors duration-300 ease-in-out border-b ${isScrolled
-            ? 'bg-[#000000]/95 backdrop-blur-2xl shadow-2xl shadow-black/90 border-white/[0.08]'
-            : 'bg-[#050505]/90 backdrop-blur-xl border-white/[0.06]'
+            ? 'bg-[#1e1e1e]/95 backdrop-blur-2xl shadow-2xl shadow-black/90 border-white/[0.08]'
+            : 'bg-[#232323]/90 backdrop-blur-xl border-white/[0.06]'
           }`}
       >
         {/* Subtle luxury accent line under header */}
@@ -388,7 +388,7 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
                   onMouseEnter={handleModulesMouseEnter}
                   onMouseLeave={handleModulesMouseLeave}
                 >
-                  <div className="rounded-2xl bg-[#050505]/98 backdrop-blur-2xl border border-white/[0.08] shadow-2xl p-5 overflow-hidden relative">
+                  <div className="rounded-2xl bg-[#232323]/98 backdrop-blur-2xl border border-white/[0.08] shadow-2xl p-5 overflow-hidden relative">
                     {/* Top subtle highlight */}
                     <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#e8623d]/60 to-transparent" />
 
@@ -572,7 +572,7 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
 
         {/* ─── Mobile Menu Drawer ─────────────────────────────────── */}
         {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-white/[0.08] bg-[#050505]/98 backdrop-blur-2xl px-5 py-4 space-y-3 animate-slide-down">
+          <div className="md:hidden border-t border-white/[0.08] bg-[#232323]/98 backdrop-blur-2xl px-5 py-4 space-y-3 animate-slide-down">
             {/* Live status badge mobile */}
             <div className="flex items-center justify-between pb-2 border-b border-white/[0.06]">
               <div className="flex items-center gap-2 text-xs">
@@ -633,7 +633,7 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
           onClick={() => setIsCommandPaletteOpen(false)}
         >
           <div
-            className="w-full max-w-xl rounded-2xl bg-[#050505] border border-white/[0.1] shadow-2xl overflow-hidden animate-scale-in"
+            className="w-full max-w-xl rounded-2xl bg-[#232323] border border-white/[0.1] shadow-2xl overflow-hidden animate-scale-in"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Input row */}

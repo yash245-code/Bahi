@@ -345,7 +345,7 @@ export default function LandingPage() {
   const currentMod: ModuleDetail = (modulesData[activeTab] || modulesData['finance']) as ModuleDetail;
 
   return (
-    <div className="min-h-screen bg-neutral-900 text-neutral-50 font-sans selection:bg-accent selection:text-white relative overflow-x-clip">
+    <div className="min-h-screen bg-[#232323] text-neutral-50 font-sans selection:bg-accent selection:text-white relative overflow-x-clip">
       {/* ─── Grain / Noise Texture Overlay (Gentle Subtle Vignette) ────────────────────────── */}
       <div className="fixed inset-0 pointer-events-none bg-noise z-40 opacity-15" />
 

@@ -32,3 +32,4 @@ export const subscriptionsManifest: ApplicationManifest = {
 };
 
 export default subscriptionsManifest;
+

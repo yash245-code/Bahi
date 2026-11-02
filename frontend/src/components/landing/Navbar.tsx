@@ -295,11 +295,12 @@ export function Navbar({ activeModuleTab, onSelectModuleTab, latency = 12 }: Nav
               aria-label="Bahi Home"
             >
               <Image
-                src="/images/bahi_logo_nobg.png"
+                src="/images/bahi_logo_nobg.webp"
                 alt="Bahi"
                 width={140}
                 height={48}
                 priority
+                sizes="(max-width: 768px) 112px, 140px"
                 className={`h-10 sm:h-11 md:h-12 w-auto object-contain transition-transform duration-200 group-hover:scale-105 ${
                   isScrolled ? 'scale-95' : 'scale-100'
                 }`}

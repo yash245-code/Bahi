@@ -10,6 +10,7 @@ export const IMAGES = {
   logoWhite: '/images/logo-white.svg',
   logoHorizontal: '/images/logo-horizontal.svg',
   logoHorizontalDark: '/images/logo-horizontal-dark.svg',
+  logoNobg: '/images/bahi_logo_nobg.webp',
   favicon: '/images/favicon.svg',
 
   // Suite & Module Logos
@@ -23,15 +24,9 @@ export const IMAGES = {
     billing: '/images/module-billing.svg',
   },
 
-  // Tech & Integration Badges
-  integrations: {
-    mongodbAtlas: '/images/mongodb-atlas.svg',
-    turborepo: '/images/turborepo.svg',
-  },
-
   // UI Previews & Showcase
   previews: {
-    dashboardPreview: '/images/dashboard-preview.jpg',
+    dashboardPreview: '/images/dashboard-preview.webp',
   },
 } as const;
 

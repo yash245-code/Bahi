@@ -11,6 +11,10 @@ dist/
 build/
 .next/
 out/
+backend/src/**/*.d.ts
+backend/src/**/*.d.ts.map
+backend/src/**/*.js
+backend/src/**/*.js.map
 
 # Testing
 coverage/

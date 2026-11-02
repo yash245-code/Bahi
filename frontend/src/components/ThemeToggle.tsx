@@ -84,7 +84,7 @@ export function ThemeToggle({ className = '', showLabel = false }: { className?:
         </svg>
       )}
       {showLabel && (
-        <span className="text-xs font-semibold text-ink">
+        <span className="text-xs font-semibold text-ink dark:text-neutral-100">
           {isDark ? 'Light' : 'Dark'}
         </span>
       )}

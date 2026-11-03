@@ -1,6 +1,7 @@
 {
   "extends": "@bahi/tsconfig/node.json",
   "compilerOptions": {
+    "lib": ["es2022", "DOM", "DOM.Iterable"],
     "outDir": "./dist",
     "rootDir": "./",
     "baseUrl": ".",

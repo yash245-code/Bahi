@@ -21,7 +21,10 @@ export const inventoryManifest: ApplicationManifest = {
     'inventory.batchTracking': false,
   },
   navigation: [
-    { label: 'Items & Warehouses', href: '/inventory', icon: 'CubeIcon' },
+    { label: 'Stock Items & Catalog', href: '/inventory', icon: 'CubeIcon' },
+    { label: 'Rooms & Warehouses', href: '/inventory#warehouses', icon: 'BuildingStorefrontIcon' },
+    { label: 'Stock Moves & Ledger', href: '/inventory#moves', icon: 'ArrowsRightLeftIcon' },
+    { label: 'Low Stock Alerts', href: '/inventory#alerts', icon: 'ExclamationTriangleIcon' },
   ],
 };
 

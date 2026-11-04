@@ -14,6 +14,7 @@ import { hrManifest } from './hr/manifest';
 import { projectsManifest } from './projects/manifest';
 import { servicesManifest } from './services/manifest';
 import { subscriptionsManifest } from './subscriptions/manifest';
+import { procurementManifest } from './procurement/manifest';
 
 export {
   crmManifest,
@@ -24,6 +25,7 @@ export {
   projectsManifest,
   servicesManifest,
   subscriptionsManifest,
+  procurementManifest,
 };
 
 export type { ApplicationManifest, ApplicationId };
@@ -37,6 +39,7 @@ export const applicationRegistry: Record<ApplicationId, ApplicationManifest> = {
   projects: projectsManifest,
   services: servicesManifest,
   subscriptions: subscriptionsManifest,
+  procurement: procurementManifest,
 };
 
 export const applications: ApplicationManifest[] = [
@@ -48,6 +51,7 @@ export const applications: ApplicationManifest[] = [
   projectsManifest,
   servicesManifest,
   subscriptionsManifest,
+  procurementManifest,
 ];
 
 /**

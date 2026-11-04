@@ -72,7 +72,7 @@ export const PLAN_MODULES: Record<PlanTier, ModuleCode[]> = {
 
 // ─── Application Architecture & Manifest Contract ──────────
 
-export type ApplicationId = 'crm' | 'sales' | 'inventory' | 'accounting' | 'hr' | 'projects' | 'services' | 'subscriptions';
+export type ApplicationId = 'crm' | 'sales' | 'inventory' | 'accounting' | 'hr' | 'projects' | 'services' | 'subscriptions' | 'procurement';
 
 export interface ApplicationManifest {
   id: ApplicationId;

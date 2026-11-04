@@ -174,7 +174,7 @@ const ALL_APPLICATIONS: ApplicationItem[] = [
     badgeClass: 'bg-[#0284C7]/10 text-[#0284C7] dark:text-[#38BDF8] border-[#0284C7]/20',
     features: ['Purchase Orders', 'Supplier List', 'Shipment Check'],
     icon: <Truck className="w-6 h-6" />,
-    status: 'not-ready',
+    status: 'ready',
   },
 
   // ─── 3. Money & Bookkeeping (3 Apps) ─────────────────────

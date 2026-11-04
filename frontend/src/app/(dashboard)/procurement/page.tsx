@@ -769,11 +769,10 @@ export default function ProcurementPage() {
           <button
             type="button"
             onClick={() => setActiveTab('orders')}
-            className={`pb-3 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all cursor-pointer whitespace-nowrap px-1 ${
-              activeTab === 'orders'
-                ? 'border-[#0284C7] text-[#0284C7] dark:text-[#38BDF8] dark:border-[#38BDF8]'
-                : 'border-transparent text-ink-muted dark:text-neutral-400 hover:text-ink dark:hover:text-white'
-            }`}
+            className={`pb-3 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all cursor-pointer whitespace-nowrap px-1 ${activeTab === 'orders'
+              ? 'border-[#0284C7] text-[#0284C7] dark:text-[#38BDF8] dark:border-[#38BDF8]'
+              : 'border-transparent text-ink-muted dark:text-neutral-400 hover:text-ink dark:hover:text-white'
+              }`}
           >
             <FileText className="w-4 h-4" />
             <span>Purchase Orders</span>
@@ -785,11 +784,10 @@ export default function ProcurementPage() {
           <button
             type="button"
             onClick={() => setActiveTab('suppliers')}
-            className={`pb-3 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all cursor-pointer whitespace-nowrap px-1 ${
-              activeTab === 'suppliers'
-                ? 'border-[#0284C7] text-[#0284C7] dark:text-[#38BDF8] dark:border-[#38BDF8]'
-                : 'border-transparent text-ink-muted dark:text-neutral-400 hover:text-ink dark:hover:text-white'
-            }`}
+            className={`pb-3 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all cursor-pointer whitespace-nowrap px-1 ${activeTab === 'suppliers'
+              ? 'border-[#0284C7] text-[#0284C7] dark:text-[#38BDF8] dark:border-[#38BDF8]'
+              : 'border-transparent text-ink-muted dark:text-neutral-400 hover:text-ink dark:hover:text-white'
+              }`}
           >
             <Building2 className="w-4 h-4" />
             <span>Supplier Directory</span>
@@ -801,11 +799,10 @@ export default function ProcurementPage() {
           <button
             type="button"
             onClick={() => setActiveTab('receiving')}
-            className={`pb-3 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all cursor-pointer whitespace-nowrap px-1 ${
-              activeTab === 'receiving'
-                ? 'border-[#0284C7] text-[#0284C7] dark:text-[#38BDF8] dark:border-[#38BDF8]'
-                : 'border-transparent text-ink-muted dark:text-neutral-400 hover:text-ink dark:hover:text-white'
-            }`}
+            className={`pb-3 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all cursor-pointer whitespace-nowrap px-1 ${activeTab === 'receiving'
+              ? 'border-[#0284C7] text-[#0284C7] dark:text-[#38BDF8] dark:border-[#38BDF8]'
+              : 'border-transparent text-ink-muted dark:text-neutral-400 hover:text-ink dark:hover:text-white'
+              }`}
           >
             <ShieldCheck className="w-4 h-4" />
             <span>Shipment Receiving &amp; Check</span>
@@ -817,11 +814,10 @@ export default function ProcurementPage() {
           <button
             type="button"
             onClick={() => setActiveTab('pricing')}
-            className={`pb-3 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all cursor-pointer whitespace-nowrap px-1 ${
-              activeTab === 'pricing'
-                ? 'border-[#0284C7] text-[#0284C7] dark:text-[#38BDF8] dark:border-[#38BDF8]'
-                : 'border-transparent text-ink-muted dark:text-neutral-400 hover:text-ink dark:hover:text-white'
-            }`}
+            className={`pb-3 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all cursor-pointer whitespace-nowrap px-1 ${activeTab === 'pricing'
+              ? 'border-[#0284C7] text-[#0284C7] dark:text-[#38BDF8] dark:border-[#38BDF8]'
+              : 'border-transparent text-ink-muted dark:text-neutral-400 hover:text-ink dark:hover:text-white'
+              }`}
           >
             <Scale className="w-4 h-4" />
             <span>Vendor Price Comparison</span>
@@ -839,11 +835,10 @@ export default function ProcurementPage() {
                 <button
                   key={st}
                   onClick={() => setStatusFilter(st)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition-colors cursor-pointer ${
-                    statusFilter === st
-                      ? 'bg-[#0284C7]/20 text-[#0284C7] dark:text-[#38BDF8] border border-[#0284C7]/30'
-                      : 'text-ink-muted dark:text-neutral-400 hover:text-ink dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800'
-                  }`}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition-colors cursor-pointer ${statusFilter === st
+                    ? 'bg-[#0284C7]/20 text-[#0284C7] dark:text-[#38BDF8] border border-[#0284C7]/30'
+                    : 'text-ink-muted dark:text-neutral-400 hover:text-ink dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800'
+                    }`}
                 >
                   {st}
                 </button>
@@ -932,15 +927,14 @@ export default function ProcurementPage() {
                         </td>
                         <td className="py-3.5 px-4 text-center">
                           <span
-                            className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1 ${
-                              po.status === 'Received'
-                                ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
-                                : po.status === 'Sent'
+                            className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1 ${po.status === 'Received'
+                              ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
+                              : po.status === 'Sent'
                                 ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20'
                                 : po.status === 'Approved'
-                                ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20'
-                                : 'bg-neutral-500/10 text-neutral-500'
-                            }`}
+                                  ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20'
+                                  : 'bg-neutral-500/10 text-neutral-500'
+                              }`}
                           >
                             {po.status}
                           </span>
@@ -1120,13 +1114,12 @@ export default function ProcurementPage() {
                       </td>
                       <td className="py-3.5 px-4 text-center">
                         <span
-                          className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
-                            grn.status === 'Inspection Passed'
-                              ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
-                              : grn.status === 'Discrepancy Reported'
+                          className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${grn.status === 'Inspection Passed'
+                            ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
+                            : grn.status === 'Discrepancy Reported'
                               ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20'
                               : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20'
-                          }`}
+                            }`}
                         >
                           {grn.status}
                         </span>
@@ -1190,8 +1183,8 @@ export default function ProcurementPage() {
                         <button
                           type="button"
                           onClick={() => {
-                            const found = suppliers.find((s) => s.name === c.bestPriceSupplier);
-                            setSelectedSupplierId(found ? found.id : (suppliers[0]?.id || ''));
+                            const target = suppliers.find((s) => s.name === c.bestPriceSupplier);
+                            setSelectedSupplierId(target ? target.id : (suppliers[0]?.id ?? ''));
                             setIsNewPOModalOpen(true);
                           }}
                           className="btn-primary text-xs py-1 px-3 cursor-pointer bg-[#0284C7] hover:bg-[#0369A1]"
@@ -1567,15 +1560,14 @@ export default function ProcurementPage() {
                     {selectedPO.id}
                   </span>
                   <span
-                    className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                      selectedPO.status === 'Received'
-                        ? 'bg-emerald-500/10 text-emerald-600'
-                        : selectedPO.status === 'Sent'
+                    className={`px-2 py-0.5 rounded text-[10px] font-bold ${selectedPO.status === 'Received'
+                      ? 'bg-emerald-500/10 text-emerald-600'
+                      : selectedPO.status === 'Sent'
                         ? 'bg-blue-500/10 text-blue-600'
                         : selectedPO.status === 'Approved'
-                        ? 'bg-amber-500/10 text-amber-600'
-                        : 'bg-neutral-500/10 text-neutral-500'
-                    }`}
+                          ? 'bg-amber-500/10 text-amber-600'
+                          : 'bg-neutral-500/10 text-neutral-500'
+                      }`}
                   >
                     {selectedPO.status}
                   </span>
@@ -1616,11 +1608,10 @@ export default function ProcurementPage() {
                       key={st}
                       type="button"
                       onClick={() => handleUpdatePOStatus(selectedPO.id, st)}
-                      className={`py-2 px-1 rounded-lg text-[10px] font-bold text-center border transition-all cursor-pointer ${
-                        selectedPO.status === st
-                          ? 'border-[#0284C7] bg-[#0284C7]/20 text-[#0284C7] dark:text-[#38BDF8]'
-                          : 'border-border dark:border-[#2A2B27] text-ink-muted dark:text-neutral-400 hover:text-ink'
-                      }`}
+                      className={`py-2 px-1 rounded-lg text-[10px] font-bold text-center border transition-all cursor-pointer ${selectedPO.status === st
+                        ? 'border-[#0284C7] bg-[#0284C7]/20 text-[#0284C7] dark:text-[#38BDF8]'
+                        : 'border-border dark:border-[#2A2B27] text-ink-muted dark:text-neutral-400 hover:text-ink'
+                        }`}
                     >
                       {st}
                     </button>
@@ -1687,11 +1678,10 @@ export default function ProcurementPage() {
                 <button
                   type="button"
                   onClick={() => handleTogglePayment(selectedPO.id)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-                    selectedPO.paymentStatus === 'Paid'
-                      ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
-                      : 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30'
-                  }`}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${selectedPO.paymentStatus === 'Paid'
+                    ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
+                    : 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30'
+                    }`}
                 >
                   <Check className="w-3.5 h-3.5" />
                   <span>{selectedPO.paymentStatus === 'Paid' ? 'Paid to Supplier' : 'Mark as Paid'}</span>

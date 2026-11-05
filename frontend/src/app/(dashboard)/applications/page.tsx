@@ -204,7 +204,7 @@ const ALL_APPLICATIONS: ApplicationItem[] = [
     badgeClass: 'bg-[#10B981]/10 text-[#059669] dark:text-[#34D399] border-[#10B981]/20',
     features: ['Send Invoices', 'Payment Links', 'Payment Reminders'],
     icon: <Receipt className="w-6 h-6" />,
-    status: 'not-ready',
+    status: 'ready',
   },
   {
     id: 'expenses',

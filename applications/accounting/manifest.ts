@@ -22,7 +22,10 @@ export const accountingManifest: ApplicationManifest = {
     'accounting.taxReports': true,
   },
   navigation: [
-    { label: 'Invoices & Payments', href: '/accounting', icon: 'BanknotesIcon' },
+    { label: 'General Ledger & Cash Flow', href: '/accounting', icon: 'DocumentTextIcon' },
+    { label: 'Chart of Accounts & Banks', href: '/accounting#accounts', icon: 'BuildingLibraryIcon' },
+    { label: 'Profit & Loss Statement', href: '/accounting#pl', icon: 'ChartPieIcon' },
+    { label: 'Tax Reports & Filing', href: '/accounting#tax', icon: 'ShieldCheckIcon' },
   ],
 };
 

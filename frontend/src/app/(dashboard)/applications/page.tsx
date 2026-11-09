@@ -292,7 +292,7 @@ const ALL_APPLICATIONS: ApplicationItem[] = [
     badgeClass: 'bg-[#8B5CF6]/10 text-[#7C3AED] dark:text-[#A78BFA] border-[#8B5CF6]/20',
     features: ['Support Requests', 'Quick Answers', 'Help Articles'],
     icon: <Headphones className="w-6 h-6" />,
-    status: 'not-ready',
+    status: 'ready',
   },
   {
     id: 'documents',
@@ -306,7 +306,7 @@ const ALL_APPLICATIONS: ApplicationItem[] = [
     badgeClass: 'bg-[#6366F1]/10 text-[#4F46E5] dark:text-[#818CF8] border-[#6366F1]/20',
     features: ['Online Signatures', 'Saved Templates', 'Safe Storage'],
     icon: <FileText className="w-6 h-6" />,
-    status: 'not-ready',
+    status: 'ready',
   },
 ];
 

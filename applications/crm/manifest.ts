@@ -2,7 +2,7 @@ import { ApplicationManifest } from '@bahi/types';
 
 export const crmManifest: ApplicationManifest = {
   id: 'crm',
-  name: 'Customers & Leads',
+  name: 'CRM',
   description: 'Keep track of clients, sales leads, upcoming deals, activities, and sales reports.',
   icon: 'UserGroupIcon',
   colorToken: 'module-crm',

@@ -2,7 +2,7 @@ import { ApplicationManifest } from '@bahi/types';
 
 export const inventoryManifest: ApplicationManifest = {
   id: 'inventory',
-  name: 'Stock & Inventory',
+  name: 'Inventory',
   description: 'Track items in storage, get low stock alerts, and record shipments.',
   icon: 'CubeIcon',
   colorToken: 'module-inventory',

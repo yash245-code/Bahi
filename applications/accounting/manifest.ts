@@ -2,7 +2,7 @@ import { ApplicationManifest } from '@bahi/types';
 
 export const accountingManifest: ApplicationManifest = {
   id: 'accounting',
-  name: 'Bookkeeping & Finances',
+  name: 'Accounting',
   description: 'Record customer invoices, check payments, and keep track of your cash flow.',
   icon: 'BanknotesIcon',
   colorToken: 'module-accounting',

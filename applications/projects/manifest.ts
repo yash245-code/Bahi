@@ -2,7 +2,7 @@ import { ApplicationManifest } from '@bahi/types';
 
 export const projectsManifest: ApplicationManifest = {
   id: 'projects',
-  name: 'Projects & Tasks',
+  name: 'Projects',
   description: 'Organize tasks, assign work to your team, and track project deadlines.',
   icon: 'BriefcaseIcon',
   colorToken: 'module-projects',

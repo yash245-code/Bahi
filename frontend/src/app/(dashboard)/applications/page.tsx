@@ -89,12 +89,12 @@ const CATEGORIES: CategoryGroup[] = [
 ];
 
 const ALL_APPLICATIONS: ApplicationItem[] = [
-  // ─── 1. Sales & Customers (3 Apps) ──────────────────────
+  // ─── 1. Sales & Revenue (3 Apps) ──────────────────────
   {
     id: 'crm',
-    name: 'Customers & Leads',
+    name: 'CRM',
     categoryId: 'sales',
-    categoryLabel: 'Sales',
+    categoryLabel: 'CRM',
     description: 'Keep track of clients, sales leads, and upcoming deals in an easy visual board.',
     route: '/crm',
     colorClass: 'text-[#C2542F] bg-[#C2542F]/10 border-[#C2542F]/20 dark:bg-[#C2542F]/15 dark:border-[#C2542F]/35',
@@ -106,9 +106,9 @@ const ALL_APPLICATIONS: ApplicationItem[] = [
   },
   {
     id: 'sales',
-    name: 'Sales & Quotes',
+    name: 'Sales',
     categoryId: 'sales',
-    categoryLabel: 'Orders',
+    categoryLabel: 'Sales',
     description: 'Create price quotes for customers, confirm orders, and manage price lists.',
     route: '/sales',
     colorClass: 'text-[#A8462F] bg-[#A8462F]/10 border-[#A8462F]/20 dark:bg-[#A8462F]/15 dark:border-[#A8462F]/35',
@@ -120,9 +120,9 @@ const ALL_APPLICATIONS: ApplicationItem[] = [
   },
   {
     id: 'subscriptions',
-    name: 'Subscriptions & Plans',
+    name: 'Subscriptions',
     categoryId: 'sales',
-    categoryLabel: 'Billing',
+    categoryLabel: 'Subscriptions',
     description: 'Set up recurring customer subscriptions, monthly billing, and auto renewals.',
     route: '/subscriptions',
     colorClass: 'text-[#E11D48] bg-[#E11D48]/10 border-[#E11D48]/20 dark:bg-[#E11D48]/15 dark:border-[#E11D48]/35',
@@ -130,13 +130,13 @@ const ALL_APPLICATIONS: ApplicationItem[] = [
     badgeClass: 'bg-[#E11D48]/10 text-[#E11D48] dark:text-[#FB7185] border-[#E11D48]/20',
     features: ['Monthly Plans', 'Payment Reminders', 'Recurring Revenue'],
     icon: <CreditCard className="w-6 h-6" />,
-    status: 'not-ready',
+    status: 'ready',
   },
 
   // ─── 2. Products & Field Work (3 Apps) ───────────────────
   {
     id: 'inventory',
-    name: 'Stock & Inventory',
+    name: 'Inventory',
     categoryId: 'operations',
     categoryLabel: 'Inventory',
     description: 'Keep count of items on shelves, get low stock warnings, and move items between rooms.',
@@ -150,9 +150,9 @@ const ALL_APPLICATIONS: ApplicationItem[] = [
   },
   {
     id: 'services',
-    name: 'Service Visits & Jobs',
+    name: 'Services',
     categoryId: 'operations',
-    categoryLabel: 'Field Jobs',
+    categoryLabel: 'Services',
     description: 'Book customer repair jobs, assign field workers, and schedule visits.',
     route: '/services',
     colorClass: 'text-[#2DD4BF] bg-[#2DD4BF]/10 border-[#2DD4BF]/20 dark:bg-[#2DD4BF]/15 dark:border-[#2DD4BF]/35',
@@ -164,9 +164,9 @@ const ALL_APPLICATIONS: ApplicationItem[] = [
   },
   {
     id: 'procurement',
-    name: 'Purchases & Suppliers',
+    name: 'Purchases',
     categoryId: 'operations',
-    categoryLabel: 'Buying',
+    categoryLabel: 'Purchases',
     description: 'Order supplies from vendors, compare prices, and check shipments when they arrive.',
     route: '/procurement',
     colorClass: 'text-[#0284C7] bg-[#0284C7]/10 border-[#0284C7]/20 dark:bg-[#0284C7]/15 dark:border-[#0284C7]/35',
@@ -180,9 +180,9 @@ const ALL_APPLICATIONS: ApplicationItem[] = [
   // ─── 3. Money & Bookkeeping (3 Apps) ─────────────────────
   {
     id: 'accounting',
-    name: 'Bookkeeping & Finances',
+    name: 'Accounting',
     categoryId: 'finance',
-    categoryLabel: 'Accounts',
+    categoryLabel: 'Accounting',
     description: 'See all money coming in and going out, balance your accounts, and keep clean books.',
     route: '/accounting',
     colorClass: 'text-[#2E9169] bg-[#2E9169]/10 border-[#2E9169]/20 dark:bg-[#2E9169]/15 dark:border-[#2E9169]/35',
@@ -194,9 +194,9 @@ const ALL_APPLICATIONS: ApplicationItem[] = [
   },
   {
     id: 'invoicing',
-    name: 'Invoices & Customer Bills',
+    name: 'Invoicing',
     categoryId: 'finance',
-    categoryLabel: 'Bills',
+    categoryLabel: 'Invoicing',
     description: 'Send professional invoices, share payment links, and get paid faster.',
     route: '/invoicing',
     colorClass: 'text-[#10B981] bg-[#10B981]/10 border-[#10B981]/20 dark:bg-[#10B981]/15 dark:border-[#10B981]/35',
@@ -208,9 +208,9 @@ const ALL_APPLICATIONS: ApplicationItem[] = [
   },
   {
     id: 'expenses',
-    name: 'Expenses & Receipts',
+    name: 'Expenses',
     categoryId: 'finance',
-    categoryLabel: 'Receipts',
+    categoryLabel: 'Expenses',
     description: 'Snap photos of receipts, track business expenses, and repay employee spending.',
     route: '/expenses',
     colorClass: 'text-[#84CC16] bg-[#84CC16]/10 border-[#84CC16]/20 dark:bg-[#84CC16]/15 dark:border-[#84CC16]/35',
@@ -218,15 +218,15 @@ const ALL_APPLICATIONS: ApplicationItem[] = [
     badgeClass: 'bg-[#84CC16]/10 text-[#65A30D] dark:text-[#A3E635] border-[#84CC16]/20',
     features: ['Receipt Photos', 'Expense Approvals', 'Daily Spending'],
     icon: <Wallet className="w-6 h-6" />,
-    status: 'not-ready',
+    status: 'ready',
   },
 
   // ─── 4. Team & Staff (3 Apps) ────────────────────────────
   {
     id: 'hr',
-    name: 'Team & Staff Directory',
+    name: 'Staff',
     categoryId: 'hr',
-    categoryLabel: 'Team',
+    categoryLabel: 'Staff',
     description: 'List all employees, their contact info, job roles, and emergency details.',
     route: '/hr',
     colorClass: 'text-[#C24A6B] bg-[#C24A6B]/10 border-[#C24A6B]/20 dark:bg-[#C24A6B]/15 dark:border-[#C24A6B]/35',
@@ -238,9 +238,9 @@ const ALL_APPLICATIONS: ApplicationItem[] = [
   },
   {
     id: 'attendance',
-    name: 'Work Hours & Attendance',
+    name: 'Attendance',
     categoryId: 'hr',
-    categoryLabel: 'Clock In',
+    categoryLabel: 'Attendance',
     description: 'Track clock-in and clock-out times, daily work shifts, and overtime hours.',
     route: '/attendance',
     colorClass: 'text-[#EC4899] bg-[#EC4899]/10 border-[#EC4899]/20 dark:bg-[#EC4899]/15 dark:border-[#EC4899]/35',
@@ -248,13 +248,13 @@ const ALL_APPLICATIONS: ApplicationItem[] = [
     badgeClass: 'bg-[#EC4899]/10 text-[#DB2777] dark:text-[#F472B6] border-[#EC4899]/20',
     features: ['Clock In / Out', 'Work Shifts', 'Overtime Logs'],
     icon: <Clock className="w-6 h-6" />,
-    status: 'not-ready',
+    status: 'ready',
   },
   {
     id: 'leave',
-    name: 'Time Off & Vacations',
+    name: 'Leave',
     categoryId: 'hr',
-    categoryLabel: 'Time Off',
+    categoryLabel: 'Leave',
     description: 'Request days off, approve employee holidays, and see who is working today.',
     route: '/leave',
     colorClass: 'text-[#F43F5E] bg-[#F43F5E]/10 border-[#F43F5E]/20 dark:bg-[#F43F5E]/15 dark:border-[#F43F5E]/35',
@@ -262,15 +262,15 @@ const ALL_APPLICATIONS: ApplicationItem[] = [
     badgeClass: 'bg-[#F43F5E]/10 text-[#E11D48] dark:text-[#FB7185] border-[#F43F5E]/20',
     features: ['Vacation Requests', 'Sick Days', 'Team Calendar'],
     icon: <Calendar className="w-6 h-6" />,
-    status: 'not-ready',
+    status: 'ready',
   },
 
   // ─── 5. Projects & Support (3 Apps) ──────────────────────
   {
     id: 'projects',
-    name: 'Projects & Tasks',
+    name: 'Projects',
     categoryId: 'productivity',
-    categoryLabel: 'Tasks',
+    categoryLabel: 'Projects',
     description: 'Organize project tasks on simple boards, assign work, and finish on time.',
     route: '/projects',
     colorClass: 'text-[#D1A536] bg-[#D1A536]/10 border-[#D1A536]/20 dark:bg-[#D1A536]/15 dark:border-[#D1A536]/35',
@@ -282,9 +282,9 @@ const ALL_APPLICATIONS: ApplicationItem[] = [
   },
   {
     id: 'helpdesk',
-    name: 'Customer Help & Support',
+    name: 'Helpdesk',
     categoryId: 'productivity',
-    categoryLabel: 'Support',
+    categoryLabel: 'Helpdesk',
     description: 'Answer customer questions, solve problems quickly, and keep clients happy.',
     route: '/helpdesk',
     colorClass: 'text-[#8B5CF6] bg-[#8B5CF6]/10 border-[#8B5CF6]/20 dark:bg-[#8B5CF6]/15 dark:border-[#8B5CF6]/35',
@@ -296,9 +296,9 @@ const ALL_APPLICATIONS: ApplicationItem[] = [
   },
   {
     id: 'documents',
-    name: 'Documents & Signatures',
+    name: 'Documents',
     categoryId: 'productivity',
-    categoryLabel: 'Contracts',
+    categoryLabel: 'Documents',
     description: 'Store agreements and forms, collect electronic signatures, and keep files safe.',
     route: '/documents',
     colorClass: 'text-[#6366F1] bg-[#6366F1]/10 border-[#6366F1]/20 dark:bg-[#6366F1]/15 dark:border-[#6366F1]/35',

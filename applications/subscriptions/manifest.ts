@@ -2,7 +2,7 @@ import { ApplicationManifest } from '@bahi/types';
 
 export const subscriptionsManifest: ApplicationManifest = {
   id: 'subscriptions',
-  name: 'Subscriptions & Plans',
+  name: 'Subscriptions',
   description: 'Manage recurring customer plans, automated billing cycles, pricing tiers, and renewals.',
   icon: 'CreditCardIcon',
   colorToken: 'module-billing',

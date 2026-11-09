@@ -2,7 +2,7 @@ import { ApplicationManifest } from '@bahi/types';
 
 export const procurementManifest: ApplicationManifest = {
   id: 'procurement',
-  name: 'Purchases & Suppliers',
+  name: 'Purchases',
   description: 'Order supplies from vendors, compare prices, and check shipments when they arrive.',
   icon: 'TruckIcon',
   colorToken: 'module-procurement',

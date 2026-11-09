@@ -2,7 +2,7 @@ import { ApplicationManifest } from '@bahi/types';
 
 export const servicesManifest: ApplicationManifest = {
   id: 'services',
-  name: 'Service Visits & Jobs',
+  name: 'Services',
   description: 'Book customer service jobs, schedule visits, and dispatch technicians.',
   icon: 'WrenchScrewdriverIcon',
   colorToken: 'module-services',

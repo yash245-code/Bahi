@@ -2,7 +2,7 @@ import { ApplicationManifest } from '@bahi/types';
 
 export const hrManifest: ApplicationManifest = {
   id: 'hr',
-  name: 'Team & Staff Directory',
+  name: 'Staff',
   description: 'Find team contact info, track attendance, and manage vacation requests.',
   icon: 'IdentificationIcon',
   colorToken: 'module-hr',

@@ -2,7 +2,7 @@ import { ApplicationManifest } from '@bahi/types';
 
 export const salesManifest: ApplicationManifest = {
   id: 'sales',
-  name: 'Sales & Quotes',
+  name: 'Sales',
   description: 'Create price quotes for customers, confirm orders, and manage price lists.',
   icon: 'DocumentTextIcon',
   colorToken: 'module-billing',

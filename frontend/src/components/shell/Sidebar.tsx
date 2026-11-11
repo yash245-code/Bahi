@@ -144,7 +144,18 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         {/* ─── Navigation Links ────────────────────────── */}
         <nav className="flex-1 py-3 overflow-y-auto space-y-1 no-scrollbar">
           {/* Applications Hub Launcher */}
-          <div className="px-3">
+          <div className="px-3 space-y-1">
+            <Link
+              href="/dashboard"
+              onClick={onClose}
+              className={`sidebar-item ${pathname === '/dashboard' ? 'active' : ''}`}
+            >
+              <svg className="w-5 h-5 flex-shrink-0 text-accent" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5M9 11.25v1.5M12 9v3.75m3-6v6" />
+              </svg>
+              <span className="flex-1 font-semibold">Overview</span>
+            </Link>
+
             <Link
               href="/applications"
               onClick={onClose}
@@ -212,6 +223,33 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
         {/* ─── Footer Controls & Sign Out ───────────────── */}
         <div className="border-t border-neutral-800 p-3 space-y-1 bg-neutral-950">
+          <Link
+            href="/billing"
+            onClick={onClose}
+            className={`sidebar-item !m-0 group ${pathname === '/billing' ? 'active' : 'text-neutral-400 hover:text-white'}`}
+          >
+            <span className="flex-1">Subscription & Billing</span>
+            <span className="text-[10px] font-mono text-neutral-400">Growth</span>
+          </Link>
+
+          <Link
+            href="/support"
+            onClick={onClose}
+            className={`sidebar-item !m-0 group ${pathname === '/support' ? 'active' : 'text-neutral-400 hover:text-white'}`}
+          >
+            <span className="flex-1">Helpdesk Support</span>
+            <span className="text-[10px] font-mono text-neutral-400">Tickets</span>
+          </Link>
+
+          <Link
+            href="/settings"
+            onClick={onClose}
+            className={`sidebar-item !m-0 group ${pathname === '/settings' ? 'active' : 'text-neutral-400 hover:text-white'}`}
+          >
+            <span className="flex-1">Settings & Security</span>
+            <span className="text-[10px] font-mono text-neutral-400">2FA</span>
+          </Link>
+
           <Link
             href="/"
             onClick={onClose}

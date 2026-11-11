@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Sidebar } from '@/components/shell/Sidebar';
 import { Topbar } from '@/components/shell/Topbar';
 import { CommandPalette } from '@/components/shell/CommandPalette';
+import { ImpersonationBanner } from '@/components/shell/ImpersonationBanner';
 
 export default function DashboardLayout({
   children,
@@ -15,6 +16,7 @@ export default function DashboardLayout({
 
   return (
     <div className="min-h-screen bg-[#F7F6F3] dark:bg-[#050505] text-ink dark:text-[#F7F6F3] selection:bg-accent/20 selection:text-accent relative transition-colors duration-150">
+      <ImpersonationBanner />
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <Topbar
         onToggleSidebar={() => setSidebarOpen((prev) => !prev)}

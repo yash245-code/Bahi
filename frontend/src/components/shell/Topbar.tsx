@@ -99,6 +99,18 @@ export function Topbar({
           <span>All Apps</span>
         </Link>
 
+        {/* Notifications Shortcut */}
+        <Link
+          href="/notifications"
+          className="p-1.5 rounded-lg text-ink-muted hover:text-ink dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition-colors relative"
+          title="Notifications & Changelog"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+          </svg>
+          <span className="w-1.5 h-1.5 rounded-full bg-accent absolute top-1.5 right-1.5" />
+        </Link>
+
         {/* Theme Toggle Button */}
         <ThemeToggle />
 
